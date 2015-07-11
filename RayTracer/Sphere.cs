@@ -1,0 +1,94 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+
+namespace RayTracer
+{
+    public sealed class Sphere : RenderableObject
+    {
+        private Point3D c;
+        private double r;
+
+        //Constructors
+        public Sphere()
+        {
+            c = new Point3D(0, 0, 0);
+            r = 1.0;
+        }
+        public Sphere(Point3D center, double radius)
+        {
+            c = new Point3D(center);
+            r = radius;
+        }
+        
+        public void set_center(Point3D center)
+        {
+            c = new Point3D(center.xcoord, center.ycoord, center.zcoord);
+        }
+        public void set_radius(double radius)
+        {
+            r = radius;
+        }
+        /// <summary>
+        /// Determines if given ray r intersects sphere.
+        /// </summary>
+        /// <param name="r">Ray</param>
+        /// <param name="tmin">Return by reference, minimum distance to intersection</param>
+        /// <param name="sr">Return by reference, shader parameters</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool hit(Ray ray, ref double tmin, ref ShadeRec sr)
+        {
+            double t;
+            //Store variables locally to minimize member accesses
+            Point3D rorigin = ray.origin;
+            Vect3D rdirection = ray.direction;
+            Vect3D temp = rorigin - this.c;
+            //Rays are unit vectors
+            //Intersection with a sphere is a quadratic equation (at^2 + bt + c = 0)
+            //a = d*d , d = ray direction
+            //b = 2(o-c)*d, o = ray origin, c = sphere center, d = ray direction
+            //c = (o-c)*(o-c)-r^2, o = ray origin, c = sphere center, r = sphere radius
+            double a = rdirection * rdirection;
+            double b = 2.0 * temp * rdirection;
+            double cv = (temp * temp) - (r*r);
+
+            //Find discriminant, d = b^2 - 4ac
+            //If d < 0, no intersection, if d = 0, one intersection, if d > 0, two intersections
+            double d = b * b - 4 * a * cv;
+
+            if(d < 0.0)
+            {
+                return false;
+            }
+            else
+            {
+                double e = Math.Sqrt(d);
+                double invdenominator = 1/(2.0 * a);
+                t = (-b - e) * invdenominator; //Solve quadratic equation for smallest value
+                if (t > GlobalVars.kEpsilon && t < tmin)
+                {
+                    tmin = t;
+                    sr.normal = new Normal((temp + t * rdirection) / r);
+                    sr.hit_point = rorigin + t * rdirection;
+                    return true;
+                }
+
+                t = (-b + e) * invdenominator; //Solve quadratic equation for largest value
+                if(t > GlobalVars.kEpsilon && t < tmin)
+                {
+                    tmin = t;
+                    sr.normal = new Normal((temp + t * rdirection) / r);
+                    sr.hit_point = rorigin + t * rdirection;
+                    return true;
+                }
+            }
+
+            //Codepath shouldn't get here
+            return false;
+        }
+    }
+}
