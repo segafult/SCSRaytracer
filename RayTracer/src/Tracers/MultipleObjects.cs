@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RayTracer
 {
+    /// <summary>
+    /// Temporary placeholder raycaster object. To be replaced by more feature complete raycaster.
+    /// </summary>
     public class MultipleObjects : Tracer
     {
         public MultipleObjects(World wrld)
@@ -20,16 +23,25 @@ namespace RayTracer
             {
                 sr.normal.normalize();
                 //Perform lighting calculations
-                Vect3D light_direction = world_pointer.lightList[0].getLightDirection(sr.hit_point);
-                RGBColor tempcolor = new RGBColor(0, 0, 0);
-                tempcolor = tempcolor + sr.color * (Math.Pow((light_direction * sr.normal),1.5) + 1);
-                sr.color = tempcolor;
+                //Vect3D light_direction = world_pointer.lightList[0].getLightDirection(sr.hit_point);
+                //RGBColor tempcolor = new RGBColor(0, 0, 0);
+                //tempcolor = tempcolor + sr.color * (Math.Pow((light_direction * sr.normal),1.5) + 1);
+                //sr.color = tempcolor;
                 return sr.color;
             }
             else
             {
                 return world_pointer.bg_color;
             }
+        }
+
+        public override RGBColor trace_ray(Ray ray, int depth)
+        {
+            return this.trace_ray(ray);
+        }
+        public override RGBColor trace_ray(Ray ray, float tmin, int depth )
+        {
+            return this.trace_ray(ray);
         }
     }
 }

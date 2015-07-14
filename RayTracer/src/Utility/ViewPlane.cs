@@ -14,6 +14,9 @@ namespace RayTracer
         public float gamma;
         public float inv_gamma;
 
+        public int numSamples;
+        public Sampler vpSampler;
+
         public ViewPlane()
         {
 
@@ -34,6 +37,18 @@ namespace RayTracer
         {
             gamma = g;
             inv_gamma = 1 / g;
+        }
+        public void set_numSamples(int samples)
+        {
+            numSamples = samples;
+        }
+        public void set_sampler(Sampler smp)
+        {
+            vpSampler = smp;
+        }
+        public void set_samples(int samples)
+        {
+            numSamples = samples;
         }
     }
 }

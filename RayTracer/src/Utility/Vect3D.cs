@@ -107,7 +107,7 @@ namespace RayTracer
         /// <returns>A unit vector pointing the same direction as the vector</returns>
         public Vect3D hat()
         {
-            double m = magnitude();
+            double m = this.magnitude();
             return new Vect3D(xcoord / m, ycoord / m, zcoord / m);
         }
 
@@ -116,10 +116,10 @@ namespace RayTracer
         /// </summary>
         public void normalize()
         {
-            Vect3D v = this.hat();
-            xcoord = v.xcoord;
-            ycoord = v.ycoord;
-            zcoord = v.ycoord;
+            double m = this.magnitude();
+            xcoord = xcoord / m;
+            ycoord = ycoord / m;
+            zcoord = zcoord / m;
         }
 
         public double angleBetween(Vect3D b)

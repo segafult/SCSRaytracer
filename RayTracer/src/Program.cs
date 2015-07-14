@@ -13,8 +13,9 @@ namespace RayTracer
         {
             World w = new World();
             w.build();
-            w.render_scene();
-
+            w.camera.render_scene(w);
+            w.drawPlan.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
+            w.drawPlan.Save("E:\\test.bmp");
             //Console.ReadKey();
         }
     }

@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace RayTracer
 {
-    abstract public class Light
+    public abstract class Material
     {
-        protected Vect3D direction;
-
-        abstract public Vect3D getLightDirection(Point3D p);
+        public abstract RGBColor shade(ShadeRec sr);
     }
 }

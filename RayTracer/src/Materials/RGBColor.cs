@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
@@ -28,9 +29,24 @@ namespace RayTracer
         //Copy constructor
         public RGBColor (RGBColor color)
         {
+            //No need to clamp when cloning, can assume values are safe.
             r = color.r;
             g = color.g;
             b = color.b;
+        }
+
+        //Setters. No getter functions, members public for performance reasons. :)
+        public void setRed(double r)
+        {
+            this.r = r;
+        }
+        public void setGreen(double g)
+        {
+            this.g = g;
+        }
+        public void setBlue(double b)
+        {
+            this.b = b;
         }
 
         /// <summary>
@@ -71,17 +87,6 @@ namespace RayTracer
         public RGBColor pow(double p)
         {
             return new RGBColor(Math.Pow(this.r, p), Math.Pow(this.g, p), Math.Pow(this.b, p));
-        }
-
-        public void clamp()
-        {
-            if(r < 0) { r = 0; }
-            else if(r > 2.0) { r = 2.0; }
-            if(g < 0) { g = 0; }
-            else if(g > 2.0) { g = 2.0; }
-            if(b < 0) { b = 0; }
-            else if(b> 2.0) { b = 2.0; }
-
         }
 
         ///

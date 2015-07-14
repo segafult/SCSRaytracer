@@ -35,7 +35,7 @@ namespace RayTracer
             double t = (p - r.origin) * n / (r.direction * n);
 
             //Intersection is in front of camera
-            if(t > GlobalVars.kEpsilon)
+            if(t > GlobalVars.kEpsilon && t < tmin)
             {
                 tmin = t;
                 sr.normal = n;

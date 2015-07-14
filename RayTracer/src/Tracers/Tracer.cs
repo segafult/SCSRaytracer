@@ -9,7 +9,7 @@ namespace RayTracer
     /// <summary>
     /// Template class for all other tracers
     /// </summary>
-    public class Tracer
+    public abstract class Tracer
     {
         protected World world_pointer;
 
@@ -22,9 +22,8 @@ namespace RayTracer
             world_pointer = wrld;
         }
 
-        public virtual RGBColor trace_ray(Ray ray)
-        {
-            return GlobalVars.color_black;
-        }
+        public abstract RGBColor trace_ray(Ray ray);
+        public abstract RGBColor trace_ray(Ray ray, int depth);
+        public abstract RGBColor trace_ray(Ray ray, float tmin, int depth);
     }
 }

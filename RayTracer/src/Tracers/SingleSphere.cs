@@ -7,6 +7,9 @@ using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
+    /// <summary>
+    /// Placeholder raycaster with support for a single sphere
+    /// </summary>
     public class SingleSphere : Tracer
     {
         private ShadeRec sr;
@@ -19,7 +22,6 @@ namespace RayTracer
           
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override RGBColor trace_ray(Ray ray)
         {
             sr = new ShadeRec(world_pointer);
@@ -32,6 +34,16 @@ namespace RayTracer
             }
             else { return (GlobalVars.color_black); }
             */
+        }
+
+        public override RGBColor trace_ray(Ray ray, int depth)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override RGBColor trace_ray(Ray ray, float tmin, int depth)
+        {
+            throw new NotImplementedException();
         }
     }
 }
