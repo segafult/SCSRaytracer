@@ -65,26 +65,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GlobalVars.cs" />
-    <Compile Include="Light.cs" />
-    <Compile Include="Matrix.cs" />
-    <Compile Include="MultipleObjects.cs" />
-    <Compile Include="Normal.cs" />
-    <Compile Include="Plane.cs" />
-    <Compile Include="Point3D.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="src\Cameras\Camera.cs" />
+    <Compile Include="src\Cameras\PinholeCamera.cs" />
+    <Compile Include="src\Lights\AmbientLight.cs" />
+    <Compile Include="src\Lights\PointLight.cs" />
+    <Compile Include="src\Materials\BRDF.cs" />
+    <Compile Include="src\Materials\Lambertian.cs" />
+    <Compile Include="src\Materials\Material.cs" />
+    <Compile Include="src\Materials\MatteShader.cs" />
+    <Compile Include="src\Samplers\RegularSampler.cs" />
+    <Compile Include="src\Samplers\Sampler.cs" />
+    <Compile Include="src\Tracers\RayCaster.cs" />
+    <Compile Include="src\Utility\GlobalVars.cs" />
+    <Compile Include="src\Lights\Light.cs" />
+    <Compile Include="src\Utility\Matrix.cs" />
+    <Compile Include="src\Tracers\MultipleObjects.cs" />
+    <Compile Include="src\Utility\Normal.cs" />
+    <Compile Include="src\Primitives\Plane.cs" />
+    <Compile Include="src\Utility\Point2D.cs" />
+    <Compile Include="src\Utility\Point3D.cs" />
+    <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Ray.cs" />
-    <Compile Include="RenderableObject.cs" />
-    <Compile Include="RGBColor.cs" />
-    <Compile Include="ShadeRec.cs" />
-    <Compile Include="SingleSphere.cs" />
-    <Compile Include="Sphere.cs" />
-    <Compile Include="Tracer.cs" />
-    <Compile Include="Vect3D.cs" />
-    <Compile Include="ViewPlane.cs" />
-    <Compile Include="World.cs" />
-    <Compile Include="WorldLight.cs" />
+    <Compile Include="src\Utility\Ray.cs" />
+    <Compile Include="src\Primitives\RenderableObject.cs" />
+    <Compile Include="src\Materials\RGBColor.cs" />
+    <Compile Include="src\Materials\ShadeRec.cs" />
+    <Compile Include="src\Tracers\SingleSphere.cs" />
+    <Compile Include="src\Primitives\Sphere.cs" />
+    <Compile Include="src\Tracers\Tracer.cs" />
+    <Compile Include="src\Utility\Vect3D.cs" />
+    <Compile Include="src\Utility\ViewPlane.cs" />
+    <Compile Include="src\Utility\World.cs" />
+    <Compile Include="src\Lights\DirectionalLight.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

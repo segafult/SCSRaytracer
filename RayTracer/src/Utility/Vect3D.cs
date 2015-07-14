@@ -1,4 +1,21 @@
-﻿using System;
+﻿//    
+//    Copyright(C) 2015  Elanna Stephenson
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.If not, see<http://www.gnu.org/licenses/>.
+//
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -107,7 +124,7 @@ namespace RayTracer
         /// <returns>A unit vector pointing the same direction as the vector</returns>
         public Vect3D hat()
         {
-            double m = magnitude();
+            double m = this.magnitude();
             return new Vect3D(xcoord / m, ycoord / m, zcoord / m);
         }
 
@@ -116,10 +133,10 @@ namespace RayTracer
         /// </summary>
         public void normalize()
         {
-            Vect3D v = this.hat();
-            xcoord = v.xcoord;
-            ycoord = v.ycoord;
-            zcoord = v.ycoord;
+            double m = this.magnitude();
+            xcoord = xcoord / m;
+            ycoord = ycoord / m;
+            zcoord = zcoord / m;
         }
 
         public double angleBetween(Vect3D b)

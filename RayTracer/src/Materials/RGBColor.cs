@@ -1,8 +1,26 @@
-﻿using System;
+﻿//    
+//    Copyright(C) 2015  Elanna Stephenson
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.If not, see<http://www.gnu.org/licenses/>.
+//
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
@@ -28,9 +46,24 @@ namespace RayTracer
         //Copy constructor
         public RGBColor (RGBColor color)
         {
+            //No need to clamp when cloning, can assume values are safe.
             r = color.r;
             g = color.g;
             b = color.b;
+        }
+
+        //Setters. No getter functions, members public for performance reasons. :)
+        public void setRed(double r)
+        {
+            this.r = r;
+        }
+        public void setGreen(double g)
+        {
+            this.g = g;
+        }
+        public void setBlue(double b)
+        {
+            this.b = b;
         }
 
         /// <summary>
@@ -71,17 +104,6 @@ namespace RayTracer
         public RGBColor pow(double p)
         {
             return new RGBColor(Math.Pow(this.r, p), Math.Pow(this.g, p), Math.Pow(this.b, p));
-        }
-
-        public void clamp()
-        {
-            if(r < 0) { r = 0; }
-            else if(r > 2.0) { r = 2.0; }
-            if(g < 0) { g = 0; }
-            else if(g > 2.0) { g = 2.0; }
-            if(b < 0) { b = 0; }
-            else if(b> 2.0) { b = 2.0; }
-
         }
 
         ///
