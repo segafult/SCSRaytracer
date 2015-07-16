@@ -144,7 +144,7 @@ namespace RayTracer
             vp.set_vres(600);
             vp.set_pixel_size(1.0F);
             vp.set_gamma(1.0F);
-            vp.set_samples(4);
+            vp.set_samples(16);
             RegularSampler mySampler = new RegularSampler(vp.numSamples);
             mySampler.generate_samples();
             vp.set_sampler(mySampler);
@@ -164,31 +164,37 @@ namespace RayTracer
             light_ptr.setIntensity(3.0);
             add_Light(light_ptr);
 
-            MatteShader matte_ptr = new MatteShader();
-            matte_ptr.setKa(0.25F);
-            matte_ptr.setKd(0.65F);
-            matte_ptr.setCd(new RGBColor(1, 1, 0));
+            PhongShader phong_ptr = new PhongShader();
+            phong_ptr.setKa(0.25F);
+            phong_ptr.setKd(0.65F);
+            phong_ptr.setCd(new RGBColor(1, 1, 0));
+            phong_ptr.setExp(20.0f);
+            phong_ptr.setKs(0.2f);
             Sphere sphere_ptr = new Sphere(new Point3D(10, -5, 0), 27);
-            sphere_ptr.setMaterial(matte_ptr);
+            sphere_ptr.setMaterial(phong_ptr);
             add_Object(sphere_ptr);
 
-            matte_ptr = new MatteShader();
-            matte_ptr.setKa(0.25f);
-            matte_ptr.setKd(0.65f);
-            matte_ptr.setCd(new RGBColor(1, 0, 0));
+            phong_ptr = new PhongShader();
+            phong_ptr.setKa(0.25f);
+            phong_ptr.setKd(0.65f);
+            phong_ptr.setCd(new RGBColor(1, 0, 0));
+            phong_ptr.setExp(20.0f);
+            phong_ptr.setKs(0.2f);
             sphere_ptr = new Sphere(new Point3D(-27, -12, 15), 20);
-            sphere_ptr.setMaterial(matte_ptr);
+            sphere_ptr.setMaterial(phong_ptr);
             add_Object(sphere_ptr);
 
-            matte_ptr = new MatteShader();
-            matte_ptr.setKa(0.25f);
-            matte_ptr.setKd(0.65f);
-            matte_ptr.setCd(new RGBColor(0, 1, 0));
-            sphere_ptr = new Sphere(new Point3D(30, -10, -10), 15);
-            sphere_ptr.setMaterial(matte_ptr);
+            phong_ptr = new PhongShader();
+            phong_ptr.setKa(0.25f);
+            phong_ptr.setKd(0.65f);
+            phong_ptr.setExp(20.0f);
+            phong_ptr.setKs(0.2f);
+            phong_ptr.setCd(new RGBColor(0, 1, 0));
+            sphere_ptr = new Sphere(new Point3D(40, -10, -10), 15);
+            sphere_ptr.setMaterial(phong_ptr);
             add_Object(sphere_ptr);
 
-            matte_ptr = new MatteShader();
+            MatteShader matte_ptr = new MatteShader();
             matte_ptr.setKa(0.25F);
             matte_ptr.setKd(0.65F);
             matte_ptr.setCd(new RGBColor(0.5, 0.5, 0.5));
@@ -215,7 +221,8 @@ namespace RayTracer
         /// <param name="pixel_color"></param>
         public void display_pixel(int row, int column, RGBColor pixel_color)
         {
-            drawPlan.SetPixel(column, row, Color.FromArgb(255, (int)(pixel_color.r * 250), (int)(pixel_color.g * 250), (int)(pixel_color.b * 250)));
+            RGBColor disp_color = pixel_color.clamp();
+            drawPlan.SetPixel(column, row, Color.FromArgb(255, (int)(disp_color.r * 250), (int)(disp_color.g * 250), (int)(disp_color.b * 250)));
         }
-    }
+    } 
 }

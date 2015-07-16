@@ -70,9 +70,11 @@
     <Compile Include="src\Lights\AmbientLight.cs" />
     <Compile Include="src\Lights\PointLight.cs" />
     <Compile Include="src\Materials\BRDF.cs" />
+    <Compile Include="src\Materials\GlossySpecular.cs" />
     <Compile Include="src\Materials\Lambertian.cs" />
     <Compile Include="src\Materials\Material.cs" />
     <Compile Include="src\Materials\MatteShader.cs" />
+    <Compile Include="src\Materials\PhongShader.cs" />
     <Compile Include="src\Samplers\RegularSampler.cs" />
     <Compile Include="src\Samplers\Sampler.cs" />
     <Compile Include="src\Tracers\RayCaster.cs" />

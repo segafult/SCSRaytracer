@@ -57,7 +57,7 @@ namespace RayTracer
                 wi = sr.w.lightList[i].getDirection(sr);
                 ndotwi = sr.normal * wi;
                 //Direction must not be 0,0,0 to be a diffuse light source.
-                if(ndotwi > 0.0 && !sr.w.hit_objects(new Ray(sr.hit_point+new Vect3D(0.001*sr.normal), wi)).hit_an_object)
+                if(ndotwi > 0.0)
                 {
                     L += diffuse_brdf.f(sr, wo, wi) * sr.w.lightList[i].L(sr) * ndotwi;
                 }

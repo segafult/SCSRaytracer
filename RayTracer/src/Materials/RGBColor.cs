@@ -106,6 +106,23 @@ namespace RayTracer
             return new RGBColor(Math.Pow(this.r, p), Math.Pow(this.g, p), Math.Pow(this.b, p));
         }
 
+        public RGBColor clamp()
+        {
+            double r_c, g_c, b_c;
+            r_c = clamp_to_range(r, 0.0, 1.0);
+            g_c = clamp_to_range(g, 0.0, 1.0);
+            b_c = clamp_to_range(b, 0.0, 1.0);
+            return new RGBColor(r_c, g_c, b_c);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private double clamp_to_range(double value, double lowerbound, double upperbound)
+        {
+            if(value < lowerbound) { return lowerbound; }
+            else if(value > upperbound) { return upperbound; }
+            else { return value; }
+        }
+
         ///
         ///Operator overloads
         ///

@@ -38,6 +38,12 @@ namespace RayTracer
             kd = kdarg;
             cdarg = new RGBColor(cdarg);
         }
+        //Copy constructor
+        public Lambertian(Lambertian clone)
+        {
+            kd = clone.getKd();
+            cd = new RGBColor(clone.getCd());
+        }
 
         public float getKd() { return kd; }
         public RGBColor getCd() { return cd; }
