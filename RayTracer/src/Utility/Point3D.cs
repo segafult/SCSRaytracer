@@ -99,6 +99,13 @@ namespace RayTracer
             return new Point3D(a.xcoord - u.xcoord, a.ycoord - u.ycoord, a.zcoord - u.zcoord);
         }
 
+        //Addition of a normal to a point (for shadow calculations)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Point3D operator +(Point3D a, Normal n)
+        {
+            return new Point3D(a.xcoord + n.xcoord, a.ycoord + n.ycoord, a.zcoord + n.zcoord);
+        }
+
         //Displacement vector (subtraction of a point from a point
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vect3D operator -(Point3D a, Point3D b)

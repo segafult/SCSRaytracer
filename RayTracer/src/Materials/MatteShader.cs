@@ -49,7 +49,9 @@ namespace RayTracer
             int numLights = sr.w.lightList.Count;
             Vect3D wi;
             double ndotwi;
-            double t = GlobalVars.kHugeValue;
+            bool inShadow;
+            Ray shadowRay;
+            //double t = GlobalVars.kHugeValue;
             
             //Loop through list of lights and add radiance for each diffuse light source.
             for(int i = 0; i < numLights; i++)
@@ -59,7 +61,16 @@ namespace RayTracer
                 //Direction must not be 0,0,0 to be a diffuse light source.
                 if(ndotwi > 0.0)
                 {
-                    L += diffuse_brdf.f(sr, wo, wi) * sr.w.lightList[i].L(sr) * ndotwi;
+                    inShadow = false;
+                    if(sr.w.lightList[i].castsShadows())
+                    {
+                        shadowRay = new Ray(sr.hit_point + (GlobalVars.shadKEpsilon * wi), wi);
+                        inShadow = sr.w.lightList[i].inShadow(sr, shadowRay);
+                    }
+                    if(!inShadow)
+                    {
+                        L += diffuse_brdf.f(sr, wo, wi) * sr.w.lightList[i].L(sr) * ndotwi;
+                    }
                 }
             }
 

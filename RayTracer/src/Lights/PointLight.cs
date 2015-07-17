@@ -50,13 +50,27 @@ namespace RayTracer
         public RGBColor getColor() { return color; }
         public double getIntensity() { return intensity; }
         public override Vect3D getDirection(ShadeRec sr) { return ((location - sr.hit_point).hat()); }
+        public override bool castsShadows(){ return shadows; }
         public void setColor(RGBColor c) { color = new RGBColor(c); }
         public void setIntensity(double i) { intensity = i; }
         public void setLocation(Point3D p) { p = new Point3D(p); }
+        public void setShadow(bool shad) { shadows = shad; }
 
         public override RGBColor L(ShadeRec sr)
         {
             return intensity * color;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sr">Shading parameters</param>
+        /// <param name="ray">Ray to cast from object to point light</param>
+        /// <returns></returns>
+        public override bool inShadow(ShadeRec sr, Ray ray)
+        {
+            ShadeRec tempSr = sr.w.hit_objects(ray);
+            return tempSr.hit_an_object;
         }
     }
 }

@@ -28,7 +28,6 @@ namespace RayTracer
         private float exp;
         private float ks;
         private RGBColor  cs;
-        private Sampler sampler_ptr;
 
         public GlossySpecular()
         {

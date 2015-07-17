@@ -26,6 +26,7 @@ namespace RayTracer
     sealed class GlobalVars
     {
         public const double kEpsilon = 0.0e-6;
+        public const double shadKEpsilon = 0.00001;
         public const double kHugeValue = 1.0e6;
         public const double invPI = 1 / Math.PI;
 

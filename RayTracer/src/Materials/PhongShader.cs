@@ -60,6 +60,9 @@ namespace RayTracer
             int numlights = sr.w.lightList.Count;
             Vect3D wi; //Direction to incident light
             float ndotwi;
+            bool inShadow;
+            Ray shadowRay;
+
             //Add together light contributions for all light sources
             for(int i = 0; i<numlights; i++)
             {
@@ -67,8 +70,18 @@ namespace RayTracer
                 ndotwi = (float)(sr.normal * wi); //Dot product of normal and light source, 0 if orthogonal, 1 if parallel.
                 if(ndotwi > 0.0f)//Avoid unnecessary light summation
                 {
-                    //Add diffuse and specular components.
-                    L += (diffuse_brdf.f(sr, wo, wi) + specular_brdf.f(sr, wo, wi)) * sr.w.lightList[i].L(sr) * ndotwi; 
+                    inShadow = false;
+
+                    if(sr.w.lightList[i].castsShadows())
+                    {
+                        shadowRay = new Ray(sr.hit_point+(GlobalVars.shadKEpsilon*wi), wi);
+                        inShadow = sr.w.lightList[i].inShadow(sr, shadowRay);
+                    }
+                    if (!inShadow)
+                    {
+                        //Add diffuse and specular components.
+                        L += (diffuse_brdf.f(sr, wo, wi) + specular_brdf.f(sr, wo, wi)) * sr.w.lightList[i].L(sr) * ndotwi;
+                    }
                 }
             }
 

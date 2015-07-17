@@ -30,9 +30,12 @@ namespace RayTracer
     {
         protected bool shadows;
         abstract public RGBColor L(ShadeRec sr);
+        public virtual bool inShadow(ShadeRec sr, Ray ray) { return false; }
         public virtual Vect3D getDirection(ShadeRec sr)
         {
             return new Vect3D(0, 0, 0);
         }
+        public virtual bool castsShadows() { return shadows; }
+        
     }
 }

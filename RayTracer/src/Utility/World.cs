@@ -140,8 +140,8 @@ namespace RayTracer
         /// </summary>
         public void build()
         {
-            vp.set_hres(800);
-            vp.set_vres(600);
+            vp.set_hres(1920);
+            vp.set_vres(1080);
             vp.set_pixel_size(1.0F);
             vp.set_gamma(1.0F);
             vp.set_samples(16);
@@ -153,27 +153,41 @@ namespace RayTracer
             tracer = new RayCaster(this);
 
             PinholeCamera pinhole_ptr = new PinholeCamera();
-            pinhole_ptr.setEye(new Point3D(0, 0, 500));
-            pinhole_ptr.setLookat(new Point3D(-5, 0, 0));
+            pinhole_ptr.setEye(new Point3D(0, 200, 500));
+            pinhole_ptr.setLookat(new Point3D(0, 0, 0));
             pinhole_ptr.setVdp(850.0F);
             pinhole_ptr.setZoom(2.0F);
             pinhole_ptr.compute_uvw();
             set_camera(pinhole_ptr);
 
-            PointLight light_ptr = new PointLight(new Point3D(100,50,150));
-            light_ptr.setIntensity(3.0);
+            PointLight light_ptr = new PointLight(new Point3D(0,150,259.8));
+            light_ptr.setIntensity(5.0);
+            light_ptr.setShadow(true);
+            light_ptr.setColor(new RGBColor(1.0, 0.0, 0.0));
+            add_Light(light_ptr);
+
+            light_ptr = new PointLight(new Point3D(259.8, 150, -150));
+            light_ptr.setIntensity(5.0);
+            light_ptr.setShadow(true);
+            light_ptr.setColor(new RGBColor(0.0, 1.0, 0.0));
+            add_Light(light_ptr);
+
+            light_ptr = new PointLight(new Point3D(-259.8, 150, -150));
+            light_ptr.setIntensity(5.0);
+            light_ptr.setShadow(true);
+            light_ptr.setColor(new RGBColor(0.0, 0.0, 1.0));
             add_Light(light_ptr);
 
             PhongShader phong_ptr = new PhongShader();
             phong_ptr.setKa(0.25F);
             phong_ptr.setKd(0.65F);
-            phong_ptr.setCd(new RGBColor(1, 1, 0));
+            phong_ptr.setCd(new RGBColor(0.75, 0.75, 0.75));
             phong_ptr.setExp(20.0f);
             phong_ptr.setKs(0.2f);
-            Sphere sphere_ptr = new Sphere(new Point3D(10, -5, 0), 27);
+            Sphere sphere_ptr = new Sphere(new Point3D(0, 5, 0), 40);
             sphere_ptr.setMaterial(phong_ptr);
             add_Object(sphere_ptr);
-
+            /*
             phong_ptr = new PhongShader();
             phong_ptr.setKa(0.25f);
             phong_ptr.setKd(0.65f);
@@ -193,13 +207,16 @@ namespace RayTracer
             sphere_ptr = new Sphere(new Point3D(40, -10, -10), 15);
             sphere_ptr.setMaterial(phong_ptr);
             add_Object(sphere_ptr);
+            */
 
-            MatteShader matte_ptr = new MatteShader();
-            matte_ptr.setKa(0.25F);
-            matte_ptr.setKd(0.65F);
-            matte_ptr.setCd(new RGBColor(0.5, 0.5, 0.5));
+            phong_ptr = new PhongShader();
+            phong_ptr.setKa(0.25F);
+            phong_ptr.setKd(0.65F);
+            phong_ptr.setExp(20.0f);
+            phong_ptr.setKs(0.2f);
+            phong_ptr.setCd(new RGBColor(1.0, 1.0, 1.0));
             Plane plane_ptr = new Plane(new Point3D(10,-32 ,0),new Normal(0,1,0));
-            plane_ptr.setMaterial(matte_ptr);
+            plane_ptr.setMaterial(phong_ptr);
             add_Object(plane_ptr);
         }
 

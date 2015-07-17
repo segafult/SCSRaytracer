@@ -42,7 +42,7 @@ namespace RayTracer
         public override RGBColor trace_ray(Ray ray)
         {
             sr = new ShadeRec(world_pointer);
-            double t = 0.0;
+            //double t = 0.0;
             return GlobalVars.color_black;
             /*
             if (world_pointer.sphere.hit(ray, ref t, ref sr))
