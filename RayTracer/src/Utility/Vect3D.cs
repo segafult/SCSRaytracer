@@ -71,39 +71,11 @@ namespace RayTracer
         public double getYCoordinates() { return ycoord; }
         public double getZCoordinates() { return zcoord; }
 
-        /*
-        public Vect3D addVector(Vect3D v)
-        {
-            return new Vect3D(xcoord + v.xcoord, ycoord + v.ycoord, zcoord + v.zcoord);
-        }
-        
-        public double dotProduct(Vect3D v)
-        {
-            return ((xcoord * v.xcoord) + (ycoord * v.ycoord) + (zcoord * v.zcoord));
-        }
-        
-        public Vect3D crossProduct(Vect3D v)
-        {
-            return new Vect3D((ycoord * v.zcoord - zcoord * v.ycoord),
-                (zcoord*v.xcoord - xcoord * v.zcoord),
-                (xcoord * v.ycoord - ycoord * v.xcoord));
-        }
-
-        public Vect3D multiplyScalar(double s)
-        {
-            return new Vect3D(xcoord * s, ycoord * s, zcoord * s);
-        }
-        
-        public Vect3D negative()
-        {
-            return new Vect3D(-xcoord, -ycoord, -zcoord);
-        }
-        */
-
         /// <summary>
         /// Returns the magnitude of the Vector
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double magnitude()
         {
             return Math.Sqrt((xcoord * xcoord) + (ycoord * ycoord) + (zcoord * zcoord));
@@ -133,10 +105,10 @@ namespace RayTracer
         /// </summary>
         public void normalize()
         {
-            double m = this.magnitude();
-            xcoord = xcoord / m;
-            ycoord = ycoord / m;
-            zcoord = zcoord / m;
+            double invm = 1/this.magnitude();
+            xcoord = xcoord * invm;
+            ycoord = ycoord * invm;
+            zcoord = zcoord * invm;
         }
 
         public double angleBetween(Vect3D b)

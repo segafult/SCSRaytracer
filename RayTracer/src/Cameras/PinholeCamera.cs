@@ -20,19 +20,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
     public class PinholeCamera : Camera
     {
-        private float d; //Distance between pinhole and viewplane
-        private float zoom; //Zoom factor
+        private double d; //Distance between pinhole and viewplane
+        private double zoom; //Zoom factor
 
-        public void setVdp(float distance)
+        public void setVdp(double distance)
         {
             d = distance;
         }
-        public void setZoom(float z)
+        public void setZoom(double z)
         {
             zoom = z;
         }
@@ -71,6 +72,7 @@ namespace RayTracer
                 }
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Vect3D ray_direction(Point2D p)
         {
             Vect3D dir = p.x * u + p.y * v - d * w;

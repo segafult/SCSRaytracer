@@ -140,8 +140,8 @@ namespace RayTracer
         /// </summary>
         public void build()
         {
-            vp.set_hres(1920);
-            vp.set_vres(1080);
+            vp.set_hres(2440);
+            vp.set_vres(1200);
             vp.set_pixel_size(1.0F);
             vp.set_gamma(1.0F);
             vp.set_samples(16);

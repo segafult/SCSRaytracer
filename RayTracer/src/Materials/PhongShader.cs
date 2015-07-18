@@ -47,11 +47,11 @@ namespace RayTracer
         }
 
         //Gets and sets
-        public void setKa(float ka) { ambient_brdf.setKd(ka); }
-        public void setKd(float kd) { diffuse_brdf.setKd(kd); }
+        public void setKa(double ka) { ambient_brdf.setKd(ka); }
+        public void setKd(double kd) { diffuse_brdf.setKd(kd); }
         public void setCd(RGBColor c) { ambient_brdf.setCd(c); diffuse_brdf.setCd(c); specular_brdf.setCs(c); }
-        public void setExp(float exp) { specular_brdf.setExp(exp); }
-        public void setKs(float ks) { specular_brdf.setKs(ks); }
+        public void setExp(double exp) { specular_brdf.setExp(exp); }
+        public void setKs(double ks) { specular_brdf.setKs(ks); }
 
         public override RGBColor shade(ShadeRec sr)
         {
@@ -59,7 +59,7 @@ namespace RayTracer
             RGBColor L = ambient_brdf.rho(sr, wo) * sr.w.ambientLight.L(sr); //Start with ambient
             int numlights = sr.w.lightList.Count;
             Vect3D wi; //Direction to incident light
-            float ndotwi;
+            double ndotwi;
             bool inShadow;
             Ray shadowRay;
 
@@ -67,7 +67,7 @@ namespace RayTracer
             for(int i = 0; i<numlights; i++)
             {
                 wi = sr.w.lightList[i].getDirection(sr); //Get the direction from the point of contact to the light source.
-                ndotwi = (float)(sr.normal * wi); //Dot product of normal and light source, 0 if orthogonal, 1 if parallel.
+                ndotwi = (double)(sr.normal * wi); //Dot product of normal and light source, 0 if orthogonal, 1 if parallel.
                 if(ndotwi > 0.0f)//Avoid unnecessary light summation
                 {
                     inShadow = false;

@@ -25,8 +25,8 @@ namespace RayTracer
 {
     public class GlossySpecular : BRDF
     {
-        private float exp;
-        private float ks;
+        private double exp;
+        private double ks;
         private RGBColor  cs;
 
         public GlossySpecular()
@@ -44,21 +44,21 @@ namespace RayTracer
             sampler_ptr = clone.getSampler();
         }
 
-        public void setExp(float e) { exp = e; }
-        public void setKs(float ks_a) { ks = ks_a; }
+        public void setExp(double e) { exp = e; }
+        public void setKs(double ks_a) { ks = ks_a; }
         public void setSampler(Sampler sampler_arg) { sampler_ptr = sampler_arg; }
         public void setCs(RGBColor color_arg) { cs = new RGBColor(color_arg); }
-        public float getExp() { return exp; }
-        public float getKs() { return ks; }
+        public double getExp() { return exp; }
+        public double getKs() { return ks; }
         public RGBColor getCs() { return cs; }
         public Sampler getSampler() { return sampler_ptr; }
 
         public override RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo)
         {
             RGBColor L = new RGBColor(0.0, 0.0, 0.0);
-            float ndotwi = (float)(sr.normal * wi); //Dot product of normal and angle of incidence gives the angle of mirror reflection
+            double ndotwi = (sr.normal * wi); //Dot product of normal and angle of incidence gives the angle of mirror reflection
             Vect3D r = new Vect3D(-wi + 2.0 * sr.normal * ndotwi); //Vector describing direction of mirror reflection
-            float rdotwo = (float)(r * wo);
+            double rdotwo = (r * wo);
 
             if(rdotwo > 0.0)
             {

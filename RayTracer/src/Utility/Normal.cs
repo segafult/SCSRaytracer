@@ -70,32 +70,6 @@ namespace RayTracer
         public double getYCoordinates() { return ycoord; }
         public double getZCoordinates() { return zcoord; }
 
-        /*
-        public Normal negative()
-        {
-            return new Normal(-xcoord, -ycoord, -zcoord);
-        }
-
-        public Normal addNormal(Normal m)
-        {
-            return new Normal(xcoord + m.xcoord, ycoord + m.ycoord, zcoord + m.zcoord);
-        }
-
-        public double dotProduct(Vect3D u)
-        {
-            return xcoord * u.xcoord + ycoord * u.ycoord + zcoord * u.zcoord;
-        }
-
-        public Normal multiplyScalar(double n)
-        {
-            return new Normal(xcoord * n, ycoord * n, zcoord * n);
-        }
-
-        public Vect3D addVector(Vect3D u)
-        {
-            return new Vect3D(xcoord + u.xcoord, ycoord + u.ycoord, zcoord + u.zcoord);
-        }
-        */
         /// <summary>
         /// Function returning a unit vector of a normal
         /// </summary>

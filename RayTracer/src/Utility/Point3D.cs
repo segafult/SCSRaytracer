@@ -70,18 +70,6 @@ namespace RayTracer
         public double getYCoordinates() { return ycoord; }
         public double getZCoordinates() { return zcoord; }
 
-        /*
-        public Point3D addVector(Vect3D v)
-        {
-            return new Point3D(xcoord + v.xcoord, ycoord + v.ycoord, zcoord + v.zcoord);
-        }
-
-        public Vect3D getDisplacementVector(Point3D p2)
-        {
-            return new Vect3D(xcoord - p2.xcoord, ycoord - p2.ycoord, zcoord - p2.zcoord);
-        }
-        */
-
         ///
         ///Operator overloads
         /// 

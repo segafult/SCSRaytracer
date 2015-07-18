@@ -65,7 +65,7 @@ namespace RayTracer
         {
             this.b = b;
         }
-
+        /*
         /// <summary>
         /// Returns a color that is effectively the sum of two other colors.
         /// </summary>
@@ -105,7 +105,7 @@ namespace RayTracer
         {
             return new RGBColor(Math.Pow(this.r, p), Math.Pow(this.g, p), Math.Pow(this.b, p));
         }
-
+        */
         public RGBColor clamp()
         {
             double r_c, g_c, b_c;
@@ -126,29 +126,45 @@ namespace RayTracer
         ///
         ///Operator overloads
         ///
+        //Color addition
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RGBColor operator +(RGBColor c1, RGBColor c2)
         {
-            return c1.addColor(c2);
+            return new RGBColor(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b);
         }
+
+        //Scalar multiplication of a color
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RGBColor operator *(double a, RGBColor c)
         {
-            return c.multiplyScalar(a);
+            return new RGBColor(c.r * a, c.g * a, c.b * a);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RGBColor operator *(RGBColor c, double a)
         {
-            return c.multiplyScalar(a);
+            return new RGBColor(c.r * a, c.g * a, c.b * a);
         }
+
+        //Scalar division of a color
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RGBColor operator /(RGBColor c, double a)
         {
-            return c.multiplyScalar(1 / a);
+            double inva = 1 / a;
+            return new RGBColor(c.r * inva, c.g * inva, c.b * inva);
         }
+
+        //Multiplication of color with a color
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RGBColor operator *(RGBColor c1, RGBColor c2)
         {
-            return c1.multiplyColor(c2);
+            return new RGBColor(c1.r * c2.r, c1.g * c2.g, c1.b * c2.b);
         }
+
+        //Raising color to a power
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RGBColor operator ^(RGBColor c, double p)
         {
-            return c.pow(p);
+            return new RGBColor(Math.Pow(c.r, p), Math.Pow(c.g, p), Math.Pow(c.b, p));
         }
     }
 }

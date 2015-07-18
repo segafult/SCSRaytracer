@@ -38,8 +38,8 @@ namespace RayTracer
         }
 
         //Setters for lambertian paramaters
-        public void setKa(float ka) { ambient_brdf.setKd(ka); }
-        public void setKd(float kd) { diffuse_brdf.setKd(kd); }
+        public void setKa(double ka) { ambient_brdf.setKd(ka); }
+        public void setKd(double kd) { diffuse_brdf.setKd(kd); }
         public void setCd(RGBColor c) { ambient_brdf.setCd(c); diffuse_brdf.setCd(c); }
 
         public override RGBColor shade(ShadeRec sr)

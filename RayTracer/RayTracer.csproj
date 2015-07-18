@@ -81,7 +81,6 @@
     <Compile Include="src\Utility\GlobalVars.cs" />
     <Compile Include="src\Lights\Light.cs" />
     <Compile Include="src\Utility\Matrix.cs" />
-    <Compile Include="src\Tracers\MultipleObjects.cs" />
     <Compile Include="src\Utility\Normal.cs" />
     <Compile Include="src\Primitives\Plane.cs" />
     <Compile Include="src\Utility\Point2D.cs" />
@@ -92,7 +91,6 @@
     <Compile Include="src\Primitives\RenderableObject.cs" />
     <Compile Include="src\Materials\RGBColor.cs" />
     <Compile Include="src\Materials\ShadeRec.cs" />
-    <Compile Include="src\Tracers\SingleSphere.cs" />
     <Compile Include="src\Primitives\Sphere.cs" />
     <Compile Include="src\Tracers\Tracer.cs" />
     <Compile Include="src\Utility\Vect3D.cs" />

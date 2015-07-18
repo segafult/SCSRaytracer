@@ -27,9 +27,9 @@ namespace RayTracer
     {
         public int hres;
         public int vres;
-        public float s;
-        public float gamma;
-        public float inv_gamma;
+        public double s;
+        public double gamma;
+        public double inv_gamma;
 
         public int numSamples;
         public Sampler vpSampler;
@@ -46,11 +46,11 @@ namespace RayTracer
         {
             vres = v;
         }
-        public void set_pixel_size(float size)
+        public void set_pixel_size(double size)
         {
             s = size;
         }
-        public void set_gamma(float g)
+        public void set_gamma(double g)
         {
             gamma = g;
             inv_gamma = 1 / g;
