@@ -40,6 +40,8 @@ namespace RayTracer
         public Camera camera;
 
         public Bitmap drawPlan;
+        public List<Bitmap> threadedBitmapList; //Only initialized when multithread rendering
+        private int fragHeight, fragWidth; //Values used for normalizing pixels in screen space to subscreen space (for multithreading)
 
         public World ()
         {
@@ -140,8 +142,8 @@ namespace RayTracer
         /// </summary>
         public void build()
         {
-            vp.set_hres(2440);
-            vp.set_vres(1200);
+            vp.set_hres(1920);
+            vp.set_vres(1080);
             vp.set_pixel_size(1.0F);
             vp.set_gamma(1.0F);
             vp.set_samples(16);
@@ -231,6 +233,29 @@ namespace RayTracer
         }
 
         /// <summary>
+        /// Sets up a rendering field for a multithreaded render
+        /// </summary>
+        /// <param name="hres">Horizontal resolution</param>
+        /// <param name="vres">Vertical resolution</param>
+        /// <param name="numThreads">Number of threads (2, 4, or 16)</param>
+        public void open_window_threaded(int hres, int vres, int numThreads)
+        {
+            drawPlan = new Bitmap(hres, vres);
+            threadedBitmapList = new List<Bitmap>();
+
+            //If there are 4 threads, divide the screen into quadrants
+            if(numThreads == 4)
+            {
+                for(int i = 0; i < numThreads; i++)
+                {
+                    threadedBitmapList.Add(new Bitmap(hres / 2, vres / 2));
+                }
+                fragHeight = vres / 2;
+                fragWidth = hres / 2;
+            }
+        }
+
+        /// <summary>
         /// Performs the required colorspace conversions
         /// </summary>
         /// <param name="row"></param>
@@ -240,6 +265,26 @@ namespace RayTracer
         {
             RGBColor disp_color = pixel_color.clamp();
             drawPlan.SetPixel(column, row, Color.FromArgb(255, (int)(disp_color.r * 250), (int)(disp_color.g * 250), (int)(disp_color.b * 250)));
+        }
+
+        public void display_pixel_threadsafe(int row, int column, RGBColor pixel_color, ref Bitmap bmp)
+        {
+            RGBColor disp_color = pixel_color.clamp();
+            bmp.SetPixel(column%fragWidth, row%fragHeight, Color.FromArgb(255, (int)(disp_color.r * 250), (int)(disp_color.g * 250), (int)(disp_color.b * 250)));
+        }
+
+        public void join_bitmaps(int numThreads)
+        {
+            Graphics joinedImage = Graphics.FromImage(drawPlan);
+            if(numThreads == 4)
+            {
+                joinedImage.Clear(Color.Black);
+                joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres / 2, 0));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[2], new Point(0, vp.vres / 2));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[3], new Point(vp.hres / 2, vp.vres / 2));
+            }
+
         }
     } 
 }

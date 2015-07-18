@@ -48,5 +48,7 @@ namespace RayTracer
         }
 
         public abstract void render_scene(World w);
+        public abstract void render_scene_multithreaded(World w, int numthreads);
+        protected abstract void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo);
     }
 }

@@ -30,7 +30,7 @@ namespace RayTracer
         {
             World w = new World();
             w.build();
-            w.camera.render_scene(w);
+            w.camera.render_scene_multithreaded(w, 4);
             w.drawPlan.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
             w.drawPlan.Save("E:\\test.bmp");
             //Console.ReadKey();
