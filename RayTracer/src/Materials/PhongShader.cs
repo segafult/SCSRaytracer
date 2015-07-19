@@ -47,11 +47,11 @@ namespace RayTracer
         }
 
         //Gets and sets
-        public void setKa(double ka) { ambient_brdf.setKd(ka); }
-        public void setKd(double kd) { diffuse_brdf.setKd(kd); }
-        public void setCd(RGBColor c) { ambient_brdf.setCd(c); diffuse_brdf.setCd(c); specular_brdf.setCs(c); }
-        public void setExp(double exp) { specular_brdf.setExp(exp); }
-        public void setKs(double ks) { specular_brdf.setKs(ks); }
+        virtual public void setKa(double ka) { ambient_brdf.setKd(ka); }
+        virtual public void setKd(double kd) { diffuse_brdf.setKd(kd); }
+        virtual public void setCd(RGBColor c) { ambient_brdf.setCd(c); diffuse_brdf.setCd(c); specular_brdf.setCs(c); }
+        virtual public void setExp(double exp) { specular_brdf.setExp(exp); }
+        virtual public void setKs(double ks) { specular_brdf.setKs(ks); }
 
         public override RGBColor shade(ShadeRec sr)
         {

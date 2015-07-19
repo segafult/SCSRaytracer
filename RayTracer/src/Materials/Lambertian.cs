@@ -54,10 +54,6 @@ namespace RayTracer
         {
             return (kd * cd * GlobalVars.invPI);
         }
-        public override RGBColor sample_f(ShadeRec sr, Vect3D wi, Vect3D wo)
-        {
-            return GlobalVars.color_black;
-        }
         public override RGBColor rho(ShadeRec sr, Vect3D wo)
         {
             return (kd * cd);

@@ -20,20 +20,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
-    class Program
+    public class PerfectSpecular : BRDF
     {
-        static void Main(string[] args)
+        private double kr;
+        private RGBColor cr;
+
+        public PerfectSpecular()
         {
-            World w = new World();
-            w.build();
-            w.camera.render_scene_multithreaded(w, 8);
-            w.drawPlan.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
-            w.drawPlan.Save("E:\\test.bmp");
-            //Console.ReadKey();
+            kr = 1.0;
+            cr = new RGBColor(1.0, 1.0, 1.0);
+        }
+        public PerfectSpecular(RGBColor color, double kr_arg)
+        {
+            kr = kr_arg;
+            cr = new RGBColor(color);
+        }
+
+        public void setKr(double kr_arg) { kr = kr_arg; }
+        public void setCr(RGBColor cr_arg) { cr = new RGBColor(cr_arg); }
+        public double getKr() { return kr; }
+        public RGBColor getCr() { return cr; }
+
+        public override RGBColor sample_f(ShadeRec sr, ref Vect3D wi, ref Vect3D wo)
+        {
+            double ndotwo = sr.normal * wo;
+            wi = -wo + 2.0 * sr.normal * ndotwo;
+
+            return (kr * cr / (sr.normal * wi));
         }
     }
 }

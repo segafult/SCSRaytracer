@@ -30,6 +30,7 @@ namespace RayTracer
         public double s;
         public double gamma;
         public double inv_gamma;
+        public int maxDepth;
 
         public int numSamples;
         public Sampler vpSampler;
@@ -66,6 +67,10 @@ namespace RayTracer
         public void set_samples(int samples)
         {
             numSamples = samples;
+        }
+        public void set_max_depth(int mdepth)
+        {
+            maxDepth = mdepth;
         }
     }
 }

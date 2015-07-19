@@ -37,7 +37,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -74,10 +74,13 @@
     <Compile Include="src\Materials\Lambertian.cs" />
     <Compile Include="src\Materials\Material.cs" />
     <Compile Include="src\Materials\MatteShader.cs" />
+    <Compile Include="src\Materials\PerfectSpecular.cs" />
     <Compile Include="src\Materials\PhongShader.cs" />
+    <Compile Include="src\Materials\ReflectiveShader.cs" />
     <Compile Include="src\Samplers\RegularSampler.cs" />
     <Compile Include="src\Samplers\Sampler.cs" />
     <Compile Include="src\Tracers\RayCaster.cs" />
+    <Compile Include="src\Tracers\Whitted.cs" />
     <Compile Include="src\Utility\FastMath.cs" />
     <Compile Include="src\Utility\GlobalVars.cs" />
     <Compile Include="src\Lights\Light.cs" />

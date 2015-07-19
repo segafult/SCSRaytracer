@@ -68,13 +68,5 @@ namespace RayTracer
 
             return L;
         }
-        public override RGBColor rho(ShadeRec sr, Vect3D wo)
-        {
-            throw new NotImplementedException();
-        }
-        public override RGBColor sample_f(ShadeRec sr, Vect3D wi, Vect3D wo)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

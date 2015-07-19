@@ -42,7 +42,6 @@ namespace RayTracer
 
         public Bitmap drawPlan;
         public List<Bitmap> threadedBitmapList; //Only initialized when multithread rendering
-        private int fragHeight, fragWidth; //Values used for normalizing pixels in screen space to subscreen space (for multithreading)
 
         public World ()
         {
@@ -148,12 +147,13 @@ namespace RayTracer
             vp.set_pixel_size(1.0F);
             vp.set_gamma(1.0F);
             vp.set_samples(16);
+            vp.set_max_depth(5);
             RegularSampler mySampler = new RegularSampler(vp.numSamples);
             mySampler.generate_samples();
             vp.set_sampler(mySampler);
 
             bg_color = GlobalVars.color_black;
-            tracer = new RayCaster(this);
+            tracer = new Whitted(this);
 
             PinholeCamera pinhole_ptr = new PinholeCamera();
             pinhole_ptr.setEye(new Point3D(0, 200, 500));
@@ -181,43 +181,44 @@ namespace RayTracer
             light_ptr.setColor(new RGBColor(0.0, 0.0, 1.0));
             add_Light(light_ptr);
 
-            PhongShader phong_ptr = new PhongShader();
-            phong_ptr.setKa(0.25F);
-            phong_ptr.setKd(0.65F);
-            phong_ptr.setCd(new RGBColor(0.75, 0.75, 0.75));
-            phong_ptr.setExp(20.0f);
-            phong_ptr.setKs(0.2f);
+            ReflectiveShader phong_ptr = new ReflectiveShader();
+            phong_ptr.setKa(0.5);
+            phong_ptr.setKd(0.5);
+            phong_ptr.setCd(new RGBColor(0.5, 0.5, 0.75));
+            phong_ptr.setExp(20.0);
+            phong_ptr.setKs(0.75);
+            phong_ptr.setReflectivity(0.75);
+            phong_ptr.setCr(new RGBColor(0.5, 0.5, 0.75));
             Sphere sphere_ptr = new Sphere(new Point3D(0, 5, 0), 40);
             sphere_ptr.setMaterial(phong_ptr);
             add_Object(sphere_ptr);
-            /*
-            phong_ptr = new PhongShader();
+            
+            /*phong_ptr = new PhongShader();
             phong_ptr.setKa(0.25f);
             phong_ptr.setKd(0.65f);
             phong_ptr.setCd(new RGBColor(1, 0, 0));
             phong_ptr.setExp(20.0f);
-            phong_ptr.setKs(0.2f);
-            sphere_ptr = new Sphere(new Point3D(-27, -12, 15), 20);
+            phong_ptr.setKs(0.2f);*/
+            sphere_ptr = new Sphere(new Point3D(-150, 30, 15), 60);
             sphere_ptr.setMaterial(phong_ptr);
             add_Object(sphere_ptr);
 
-            phong_ptr = new PhongShader();
+            /*phong_ptr = new PhongShader();
             phong_ptr.setKa(0.25f);
             phong_ptr.setKd(0.65f);
             phong_ptr.setExp(20.0f);
             phong_ptr.setKs(0.2f);
-            phong_ptr.setCd(new RGBColor(0, 1, 0));
-            sphere_ptr = new Sphere(new Point3D(40, -10, -10), 15);
+            phong_ptr.setCd(new RGBColor(0, 1, 0));*/
+            sphere_ptr = new Sphere(new Point3D(150, 5, -10), 50);
             sphere_ptr.setMaterial(phong_ptr);
             add_Object(sphere_ptr);
-            */
 
             MatteShader matte_ptr = new MatteShader();
-            phong_ptr.setKa(0.25F);
-            phong_ptr.setKd(0.65F);
-            phong_ptr.setCd(new RGBColor(1.0, 1.0, 1.0));
+            matte_ptr.setKa(0.25F);
+            matte_ptr.setKd(0.65F);
+            matte_ptr.setCd(new RGBColor(1.0, 1.0, 1.0));
             Plane plane_ptr = new Plane(new Point3D(10,-32 ,0),new Normal(0,1,0));
-            plane_ptr.setMaterial(matte_ptr);
+            plane_ptr.setMaterial(phong_ptr);
             add_Object(plane_ptr);
         }
 

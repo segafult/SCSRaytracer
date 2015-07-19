@@ -28,8 +28,17 @@ namespace RayTracer
         protected Sampler sampler_ptr;
         protected Normal normal;
 
-        abstract public RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo);
-        abstract public RGBColor sample_f(ShadeRec sr, Vect3D wi, Vect3D wo);
-        abstract public RGBColor rho(ShadeRec sr, Vect3D wo);
+        virtual public RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo)
+        {
+            return GlobalVars.color_black;
+        }
+        virtual public RGBColor sample_f(ShadeRec sr, ref Vect3D  wi, ref Vect3D wo)
+        {
+            return GlobalVars.color_black;
+        }
+        virtual public RGBColor rho(ShadeRec sr, Vect3D wo)
+        {
+            return GlobalVars.color_black;
+        }
     }
 }
