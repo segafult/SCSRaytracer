@@ -78,7 +78,7 @@ namespace RayTracer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double magnitude()
         {
-            return Math.Sqrt((xcoord * xcoord) + (ycoord * ycoord) + (zcoord * zcoord));
+            return Math.Sqrt(xcoord * xcoord + ycoord * ycoord + zcoord * zcoord);
         }
 
         /// <summary>
@@ -96,8 +96,8 @@ namespace RayTracer
         /// <returns>A unit vector pointing the same direction as the vector</returns>
         public Vect3D hat()
         {
-            double m = this.magnitude();
-            return new Vect3D(xcoord / m, ycoord / m, zcoord / m);
+            double m = 1/this.magnitude();
+            return new Vect3D(xcoord * m, ycoord * m, zcoord * m);
         }
 
         /// <summary>

@@ -33,7 +33,37 @@ namespace RayTracer
         protected List<Point2D> samples; //Sample points on unit square;
         protected List<int> shuffledIndices; //Shuffled samples array indices
         protected ulong count; //Current number of sample points
+        protected ulong bitmask; //Bit mask 
         protected int jump; //Random index jump
+
+        protected Sampler(int s)
+        {
+            count = 0;
+            jump = 0;
+            numsamples = s;
+            numsets = 1;
+            samples = new List<Point2D>();
+            shuffledIndices = new List<int>();
+        }
+        protected Sampler(Sampler clone)
+        {
+            count = 0;
+            numsamples = clone.getNumSamples();
+            numsets = clone.getNumSets();
+            samples = clone.getSamples();
+            shuffledIndices = clone.getShuffledIndices();
+            bitmask = clone.getBitMask();
+            jump = clone.getJump();
+        }
+
+        public int getNumSamples() { return numsamples; }
+        public int getNumSets() { return numsets; }
+        public List<Point2D> getSamples() { return samples; }
+        public List<int> getShuffledIndices() { return shuffledIndices; }
+        public ulong getBitMask() { return bitmask; }
+        public int getJump() { return jump; }
+
+        public abstract Sampler clone();
 
         public abstract void generate_samples();
         public abstract void setup_shuffled_indices();

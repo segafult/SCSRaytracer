@@ -107,5 +107,49 @@ namespace RayTracer
             //Codepath shouldn't get here
             return false;
         }
+        public override bool shadowHit(Ray ray)
+        {
+            double t;
+            //Store variables locally to minimize member accesses
+            Point3D rorigin = ray.origin;
+            Vect3D rdirection = ray.direction;
+            Vect3D temp = rorigin - this.c;
+            //Rays are unit vectors
+            //Intersection with a sphere is a quadratic equation (at^2 + bt + c = 0)
+            //a = d*d , d = ray direction
+            //b = 2(o-c)*d, o = ray origin, c = sphere center, d = ray direction
+            //c = (o-c)*(o-c)-r^2, o = ray origin, c = sphere center, r = sphere radius
+            double a = rdirection * rdirection;
+            double b = 2.0 * temp * rdirection;
+            double cv = (temp * temp) - (r * r);
+
+            //Find discriminant, d = b^2 - 4ac
+            //If d < 0, no intersection, if d = 0, one intersection, if d > 0, two intersections
+            double d = b * b - 4 * a * cv;
+
+            if (d < 0.0)
+            {
+                return false;
+            }
+            else
+            {
+                double e = Math.Sqrt(d);
+                double invdenominator = 1 / (2.0 * a);
+                t = (-b - e) * invdenominator; //Solve quadratic equation for smallest value
+                if (t > GlobalVars.kEpsilon)
+                {
+                    return true;
+                }
+
+                t = (-b + e) * invdenominator; //Solve quadratic equation for largest value
+                if (t > GlobalVars.kEpsilon)
+                {
+                    return true;
+                }
+            }
+
+            //Codepath shouldn't get here
+            return false;
+        }
     }
 }

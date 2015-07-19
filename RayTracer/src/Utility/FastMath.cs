@@ -20,25 +20,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
-    public abstract class RenderableObject
+    public class FastMath
     {
-        public RGBColor color;
-        private Material mat;
-        public virtual bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        /// <summary>
+        /// Fast approximation for the Math.Pow operation as described at
+        /// http://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/
+        /// </summary>
+        /// <param name="a">Number to be raised to an exponent</param>
+        /// <param name="b">Exponent to raise a to</param>
+        /// <returns>Approximation of a^b</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public double fastPow(double a, double b)
         {
-            return false;
-        }
-        public virtual bool shadowHit(Ray r)
-        {
-            return false;
-        }
-        public Material getMaterial() { return mat; }
-        public void setMaterial(Material m)
-        {
-            mat = m;
+            int x = (int)(BitConverter.DoubleToInt64Bits(a) >> 32);
+            int y = (int)(b * (x - 1072632447) + 1072632447);
+            return BitConverter.Int64BitsToDouble(((long)y) << 32);
         }
     }
 }

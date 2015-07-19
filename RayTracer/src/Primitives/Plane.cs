@@ -65,5 +65,18 @@ namespace RayTracer
                 return false;
             }
         }
+
+        public override bool shadowHit(Ray r)
+        {
+            double t = (p - r.origin) * n / (r.direction * n);
+
+            //Intersection is in front of camera
+            if (t > GlobalVars.kEpsilon)
+            {
+                return true;
+            }
+            //Intersection is behind camera
+            return false;
+        }
     }
 }

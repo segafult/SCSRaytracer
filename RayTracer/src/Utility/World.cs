@@ -21,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 
 namespace RayTracer
@@ -34,7 +35,7 @@ namespace RayTracer
         public RGBColor bg_color;
         public Tracer tracer;
 
-        List<RenderableObject> renderList;
+        public List<RenderableObject> renderList;
         public List<Light> lightList;
         public AmbientLight ambientLight;
         public Camera camera;
@@ -211,14 +212,12 @@ namespace RayTracer
             add_Object(sphere_ptr);
             */
 
-            phong_ptr = new PhongShader();
+            MatteShader matte_ptr = new MatteShader();
             phong_ptr.setKa(0.25F);
             phong_ptr.setKd(0.65F);
-            phong_ptr.setExp(20.0f);
-            phong_ptr.setKs(0.2f);
             phong_ptr.setCd(new RGBColor(1.0, 1.0, 1.0));
             Plane plane_ptr = new Plane(new Point3D(10,-32 ,0),new Normal(0,1,0));
-            plane_ptr.setMaterial(phong_ptr);
+            plane_ptr.setMaterial(matte_ptr);
             add_Object(plane_ptr);
         }
 
@@ -242,16 +241,35 @@ namespace RayTracer
         {
             drawPlan = new Bitmap(hres, vres);
             threadedBitmapList = new List<Bitmap>();
+            int xsize = 0;
+            int ysize = 0;
 
-            //If there are 4 threads, divide the screen into quadrants
-            if(numThreads == 4)
+            //If there are 2 threads, divide the screen into halves.
+            if(numThreads == 2)
             {
-                for(int i = 0; i < numThreads; i++)
-                {
-                    threadedBitmapList.Add(new Bitmap(hres / 2, vres / 2));
-                }
-                fragHeight = vres / 2;
-                fragWidth = hres / 2;
+                xsize = hres / 2;
+                ysize = vres;
+            }
+            //If there are 4 threads, divide the screen into quadrants
+            else if(numThreads == 4)
+            {
+                xsize = hres / 2;
+                ysize = vres / 2;
+            }
+            else if(numThreads == 8)
+            {
+                xsize = hres / 4;
+                ysize = vres / 2;
+            }
+            else if(numThreads == 16)
+            {
+                xsize = hres / 4;
+                ysize = vres / 4;
+            }
+
+            for (int i = 0; i < numThreads; i++)
+            {
+                threadedBitmapList.Add(new Bitmap(xsize, ysize));
             }
         }
 
@@ -267,22 +285,52 @@ namespace RayTracer
             drawPlan.SetPixel(column, row, Color.FromArgb(255, (int)(disp_color.r * 250), (int)(disp_color.g * 250), (int)(disp_color.b * 250)));
         }
 
-        public void display_pixel_threadsafe(int row, int column, RGBColor pixel_color, ref Bitmap bmp)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void display_pixel_threadsafe(int row, int column, RGBColor pixel_color, ref BitmapData bmp)
         {
             RGBColor disp_color = pixel_color.clamp();
-            bmp.SetPixel(column%fragWidth, row%fragHeight, Color.FromArgb(255, (int)(disp_color.r * 250), (int)(disp_color.g * 250), (int)(disp_color.b * 250)));
+            byte r = (byte)(255 * disp_color.r);
+            byte g = (byte)(255 * disp_color.g);
+            byte b = (byte)(255 * disp_color.b);
+            int stride = bmp.Stride;
+            unsafe
+            {
+                byte* ptr = (byte*)bmp.Scan0;
+                ptr[(column * 3) + row * stride] = b;
+                ptr[(column * 3) + row * stride + 1] = g;
+                ptr[(column * 3) + row * stride + 2] = r;
+            }
+            //bmp.SetPixel(column, row, Color.FromArgb(255, (int)(disp_color.r * 250), (int)(disp_color.g * 250), (int)(disp_color.b * 250)));
         }
 
         public void join_bitmaps(int numThreads)
         {
             Graphics joinedImage = Graphics.FromImage(drawPlan);
-            if(numThreads == 4)
+            if(numThreads == 2)
+            {
+                joinedImage.Clear(Color.Black);
+                joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres / 2, 0));
+            }
+            else if(numThreads == 4)
             {
                 joinedImage.Clear(Color.Black);
                 joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
                 joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres / 2, 0));
                 joinedImage.DrawImageUnscaled(threadedBitmapList[2], new Point(0, vp.vres / 2));
                 joinedImage.DrawImageUnscaled(threadedBitmapList[3], new Point(vp.hres / 2, vp.vres / 2));
+            }
+            else if(numThreads == 8)
+            {
+                joinedImage.Clear(Color.Black);
+                joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres/4, 0));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[2], new Point(vp.hres/2, 0));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[3], new Point(3*vp.hres/4, 0));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[4], new Point(0, vp.vres/2));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[5], new Point(vp.hres/4, vp.vres/2));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[6], new Point(vp.hres/2, vp.vres/2));
+                joinedImage.DrawImageUnscaled(threadedBitmapList[7], new Point(3*vp.hres/4, vp.vres/2));
             }
 
         }

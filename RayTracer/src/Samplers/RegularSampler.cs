@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
@@ -28,19 +29,20 @@ namespace RayTracer
     /// </summary>
     public class RegularSampler : Sampler
     {
-        public RegularSampler(int s)
+
+        public RegularSampler(int s) : base(s)
         {
-            count = 0;
-            jump = 0;
-            numsamples = s;
-            numsets = 1;
-            samples = new List<Point2D>();
-            shuffledIndices = new List<int>();
+
+        }
+        public RegularSampler(Sampler clone) : base(clone)
+        {
+
         }
 
         public override void generate_samples()
         {
             int n = (int)Math.Sqrt(numsamples);
+            bitmask = (ulong)numsamples - 1;
 
             for(int setloop = 0; setloop<numsets; setloop++)
             {
@@ -64,9 +66,16 @@ namespace RayTracer
             throw new NotImplementedException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override Point2D sample_unit_square()
         {
-            return samples[(int)(count++ % Convert.ToUInt64(numsamples * numsets))];
+            //Bit masked fast modulus, special case for simple antialiasing
+            return samples[(int)(count++ & bitmask)];
+        }
+
+        public override Sampler clone()
+        {
+            return new RegularSampler(this);
         }
     }
 }
