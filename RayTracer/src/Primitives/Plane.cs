@@ -66,7 +66,7 @@ namespace RayTracer
             }
         }
 
-        public override bool shadowHit(Ray r)
+        public override bool hit(Ray r)
         {
             double t = (p - r.origin) * n / (r.direction * n);
 

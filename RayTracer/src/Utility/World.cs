@@ -202,23 +202,34 @@ namespace RayTracer
             sphere_ptr = new Sphere(new Point3D(-150, 30, 15), 60);
             sphere_ptr.setMaterial(phong_ptr);
             add_Object(sphere_ptr);
+            Box box_ptr = new Box(-100,0,-100,50);
+            box_ptr.setMaterial(phong_ptr);
+            add_Object(box_ptr);
+            MatteShader temp = new MatteShader();
+            temp.setKa(0.25F);
+            temp.setKd(0.65F);
+            temp.setCd(new RGBColor(1.0, 1.0, 1.0));
+            Triangle tri_ptr = new Triangle();
+            tri_ptr.setVertices(new Point3D(50, 0, -70), new Point3D(200, 0, 0), new Point3D(100, 100, -30));
+            tri_ptr.setMaterial(phong_ptr);
+            add_Object(tri_ptr);
 
             /*phong_ptr = new PhongShader();
             phong_ptr.setKa(0.25f);
             phong_ptr.setKd(0.65f);
             phong_ptr.setExp(20.0f);
             phong_ptr.setKs(0.2f);
-            phong_ptr.setCd(new RGBColor(0, 1, 0));*/
+            phong_ptr.setCd(new RGBColor(0, 1, 0));
             sphere_ptr = new Sphere(new Point3D(150, 5, -10), 50);
             sphere_ptr.setMaterial(phong_ptr);
-            add_Object(sphere_ptr);
+            add_Object(sphere_ptr);*/
 
             MatteShader matte_ptr = new MatteShader();
             matte_ptr.setKa(0.25F);
             matte_ptr.setKd(0.65F);
             matte_ptr.setCd(new RGBColor(1.0, 1.0, 1.0));
             Plane plane_ptr = new Plane(new Point3D(10,-32 ,0),new Normal(0,1,0));
-            plane_ptr.setMaterial(phong_ptr);
+            plane_ptr.setMaterial(matte_ptr);
             add_Object(plane_ptr);
         }
 

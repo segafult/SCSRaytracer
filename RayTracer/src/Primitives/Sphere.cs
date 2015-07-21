@@ -107,7 +107,7 @@ namespace RayTracer
             //Codepath shouldn't get here
             return false;
         }
-        public override bool shadowHit(Ray ray)
+        public override bool hit(Ray ray)
         {
             double t;
             //Store variables locally to minimize member accesses

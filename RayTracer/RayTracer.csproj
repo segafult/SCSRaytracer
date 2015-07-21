@@ -77,6 +77,9 @@
     <Compile Include="src\Materials\PerfectSpecular.cs" />
     <Compile Include="src\Materials\PhongShader.cs" />
     <Compile Include="src\Materials\ReflectiveShader.cs" />
+    <Compile Include="src\Primitives\BoundingBox.cs" />
+    <Compile Include="src\Primitives\Box.cs" />
+    <Compile Include="src\Primitives\Triangle.cs" />
     <Compile Include="src\Samplers\RegularSampler.cs" />
     <Compile Include="src\Samplers\Sampler.cs" />
     <Compile Include="src\Tracers\RayCaster.cs" />

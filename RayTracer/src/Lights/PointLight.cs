@@ -74,7 +74,7 @@ namespace RayTracer
             //Find the closest intersection point along the given ray
             for (int i = 0; i < num_objects; i++)
             {
-                if (sr.w.renderList[i].shadowHit(ray))
+                if (sr.w.renderList[i].hit(ray))
                 {
                     return true;
                 }

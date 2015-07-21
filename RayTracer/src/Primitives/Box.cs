@@ -1,0 +1,269 @@
+﻿//    
+//    Copyright(C) 2015  Elanna Stephenson
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.If not, see<http://www.gnu.org/licenses/>.
+//
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+
+namespace RayTracer
+{
+    public class Box : RenderableObject
+    {
+        private double x0, x1;
+        private double y0, y1;
+        private double z0, z1;
+
+        public Box()
+        {
+            x0 = 0;
+            x1 = 10;
+            y0 = 0;
+            y1 = 10;
+            z0 = 0;
+            z1 = 10;
+        }
+
+        ///Constructor for perfect cube
+        public Box(double x, double y, double z, double size)
+        {
+            x0 = x;
+            y0 = y;
+            z0 = z;
+            double s = Math.Abs(size); //Error protection, dont want a negative size
+            x1 = x + s;
+            y1 = y + s;
+            z1 = z + s;
+
+        }
+        public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        {
+            ///-------------------------------------------------------------------------------------
+            /// same as colision code for axis aligned bounding box
+            double ox = r.origin.xcoord; double oy = r.origin.ycoord; double oz = r.origin.zcoord;
+            double dx = r.direction.xcoord; double dy = r.direction.ycoord; double dz = r.direction.zcoord;
+
+            double tx_min, ty_min, tz_min;
+            double tx_max, ty_max, tz_max;
+
+            double a = 1.0 / dx;
+            if (a >= 0.0)
+            {
+                tx_min = (x0 - ox) * a;
+                tx_max = (x1 - ox) * a;
+            }
+            else
+            {
+                tx_min = (x1 - ox) * a;
+                tx_max = (x0 - ox) * a;
+            }
+
+            double b = 1.0 / dy;
+            if (b >= 0.0)
+            {
+                ty_min = (y0 - oy) * b;
+                ty_max = (y1 - oy) * b;
+            }
+            else
+            {
+                ty_min = (y1 - oy) * b;
+                ty_max = (y0 - oy) * b;
+            }
+
+            double c = 1.0 / dz;
+            if (c >= 0.0)
+            {
+                tz_min = (z0 - oz) * c;
+                tz_max = (z1 - oz) * c;
+            }
+            else
+            {
+                tz_min = (z1 - oz) * c;
+                tz_max = (z0 - oz) * c;
+            }
+            ///code differs after this point
+            ///--------------------------------------------------------------------------
+            /// 
+            double t0, t1;
+            int face_in, face_out; //for handling both inside and outside collisions with box
+
+            //Find the largest entering t value
+            if(tx_min > ty_min)
+            {
+                t0 = tx_min;
+                face_in = (a >= 0.0) ? 0 : 3;
+            }
+            else
+            {
+                t0 = ty_min;
+                face_in = (b >= 0.0) ? 1 : 4;
+            }
+            if(tz_min > t0)
+            {
+                t0 = tz_min;
+                face_in = (c >= 0.0) ? 2 : 5;
+            }
+
+            //Find the smallest exiting t value
+            if(tx_max < ty_max)
+            {
+                t1 = tx_max;
+                face_out = (a >= 0.0) ? 3 : 0;
+            }
+            else
+            {
+                t1 = ty_max;
+                face_out = (b >= 0.0) ? 4 : 1;
+            }
+            if(tz_max < t1)
+            {
+                t1 = tz_max;
+                face_out = (c >= 0.0) ? 5 : 2;
+            }
+
+            //Hit conditions
+            if (t0 < t1 && t1 > GlobalVars.kEpsilon)
+            {
+                if (t0 > GlobalVars.kEpsilon) //Ray hits outside surface
+                {
+                    tmin = t0;
+                    sr.normal = get_normal(face_in);
+                }
+                else //Ray hits inside surface
+                {
+                    tmin = t1;
+                    sr.normal = get_normal(face_out);
+                }
+
+                sr.hit_point_local = r.origin + tmin * r.direction;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public override bool hit(Ray r)
+        {
+            double ox = r.origin.xcoord; double oy = r.origin.ycoord; double oz = r.origin.zcoord;
+            double dx = r.direction.xcoord; double dy = r.direction.ycoord; double dz = r.direction.zcoord;
+
+            double tx_min, ty_min, tz_min;
+            double tx_max, ty_max, tz_max;
+
+            //How this algorithm works:
+            //Generate *x_min and *x_max values which indicate the minimum and maximum length a line segment
+            //from origin in the ray direction can have and be within the volume of the bounding box. If all 3
+            //distance ranges overlap, then the bounding box was hit.
+
+            double a = 1.0 / dx;
+            if (a >= 0.0)
+            {
+                tx_min = (x0 - ox) * a;
+                tx_max = (x1 - ox) * a;
+            }
+            else
+            {
+                tx_min = (x1 - ox) * a;
+                tx_max = (x0 - ox) * a;
+            }
+
+            double b = 1.0 / dy;
+            if (b >= 0.0)
+            {
+                ty_min = (y0 - oy) * b;
+                ty_max = (y1 - oy) * b;
+            }
+            else
+            {
+                ty_min = (y1 - oy) * b;
+                ty_max = (y0 - oy) * b;
+            }
+
+            double c = 1.0 / dz;
+            if (c >= 0.0)
+            {
+                tz_min = (z0 - oz) * c;
+                tz_max = (z1 - oz) * c;
+            }
+            else
+            {
+                tz_min = (z1 - oz) * c;
+                tz_max = (z0 - oz) * c;
+            }
+
+            double t0, t1;
+
+            //largest entering t value
+            if (tx_min > ty_min)
+            {
+                t0 = tx_min;
+            }
+            else
+            {
+                t0 = ty_min;
+            }
+
+            if (tz_min > t0)
+            {
+                t0 = tz_min;
+            }
+
+            //smallest exiting t value
+            if (tx_max < ty_max)
+            {
+                t1 = tx_max;
+            }
+            else
+            {
+                t1 = ty_max;
+            }
+
+            if (tz_max < t1)
+            {
+                t1 = tz_max;
+            }
+
+            //If the largest entering t value is less than the smallest exiting t value, then the ray is inside
+            //the bounding box for the range of t values t0 to t1;
+            return (t0 < t1 && t1 > GlobalVars.kEpsilon);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Normal get_normal(int face_hit)
+        {
+            switch(face_hit)
+            {
+                case 0:
+                    return (new Normal(-1, 0, 0)); //-x
+                case 1:
+                    return (new Normal(0, -1, 0)); //-y
+                case 2:
+                    return (new Normal(0, 0, -1)); //-z
+                case 3:
+                    return (new Normal(1, 0, 0)); //x
+                case 4:
+                    return (new Normal(0, 1, 0)); //y
+                case 5:
+                    return (new Normal(0, 0, 1)); //z
+            }
+
+            return null;
+        }
+    }
+}
