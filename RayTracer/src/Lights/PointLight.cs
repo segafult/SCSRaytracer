@@ -70,11 +70,13 @@ namespace RayTracer
         public override bool inShadow(ShadeRec sr, Ray ray)
         {
             int num_objects = sr.w.renderList.Count;
+            double tmin;
 
             //Find the closest intersection point along the given ray
             for (int i = 0; i < num_objects; i++)
             {
-                if (sr.w.renderList[i].shadowHit(ray))
+                tmin = (location - sr.hit_point).magnitude();
+                if (sr.w.renderList[i].hit(ray, tmin))
                 {
                     return true;
                 }

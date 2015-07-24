@@ -66,12 +66,12 @@ namespace RayTracer
             }
         }
 
-        public override bool shadowHit(Ray r)
+        public override bool hit(Ray r, double tmin)
         {
             double t = (p - r.origin) * n / (r.direction * n);
 
             //Intersection is in front of camera
-            if (t > GlobalVars.kEpsilon)
+            if (t > GlobalVars.kEpsilon && t < tmin)
             {
                 return true;
             }

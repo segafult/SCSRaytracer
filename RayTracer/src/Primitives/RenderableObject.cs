@@ -31,11 +31,11 @@ namespace RayTracer
         {
             return false;
         }
-        public virtual bool shadowHit(Ray r)
+        public virtual bool hit(Ray r, double tmin)
         {
             return false;
         }
-        public Material getMaterial() { return mat; }
+        public virtual Material getMaterial() { return mat; }
         public void setMaterial(Material m)
         {
             mat = m;

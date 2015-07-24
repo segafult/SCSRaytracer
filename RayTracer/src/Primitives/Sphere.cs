@@ -90,6 +90,10 @@ namespace RayTracer
                 {
                     tmin = t;
                     sr.normal = new Normal((temp + t * rdirection) / r);
+                    if ((rorigin - c).magnitude() < r)
+                    {
+                        sr.normal = -sr.normal;
+                    }
                     sr.hit_point = rorigin + t * rdirection;
                     return true;
                 }
@@ -99,6 +103,11 @@ namespace RayTracer
                 {
                     tmin = t;
                     sr.normal = new Normal((temp + t * rdirection) / r);
+                    //Reverse the normal if the ray originated from inside the sphere.
+                    if((rorigin-c).magnitude() < r)
+                    {
+                        sr.normal = -sr.normal;
+                    }
                     sr.hit_point = rorigin + t * rdirection;
                     return true;
                 }
@@ -107,7 +116,7 @@ namespace RayTracer
             //Codepath shouldn't get here
             return false;
         }
-        public override bool shadowHit(Ray ray)
+        public override bool hit(Ray ray, double tmin)
         {
             double t;
             //Store variables locally to minimize member accesses
@@ -136,13 +145,13 @@ namespace RayTracer
                 double e = Math.Sqrt(d);
                 double invdenominator = 1 / (2.0 * a);
                 t = (-b - e) * invdenominator; //Solve quadratic equation for smallest value
-                if (t > GlobalVars.kEpsilon)
+                if (t > GlobalVars.kEpsilon && t < tmin)
                 {
                     return true;
                 }
 
                 t = (-b + e) * invdenominator; //Solve quadratic equation for largest value
-                if (t > GlobalVars.kEpsilon)
+                if (t > GlobalVars.kEpsilon && t < tmin)
                 {
                     return true;
                 }

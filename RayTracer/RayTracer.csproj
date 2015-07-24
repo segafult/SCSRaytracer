@@ -56,6 +56,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -70,6 +71,7 @@
     <Compile Include="src\Lights\AmbientLight.cs" />
     <Compile Include="src\Lights\PointLight.cs" />
     <Compile Include="src\Materials\BRDF.cs" />
+    <Compile Include="src\Materials\DebugCheckerboard.cs" />
     <Compile Include="src\Materials\GlossySpecular.cs" />
     <Compile Include="src\Materials\Lambertian.cs" />
     <Compile Include="src\Materials\Material.cs" />
@@ -77,6 +79,10 @@
     <Compile Include="src\Materials\PerfectSpecular.cs" />
     <Compile Include="src\Materials\PhongShader.cs" />
     <Compile Include="src\Materials\ReflectiveShader.cs" />
+    <Compile Include="src\Primitives\BoundingBox.cs" />
+    <Compile Include="src\Primitives\Box.cs" />
+    <Compile Include="src\Primitives\Torus.cs" />
+    <Compile Include="src\Primitives\Triangle.cs" />
     <Compile Include="src\Samplers\RegularSampler.cs" />
     <Compile Include="src\Samplers\Sampler.cs" />
     <Compile Include="src\Tracers\RayCaster.cs" />
