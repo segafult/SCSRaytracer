@@ -32,11 +32,11 @@ namespace RayTracer
 
         public Box()
         {
-            x0 = 0;
+            x0 = -10;
             x1 = 10;
-            y0 = 0;
+            y0 = -10;
             y1 = 10;
-            z0 = 0;
+            z0 = -10;
             z1 = 10;
         }
 
@@ -51,6 +51,16 @@ namespace RayTracer
             y1 = y + s;
             z1 = z + s;
 
+        }
+
+        public Box(double x0_arg, double x1_arg, double y0_arg, double y1_arg, double z0_arg, double z1_arg)
+        {
+            x0 = x0_arg;
+            x1 = x1_arg;
+            y0 = y0_arg;
+            y1 = y1_arg;
+            z0 = z0_arg;
+            z1 = z1_arg;
         }
         public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
         {
@@ -138,14 +148,14 @@ namespace RayTracer
             }
 
             //Hit conditions
-            if (t0 < t1 && t1 > GlobalVars.kEpsilon)
+            if (t0 < t1 && t1 > GlobalVars.kEpsilon && t0 < tmin)
             {
                 if (t0 > GlobalVars.kEpsilon) //Ray hits outside surface
                 {
                     tmin = t0;
                     sr.normal = get_normal(face_in);
                 }
-                else //Ray hits inside surface
+                else//Ray hits inside surface
                 {
                     tmin = t1;
                     sr.normal = get_normal(face_out);

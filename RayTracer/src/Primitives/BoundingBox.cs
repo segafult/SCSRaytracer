@@ -33,6 +33,16 @@ namespace RayTracer
         public double y0, y1;
         public double z0, z1;
 
+        public BoundingBox(double x0_arg, double x1_arg, double y0_arg, double y1_arg, double z0_arg, double z1_arg)
+        {
+            x0 = x0_arg;
+            x1 = x1_arg;
+            y0 = y0_arg;
+            y1 = y1_arg;
+            z0 = z0_arg;
+            z1 = z1_arg;
+        }
+
         public override bool hit(Ray r)
         {
             double ox = r.origin.xcoord; double oy = r.origin.ycoord; double oz = r.origin.zcoord;

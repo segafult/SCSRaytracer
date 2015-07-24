@@ -76,8 +76,8 @@ namespace RayTracer
         /// <returns>Normal vector as a unit vector</returns>
         public Normal hat()
         {
-            double m = this.magnitude();
-            return new Normal(xcoord / m, ycoord / m, zcoord / m);
+            double invm = 1/this.magnitude();
+            return new Normal(xcoord * invm, ycoord * invm, zcoord * invm);
         }
 
         private double magnitude()
@@ -90,10 +90,10 @@ namespace RayTracer
         /// </summary>
         public void normalize()
         {
-            Normal n = this.hat();
-            xcoord = n.xcoord;
-            ycoord = n.ycoord;
-            zcoord = n.zcoord;
+            double invn = 1 / this.magnitude();
+            xcoord = xcoord * invn;
+            ycoord = ycoord * invn;
+            zcoord = zcoord * invn;
         }
 
         ///
