@@ -47,7 +47,7 @@ namespace RayTracer
 
         public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
         {
-            if(!bb.hit(r))
+            if(!bb.hit(r, tmin))
             {
                 return false;
             }
@@ -117,7 +117,7 @@ namespace RayTracer
             return hit;
         }
 
-        public override bool hit(Ray r)
+        public override bool hit(Ray r, double tmin)
         {
             /// Hit point on a torus as distance from point r.origin along vector r.direction
             /// can be solved for as a quartic equation of the form c4t^4 + c3t^3 + c2t^2 + c1t + c0 = 0
@@ -163,22 +163,13 @@ namespace RayTracer
             //Find the smallest root
             for (int i = 0; i < numroots; i++)
             {
-                if (roots[i] > GlobalVars.kEpsilon)
+                if (roots[i] > GlobalVars.kEpsilon && roots[i] < tmin)
                 {
-                    hit = true;
-                    if (roots[i] < t)
-                    {
-                        t = roots[i];
-                    }
+                    return true;
                 }
             }
 
-            if (!hit)
-            {
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
         private Normal calcNormal(Point3D point)

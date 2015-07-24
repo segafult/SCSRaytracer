@@ -146,7 +146,7 @@ namespace RayTracer
             vp.set_vres(1080);
             vp.set_pixel_size(1.0F);
             vp.set_gamma(1.0F);
-            vp.set_samples(4);
+            vp.set_samples(16);
             vp.set_max_depth(5);
             RegularSampler mySampler = new RegularSampler(vp.numSamples);
             mySampler.generate_samples();
@@ -156,7 +156,7 @@ namespace RayTracer
             tracer = new Whitted(this);
 
             PinholeCamera pinhole_ptr = new PinholeCamera();
-            pinhole_ptr.setEye(new Point3D(0, 200, 500));
+            pinhole_ptr.setEye(new Point3D(150, 250, 500));
             pinhole_ptr.setLookat(new Point3D(0, 0, 0));
             pinhole_ptr.setVdp(850.0);
             pinhole_ptr.setZoom(2.0);
@@ -175,21 +175,52 @@ namespace RayTracer
             matte_ptr.setKd(0.5);
 
             ReflectiveShader reflective_ptr = new ReflectiveShader();
-            reflective_ptr.setKa(0.5);
-            reflective_ptr.setKd(0.5);
+            reflective_ptr.setKa(0.0);
+            reflective_ptr.setKd(0.0);
             reflective_ptr.setCd(new RGBColor(0.5, 0.5, 0.75));
             reflective_ptr.setExp(200.0);
             reflective_ptr.setKs(0.5);
             reflective_ptr.setReflectivity(0.9);
             reflective_ptr.setCr(new RGBColor(0.5, 0.5, 0.75));
 
+            PhongShader phong_ptr = new PhongShader();
+            phong_ptr.setKa(0.5);
+            phong_ptr.setKd(0.77);
+            phong_ptr.setCd(new RGBColor(0.5, 0.5, 0.75));
+            phong_ptr.setExp(20.0);
+            phong_ptr.setKs(0.5);
+
+            DebugCheckerboard debug_ptr = new DebugCheckerboard();
+            debug_ptr.setKa(0.5);
+            debug_ptr.setKd(0.77);
+            debug_ptr.setCd(new RGBColor(0.5, 0.5, 0.75));
+            debug_ptr.setExp(20.0);
+            debug_ptr.setKs(0.5);
+
             Sphere sphere_ptr = new Sphere(new Point3D(0,0,0),40.0);
             sphere_ptr.setMaterial(reflective_ptr);
             add_Object(sphere_ptr);
 
+            Torus torus_ptr = new Torus(200.0, 50.0);
+            torus_ptr.setMaterial(reflective_ptr);
+            add_Object(torus_ptr);
+
+            
             Plane plane_ptr = new Plane(new Point3D(0, -50, 0), new Normal(0, 1, 0));
+            plane_ptr.setMaterial(debug_ptr);
+            add_Object(plane_ptr);
+            plane_ptr = new Plane(new Point3D(0, 1000, 0), new Normal(0, -1, 0));
             plane_ptr.setMaterial(matte_ptr);
             add_Object(plane_ptr);
+
+
+            /*Box box_ptr = new Box(-1000, 1000, -1000, 1000, -100, 1000);
+            box_ptr.setMaterial(matte_ptr);
+            add_Object(box_ptr);*/
+
+            Sphere world_sphere = new Sphere(new Point3D(0, 0, 0), 1000);
+            world_sphere.setMaterial(phong_ptr);
+            add_Object(world_sphere);
         }
 
         /// <summary>

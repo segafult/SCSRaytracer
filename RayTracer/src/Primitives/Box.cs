@@ -71,7 +71,7 @@ namespace RayTracer
 
             double tx_min, ty_min, tz_min;
             double tx_max, ty_max, tz_max;
-
+            
             double a = 1.0 / dx;
             if (a >= 0.0)
             {
@@ -157,6 +157,7 @@ namespace RayTracer
                 }
                 else//Ray hits inside surface
                 {
+                    //Console.Write("hit inside");
                     tmin = t1;
                     sr.normal = get_normal(face_out);
                 }
@@ -168,7 +169,7 @@ namespace RayTracer
                 return false;
         }
 
-        public override bool hit(Ray r)
+        public override bool hit(Ray r, double tmin)
         {
             double ox = r.origin.xcoord; double oy = r.origin.ycoord; double oz = r.origin.zcoord;
             double dx = r.direction.xcoord; double dy = r.direction.ycoord; double dz = r.direction.zcoord;
@@ -251,7 +252,7 @@ namespace RayTracer
 
             //If the largest entering t value is less than the smallest exiting t value, then the ray is inside
             //the bounding box for the range of t values t0 to t1;
-            return (t0 < t1 && t1 > GlobalVars.kEpsilon);
+            return (t0 < t1 && t1 > GlobalVars.kEpsilon && t1 < tmin);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

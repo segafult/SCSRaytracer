@@ -31,7 +31,7 @@ namespace RayTracer
         {
             return false;
         }
-        public virtual bool hit(Ray r)
+        public virtual bool hit(Ray r, double tmin)
         {
             return false;
         }

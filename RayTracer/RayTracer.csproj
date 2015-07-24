@@ -71,6 +71,7 @@
     <Compile Include="src\Lights\AmbientLight.cs" />
     <Compile Include="src\Lights\PointLight.cs" />
     <Compile Include="src\Materials\BRDF.cs" />
+    <Compile Include="src\Materials\DebugCheckerboard.cs" />
     <Compile Include="src\Materials\GlossySpecular.cs" />
     <Compile Include="src\Materials\Lambertian.cs" />
     <Compile Include="src\Materials\Material.cs" />

@@ -142,7 +142,7 @@ namespace RayTracer
             }
         }
 
-        public override bool hit(Ray r)
+        public override bool hit(Ray r, double tmin)
         {
             //Calculate ray intersection with the Moller-Trumbore algorithm
 
@@ -186,7 +186,7 @@ namespace RayTracer
 
             t = e2 * Q * inv_det;
 
-            if (t > GlobalVars.kEpsilon)
+            if (t > GlobalVars.kEpsilon && t < tmin)
             {
                 return true;
             }
