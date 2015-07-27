@@ -126,7 +126,7 @@ namespace RayTracer
 
             //If the largest entering t value is less than the smallest exiting t value, then the ray is inside
             //the bounding box for the range of t values t0 to t1;
-            return (t0 < t1 && t1 > GlobalVars.kEpsilon && t1 < tmin);
+            return (t0 < t1 && t1 > GlobalVars.kEpsilon);
         }
     }
 }

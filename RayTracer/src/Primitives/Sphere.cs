@@ -85,21 +85,23 @@ namespace RayTracer
             {
                 double e = Math.Sqrt(d);
                 double invdenominator = 1/(2.0 * a);
+
                 t = (-b - e) * invdenominator; //Solve quadratic equation for smallest value
-                if (t > GlobalVars.kEpsilon && t < tmin)
+                if (t > GlobalVars.kEpsilon)
                 {
                     tmin = t;
                     sr.normal = new Normal((temp + t * rdirection) / r);
+                    //Reverse the normal if ray originated inside the sphere
                     if ((rorigin - c).magnitude() < r)
                     {
                         sr.normal = -sr.normal;
                     }
-                    sr.hit_point = rorigin + t * rdirection;
+                    sr.hit_point_local = rorigin + t * rdirection;
                     return true;
                 }
 
                 t = (-b + e) * invdenominator; //Solve quadratic equation for largest value
-                if(t > GlobalVars.kEpsilon && t < tmin)
+                if(t > GlobalVars.kEpsilon)
                 {
                     tmin = t;
                     sr.normal = new Normal((temp + t * rdirection) / r);
@@ -108,7 +110,7 @@ namespace RayTracer
                     {
                         sr.normal = -sr.normal;
                     }
-                    sr.hit_point = rorigin + t * rdirection;
+                    sr.hit_point_local = rorigin + t * rdirection;
                     return true;
                 }
             }
@@ -119,10 +121,12 @@ namespace RayTracer
         public override bool hit(Ray ray, double tmin)
         {
             double t;
+
             //Store variables locally to minimize member accesses
             Point3D rorigin = ray.origin;
             Vect3D rdirection = ray.direction;
             Vect3D temp = rorigin - this.c;
+
             //Rays are unit vectors
             //Intersection with a sphere is a quadratic equation (at^2 + bt + c = 0)
             //a = d*d , d = ray direction

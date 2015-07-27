@@ -84,7 +84,7 @@ namespace RayTracer
             int numroots = FastMath.solveQuartic(coefficients, roots);
            
             bool hit = false;
-            double t = tmin;
+            double t = GlobalVars.kHugeValue;
             
             if (numroots == 0)
             {
@@ -104,14 +104,13 @@ namespace RayTracer
 
             if(!hit)
             {
-                
                 return false;
             }
 
             tmin = t;
             sr.hit_point_local = r.origin + (t * r.direction);
+
             //Compute the normal at the hit point (see Thomas and Finney, 1996)
-            
             sr.normal = calcNormal(sr.hit_point_local);
 
             return hit;
@@ -151,8 +150,6 @@ namespace RayTracer
             //Find roots
             int numroots = FastMath.solveQuartic(coefficients, roots);
 
-            bool hit = false;
-            double t = GlobalVars.kHugeValue;
 
             if (numroots == 0)
             {

@@ -51,9 +51,6 @@ namespace RayTracer
             ambientLight = new AmbientLight();   
         }
 
-        //Getters, setters, and adders
-
-
         /// <summary>
         /// Appends given render object to the end of the scene list
         /// </summary>
@@ -197,12 +194,17 @@ namespace RayTracer
             debug_ptr.setExp(20.0);
             debug_ptr.setKs(0.5);
 
+            /*
             Sphere sphere_ptr = new Sphere(new Point3D(0,0,0),40.0);
             sphere_ptr.setMaterial(reflective_ptr);
             add_Object(sphere_ptr);
+            */
+            Box box_ptr = new Box();
+            box_ptr.setMaterial(phong_ptr);
+            add_Object(box_ptr);
 
             Torus torus_ptr = new Torus(200.0, 50.0);
-            torus_ptr.setMaterial(reflective_ptr);
+            torus_ptr.setMaterial(phong_ptr);
             add_Object(torus_ptr);
 
             
@@ -213,10 +215,6 @@ namespace RayTracer
             plane_ptr.setMaterial(matte_ptr);
             add_Object(plane_ptr);
 
-
-            /*Box box_ptr = new Box(-1000, 1000, -1000, 1000, -100, 1000);
-            box_ptr.setMaterial(matte_ptr);
-            add_Object(box_ptr);*/
 
             Sphere world_sphere = new Sphere(new Point3D(0, 0, 0), 1000);
             world_sphere.setMaterial(phong_ptr);

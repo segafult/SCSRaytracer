@@ -148,7 +148,7 @@ namespace RayTracer
             }
 
             //Hit conditions
-            if (t0 < t1 && t1 > GlobalVars.kEpsilon && t0 < tmin)
+            if (t0 < t1 && t1 > GlobalVars.kEpsilon)
             {
                 if (t0 > GlobalVars.kEpsilon) //Ray hits outside surface
                 {
