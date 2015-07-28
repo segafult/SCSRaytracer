@@ -81,6 +81,7 @@
     <Compile Include="src\Materials\ReflectiveShader.cs" />
     <Compile Include="src\Primitives\BoundingBox.cs" />
     <Compile Include="src\Primitives\Box.cs" />
+    <Compile Include="src\Primitives\Instance.cs" />
     <Compile Include="src\Primitives\Torus.cs" />
     <Compile Include="src\Primitives\Triangle.cs" />
     <Compile Include="src\Samplers\RegularSampler.cs" />

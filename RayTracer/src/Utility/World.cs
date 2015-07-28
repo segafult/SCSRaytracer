@@ -51,9 +51,6 @@ namespace RayTracer
             ambientLight = new AmbientLight();   
         }
 
-        //Getters, setters, and adders
-
-
         /// <summary>
         /// Appends given render object to the end of the scene list
         /// </summary>
@@ -156,10 +153,10 @@ namespace RayTracer
             tracer = new Whitted(this);
 
             PinholeCamera pinhole_ptr = new PinholeCamera();
-            pinhole_ptr.setEye(new Point3D(150, 250, 500));
-            pinhole_ptr.setLookat(new Point3D(0, 0, 0));
+            pinhole_ptr.setEye(new Point3D(100, 10, 500));
+            pinhole_ptr.setLookat(new Point3D(0, 50, 0));
             pinhole_ptr.setVdp(850.0);
-            pinhole_ptr.setZoom(2.0);
+            pinhole_ptr.setZoom(2.5);
             pinhole_ptr.compute_uvw();
             set_camera(pinhole_ptr);
 
@@ -177,11 +174,11 @@ namespace RayTracer
             ReflectiveShader reflective_ptr = new ReflectiveShader();
             reflective_ptr.setKa(0.0);
             reflective_ptr.setKd(0.0);
-            reflective_ptr.setCd(new RGBColor(0.5, 0.5, 0.75));
+            reflective_ptr.setCd(new RGBColor(0.9, 0.5, 0.75));
             reflective_ptr.setExp(200.0);
             reflective_ptr.setKs(0.5);
             reflective_ptr.setReflectivity(0.9);
-            reflective_ptr.setCr(new RGBColor(0.5, 0.5, 0.75));
+            reflective_ptr.setCr(new RGBColor(0.9, 0.5, 0.75));
 
             PhongShader phong_ptr = new PhongShader();
             phong_ptr.setKa(0.5);
@@ -197,26 +194,34 @@ namespace RayTracer
             debug_ptr.setExp(20.0);
             debug_ptr.setKs(0.5);
 
+            /*
             Sphere sphere_ptr = new Sphere(new Point3D(0,0,0),40.0);
             sphere_ptr.setMaterial(reflective_ptr);
             add_Object(sphere_ptr);
+            Box box_ptr = new Box(-20,20,-20,20,-20,20);
+            box_ptr.setMaterial(phong_ptr);
+            */
 
-            Torus torus_ptr = new Torus(200.0, 50.0);
-            torus_ptr.setMaterial(reflective_ptr);
-            add_Object(torus_ptr);
+            Torus torus_ptr;
+            Instance instance_ptr;
 
-            
+            for(int i=1; i<10;i++)
+            {
+                torus_ptr = new Torus(i * 13, 3);
+                torus_ptr.setMaterial(reflective_ptr);
+                instance_ptr = new Instance(torus_ptr);
+                instance_ptr.applyTransformation(Matrix.standardTransformDeg(new Vect3D(i * 33, -i*22, 0), new Vect3D(1, 1, 1), new Vect3D(0, 60, 0)));
+                add_Object(instance_ptr);
+            }
+
             Plane plane_ptr = new Plane(new Point3D(0, -50, 0), new Normal(0, 1, 0));
             plane_ptr.setMaterial(debug_ptr);
             add_Object(plane_ptr);
             plane_ptr = new Plane(new Point3D(0, 1000, 0), new Normal(0, -1, 0));
             plane_ptr.setMaterial(matte_ptr);
             add_Object(plane_ptr);
+            
 
-
-            /*Box box_ptr = new Box(-1000, 1000, -1000, 1000, -100, 1000);
-            box_ptr.setMaterial(matte_ptr);
-            add_Object(box_ptr);*/
 
             Sphere world_sphere = new Sphere(new Point3D(0, 0, 0), 1000);
             world_sphere.setMaterial(phong_ptr);
