@@ -30,15 +30,122 @@ namespace RayTracer
     class Matrix
     {
         public double[,] tfVals;
+        public static double invThreeSixtyTwoPi = 1.0 / 360.0 * 2.0 * Math.PI;
 
         //Default constructor (identity matrix)
         public Matrix()
         {
-            tfVals = new double[4,4] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+            tfVals = new double[4, 4] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
             tfVals[0, 0] = 1;
             tfVals[1, 1] = 1;
             tfVals[2, 2] = 1;
             tfVals[3, 3] = 1;
+        }
+
+        ///----------------------------------------------------------------------------------------------------
+        /// Static rotation related functions
+        ///----------------------------------------------------------------------------------------------------
+        public static Matrix rotateX(double rot)
+        {
+            Matrix toReturn = new Matrix();
+            //Set up transformation matrix
+            toReturn.tfVals[1, 1] = Math.Cos(rot);
+            toReturn.tfVals[2, 1] = -Math.Sin(rot);
+            toReturn.tfVals[1, 2] = Math.Sin(rot);
+            toReturn.tfVals[2, 2] = Math.Cos(rot);
+
+            return toReturn;
+        }
+        public static Matrix rotateXDeg(double rot)
+        {
+            return rotateX(rot * invThreeSixtyTwoPi);
+        }
+        public static Matrix rotateY(double rot)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 0] = Math.Cos(rot);
+            toReturn.tfVals[2, 0] = Math.Sin(rot);
+            toReturn.tfVals[0, 2] = -Math.Sin(rot);
+            toReturn.tfVals[2, 2] = Math.Cos(rot);
+
+            return toReturn;
+        }
+        public static Matrix rotateYDeg(double rot)
+        {
+            return rotateY(rot * invThreeSixtyTwoPi);
+        }
+        public static Matrix rotateZ(double rot)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 0] = Math.Cos(rot);
+            toReturn.tfVals[1, 0] = -Math.Sin(rot);
+            toReturn.tfVals[0, 1] = Math.Sin(rot);
+            toReturn.tfVals[1, 1] = Math.Cos(rot);
+
+            return toReturn;
+        }
+        public static Matrix rotateZDeg(double rot)
+        {
+            return rotateZ(rot * invThreeSixtyTwoPi);
+        }
+
+        ///----------------------------------------------------------------------------------------------------
+        /// Static scaling related functions
+        ///----------------------------------------------------------------------------------------------------
+        public static Matrix scale(Vect3D scaleFactor)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 0] = 1 / scaleFactor.xcoord;
+            toReturn.tfVals[1, 1] = 1 / scaleFactor.ycoord;
+            toReturn.tfVals[2, 2] = 1 / scaleFactor.zcoord;
+
+            return toReturn;
+        }
+        public static Matrix scale(double x, double y, double z)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 0] = 1 / x;
+            toReturn.tfVals[1, 1] = 1 / y;
+            toReturn.tfVals[2, 2] = 1 / z;
+
+            return toReturn;
+        }
+
+        ///----------------------------------------------------------------------------------------------------
+        /// Static translation related functions
+        ///----------------------------------------------------------------------------------------------------
+        public static Matrix translate(Vect3D translation)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 3] = -translation.xcoord;
+            toReturn.tfVals[1, 3] = -translation.ycoord;
+            toReturn.tfVals[2, 3] = -translation.zcoord;
+
+            return toReturn;
+        }
+        public static Matrix translate(double x, double y, double z)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 3] = -x;
+            toReturn.tfVals[1, 3] = -y;
+            toReturn.tfVals[2, 3] = -z;
+
+            return toReturn;
+        }
+
+        ///----------------------------------------------------------------------------------------------------
+        /// Polytransformation functions
+        ///----------------------------------------------------------------------------------------------------
+        
+        public static Matrix standardTransformDeg(Vect3D rot,Vect3D scale,Vect3D translate)
+        {
+            //Scale first
+            Matrix toReturn = Matrix.scale(scale);
+            //Standard order of rotations are x rotation, y rotation, then z rotation
+            toReturn = toReturn * Matrix.rotateXDeg(rot.xcoord) * Matrix.rotateYDeg(rot.ycoord) * Matrix.rotateZDeg(rot.zcoord);
+            //Translate last
+            toReturn = toReturn * Matrix.translate(translate);
+            return toReturn;
         }
 
         //Operator overloads
@@ -49,6 +156,13 @@ namespace RayTracer
                 mat.tfVals[1, 0] * v.xcoord + mat.tfVals[1, 1] * v.ycoord + mat.tfVals[1, 2] * v.zcoord,
                 mat.tfVals[2, 0] * v.xcoord + mat.tfVals[2, 1] * v.ycoord + mat.tfVals[2, 2] * v.zcoord
                 );
+        }
+        //Applying a transformation matrix to a normal (unaffected by translation, rows/columns of matrix flipped)
+        public static Normal operator *(Matrix mat, Normal n)
+        {
+            return new Normal(mat.tfVals[0, 0] * n.xcoord + mat.tfVals[1, 0] * n.ycoord + mat.tfVals[2, 0] * n.zcoord,
+                mat.tfVals[0, 1] * n.xcoord + mat.tfVals[1, 1] * n.ycoord + mat.tfVals[2, 1] * n.zcoord,
+                mat.tfVals[0, 2] * n.xcoord + mat.tfVals[1, 2] * n.ycoord + mat.tfVals[2, 2] * n.zcoord);
         }
         //Applying a transformation matrix to a point (affected by translation)
         public static Point3D operator *(Matrix mat, Point3D p)
@@ -61,7 +175,6 @@ namespace RayTracer
         //Applying a transformation matrix to a normal
 
         //4x4 Matrix multiplication
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix operator *(Matrix l, Matrix r)
         {
             Matrix result = new Matrix();
