@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Drawing;
 
 namespace RayTracer
 {
@@ -30,6 +31,12 @@ namespace RayTracer
         public double g;
         public double b;
 
+        public override string ToString()
+        {
+            return "#" + Convert.ToByte(r * 255.0).ToString("x") +
+                Convert.ToByte(g * 255.0).ToString("x") + 
+                Convert.ToByte(b * 255.0).ToString("x");
+        }
         public RGBColor()
         {
             //Default color = grey
@@ -42,6 +49,12 @@ namespace RayTracer
             r = red;
             g = green;
             b = blue;
+        }
+        public RGBColor (System.Drawing.Color col)
+        {
+            r = (double)col.R / 255.0;
+            g = (double)col.G / 255.0;
+            b = (double)col.B / 255.0;
         }
         //Copy constructor
         public RGBColor (RGBColor color)

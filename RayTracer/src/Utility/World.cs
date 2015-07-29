@@ -35,10 +35,14 @@ namespace RayTracer
         public RGBColor bg_color;
         public Tracer tracer;
 
-        public List<RenderableObject> renderList;
+        public List<RenderableObject> renderList;  //Renderlist is the actual list of objects to render
+        public List<RenderableObject> objectList;  //Objectlist isn't rendered, and instead serves to hold objects to be instanced
+
         public List<Light> lightList;
         public AmbientLight ambientLight;
         public Camera camera;
+
+        public List<Material> materialList;
 
         public Bitmap drawPlan;
         public List<Bitmap> threadedBitmapList; //Only initialized when multithread rendering
@@ -47,8 +51,10 @@ namespace RayTracer
         {
             vp = new ViewPlane();
             renderList = new List<RenderableObject>();
+
             lightList = new List<Light>();
-            ambientLight = new AmbientLight();   
+            materialList = new List<Material>();
+            ambientLight = new AmbientLight();
         }
 
         /// <summary>
@@ -73,26 +79,6 @@ namespace RayTracer
         public void set_camera(Camera c)
         {
             camera = c;
-        }
-
-        public ShadeRec hit_barebones_objects(Ray ray)
-        {
-            ShadeRec sr = new ShadeRec(this);
-            double t = GlobalVars.kHugeValue-1;
-            double tmin = GlobalVars.kHugeValue;
-            int num_objects = renderList.Count;
-
-            for(int i = 0; i < num_objects; i++)
-            {
-                if(renderList[i].hit(ray,ref t, ref sr) && (t<tmin))
-                {
-                    sr.hit_an_object = true;
-                    tmin = t;
-                    sr.color = renderList[i].color;
-                }
-            }
-
-            return sr;
         }
 
         /// <summary>
@@ -139,6 +125,7 @@ namespace RayTracer
         /// </summary>
         public void build()
         {
+            
             vp.set_hres(1920);
             vp.set_vres(1080);
             vp.set_pixel_size(1.0F);
@@ -166,66 +153,16 @@ namespace RayTracer
             light_ptr.setColor(new RGBColor(1.0, 1.0, 1.0));
             add_Light(light_ptr);
 
-            MatteShader matte_ptr = new MatteShader();
-            matte_ptr.setCd(new RGBColor(1.0, 1.0, 1.0));
-            matte_ptr.setKa(0.5);
-            matte_ptr.setKd(0.5);
-
-            ReflectiveShader reflective_ptr = new ReflectiveShader();
-            reflective_ptr.setKa(0.0);
-            reflective_ptr.setKd(0.0);
-            reflective_ptr.setCd(new RGBColor(0.9, 0.5, 0.75));
-            reflective_ptr.setExp(200.0);
-            reflective_ptr.setKs(0.5);
-            reflective_ptr.setReflectivity(0.9);
-            reflective_ptr.setCr(new RGBColor(0.9, 0.5, 0.75));
-
-            PhongShader phong_ptr = new PhongShader();
-            phong_ptr.setKa(0.5);
-            phong_ptr.setKd(0.77);
-            phong_ptr.setCd(new RGBColor(0.5, 0.5, 0.75));
-            phong_ptr.setExp(20.0);
-            phong_ptr.setKs(0.5);
-
-            DebugCheckerboard debug_ptr = new DebugCheckerboard();
-            debug_ptr.setKa(0.5);
-            debug_ptr.setKd(0.77);
-            debug_ptr.setCd(new RGBColor(0.5, 0.5, 0.75));
-            debug_ptr.setExp(20.0);
-            debug_ptr.setKs(0.5);
-
-            /*
-            Sphere sphere_ptr = new Sphere(new Point3D(0,0,0),40.0);
-            sphere_ptr.setMaterial(reflective_ptr);
-            add_Object(sphere_ptr);
-            Box box_ptr = new Box(-20,20,-20,20,-20,20);
-            box_ptr.setMaterial(phong_ptr);
-            */
-
-            Torus torus_ptr;
-            Instance instance_ptr;
-
-            for(int i=1; i<10;i++)
+            XMLProcessor sceneLoader = new XMLProcessor("scene.xml", this);
+            sceneLoader.LoadMaterials();
+            if (GlobalVars.verbose)
             {
-                torus_ptr = new Torus(i * 13, 3);
-                torus_ptr.setMaterial(reflective_ptr);
-                instance_ptr = new Instance(torus_ptr);
-                instance_ptr.applyTransformation(Matrix.standardTransformDeg(new Vect3D(i * 33, -i*22, 0), new Vect3D(1, 1, 1), new Vect3D(0, 60, 0)));
-                add_Object(instance_ptr);
+                Console.WriteLine("Materials loaded:");
+                foreach (Material m in materialList)
+                {
+                    Console.WriteLine(m.ToString());
+                }
             }
-
-            Plane plane_ptr = new Plane(new Point3D(0, -50, 0), new Normal(0, 1, 0));
-            plane_ptr.setMaterial(debug_ptr);
-            add_Object(plane_ptr);
-            plane_ptr = new Plane(new Point3D(0, 1000, 0), new Normal(0, -1, 0));
-            plane_ptr.setMaterial(matte_ptr);
-            add_Object(plane_ptr);
-            
-
-
-            Sphere world_sphere = new Sphere(new Point3D(0, 0, 0), 1000);
-            world_sphere.setMaterial(phong_ptr);
-            add_Object(world_sphere);
         }
 
         /// <summary>

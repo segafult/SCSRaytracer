@@ -36,11 +36,11 @@ namespace RayTracer
         public PerfectSpecular(RGBColor color, double kr_arg)
         {
             kr = kr_arg;
-            cr = new RGBColor(color);
+            cr = color;
         }
 
         public void setKr(double kr_arg) { kr = kr_arg; }
-        public void setCr(RGBColor cr_arg) { cr = new RGBColor(cr_arg); }
+        public void setCr(RGBColor cr_arg) { cr = cr_arg; }
         public double getKr() { return kr; }
         public RGBColor getCr() { return cr; }
 

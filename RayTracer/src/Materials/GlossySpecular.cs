@@ -41,14 +41,14 @@ namespace RayTracer
         {
             exp = clone.getExp();
             ks = clone.getKs();
-            cs = new RGBColor(clone.getCs());
+            cs = clone.getCs();
             sampler_ptr = clone.getSampler();
         }
 
         public void setExp(double e) { exp = e; }
         public void setKs(double ks_a) { ks = ks_a; }
         public void setSampler(Sampler sampler_arg) { sampler_ptr = sampler_arg; }
-        public void setCs(RGBColor color_arg) { cs = new RGBColor(color_arg); }
+        public void setCs(RGBColor color_arg) { cs = color_arg; }
         public double getExp() { return exp; }
         public double getKs() { return ks; }
         public RGBColor getCs() { return cs; }

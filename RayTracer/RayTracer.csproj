@@ -108,6 +108,7 @@
     <Compile Include="src\Utility\ViewPlane.cs" />
     <Compile Include="src\Utility\World.cs" />
     <Compile Include="src\Lights\DirectionalLight.cs" />
+    <Compile Include="src\XMLProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -123,6 +124,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="xml\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -36,9 +36,15 @@ namespace RayTracer
         }
         public Plane(Point3D point, Normal normal)
         {
-            p = new Point3D(point);
-            n = new Normal(normal);
+            p = point;
+            n = normal;
         }
+
+        //Gets and sets
+        public void setP(Point3D parg) { p = parg; }
+        public void setN(Normal narg) { n = narg; }
+        public Point3D getP() { return p; }
+        public Normal getN() { return n; }
 
         /// <summary>
         /// Determines t value for intersection of plane and given ray, passes shading info back through sr;
