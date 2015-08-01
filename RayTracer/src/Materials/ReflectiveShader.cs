@@ -32,6 +32,20 @@ namespace RayTracer
             reflective_brdf = new PerfectSpecular();
         }
 
+        public override string ToString()
+        {
+            string toReturn = "Reflective/whittal shader:\n";
+            toReturn += "  ID: " + id + "\n";
+            toReturn += "  Ka: " + ambient_brdf.getKd() + "\n";
+            toReturn += "  Kd: " + diffuse_brdf.getKd() + "\n";
+            toReturn += "  Cd: " + ambient_brdf.getCd() + "\n";
+            toReturn += "  Exp: " + specular_brdf.getExp() + "\n";
+            toReturn += "  Ks: " + specular_brdf.getKs() +"\n";
+            toReturn += "  Cr: " + reflective_brdf.getCr().ToString() + "\n";
+            toReturn += "  Kr: " + reflective_brdf.getKr();
+
+            return toReturn;
+        }
         virtual public void setReflectivity(double refl) { reflective_brdf.setKr(refl); }
         virtual public void setCr(RGBColor c)
         {

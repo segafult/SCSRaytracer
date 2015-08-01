@@ -33,7 +33,7 @@ namespace RayTracer
 
         public override string ToString()
         {
-            string toreturn = "Matte Shader:\n";
+            string toreturn = "Matte shader:\n";
             toreturn += "  ID = " + this.id + "\n";
             toreturn += "  Ka = " + ambient_brdf.getKd() + "\n";
             toreturn += "  Kd = " + diffuse_brdf.getKd() + "\n";

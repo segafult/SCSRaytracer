@@ -44,6 +44,13 @@ namespace RayTracer
             v3 = v3_arg;
         }
 
+        public override string ToString()
+        {
+            return "Triangle primitive:\n" +
+                "  ID: " + id + "\n" +
+                "  Mat: " + this.getMaterial().id + "\n" +
+                "  Vertices: " + v1.ToString() + v2.ToString() + v3.ToString();
+        }
         //Gets and sets
         public void setVertices(Point3D v1_arg, Point3D v2_arg, Point3D v3_arg)
         {

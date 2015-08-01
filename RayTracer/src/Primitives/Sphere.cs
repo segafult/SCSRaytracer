@@ -40,7 +40,15 @@ namespace RayTracer
             c = new Point3D(center);
             r = radius;
         }
-        
+
+        public override string ToString()
+        {
+            return "Sphere primitive:\n" +
+                "  ID: " + id + "\n" +
+                "  Mat: " + this.getMaterial().id + "\n" +
+                "  c: " + c.ToString() + "\n" +
+                "  r: " + r;
+        }
         public void set_center(Point3D center)
         {
             c = new Point3D(center.xcoord, center.ycoord, center.zcoord);

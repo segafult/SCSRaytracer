@@ -40,6 +40,15 @@ namespace RayTracer
             n = normal;
         }
 
+        public override string ToString()
+        {
+            return "Plane primitive\n" +
+                "  ID: " + id + "\n" +
+                "  Mat: " + this.getMaterial().id + "\n" +
+                "  P: " + p.ToString() + "\n" +
+                "  N: " + n.ToString();
+        }
+
         //Gets and sets
         public void setP(Point3D parg) { p = parg; }
         public void setN(Normal narg) { n = narg; }

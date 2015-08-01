@@ -34,7 +34,7 @@ namespace RayTracer
             a = 2.0;
             b = 1.0;
 
-            bb = new BoundingBox(-a + b, a + b, -b, b, -a + b, a + b);
+            bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
         }
 
         public Torus(double a_arg, double b_arg)
@@ -44,6 +44,31 @@ namespace RayTracer
 
             bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
         }
+
+        //Gets and sets
+        public void setA(double a_arg)
+        {
+            a = a_arg;
+            bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
+        }
+        public void setB(double b_arg)
+        {
+            b = b_arg;
+            bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
+        }
+
+        public override string ToString()
+        {
+            return "Torus primitive:\n" +
+                "  ID: " + id + "\n" +
+                "  Mat: " + this.getMaterial().id + "\n" +
+                "  A: " + a + "\n" +
+                "  B: " + b;
+
+        }
+        public double getA() { return a; }
+        public double getB() { return b; }
+        public BoundingBox getBB() { return bb; }
 
         public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
         {

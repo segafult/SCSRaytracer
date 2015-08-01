@@ -65,10 +65,49 @@ namespace RayTracer
             zcoord = n.zcoord;
         }
 
+        public override string ToString()
+        {
+            return "[" + xcoord + "," + ycoord + "," + zcoord + "]";
+        }
+
         //Gets and sets
         public double getXCoordinates() { return xcoord; }
         public double getYCoordinates() { return ycoord; }
         public double getZCoordinates() { return zcoord; }
+
+        //Generators
+        /// <summary>
+        /// Generates a Point3D from a 3 element CSV string.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns>Point3D(x,y,z) if properly formed, null if invalid.</returns>
+        public static Point3D FromCsv(string input)
+        {
+            try {
+                string[] args = input.Split(',');
+                
+                //Ensure there are 3 values
+                if (args.Length == 3)
+                {
+                    double[] vals = new double[3];
+                    for (int i = 0; i < 3; i++)
+                    {
+                        vals[i] = Convert.ToDouble(args[i]);
+                    }
+
+                    return new Point3D(vals[0], vals[1], vals[2]);
+                }
+                else
+                {
+                    throw new System.FormatException();
+                }
+            }
+            catch(System.FormatException e)
+            {
+                Console.WriteLine(e.ToString());
+                return null;
+            }
+        }
 
         ///
         ///Operator overloads

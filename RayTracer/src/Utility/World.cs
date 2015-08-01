@@ -51,6 +51,7 @@ namespace RayTracer
         {
             vp = new ViewPlane();
             renderList = new List<RenderableObject>();
+            objectList = new List<RenderableObject>();
 
             lightList = new List<Light>();
             materialList = new List<Material>();
@@ -140,8 +141,8 @@ namespace RayTracer
             tracer = new Whitted(this);
 
             PinholeCamera pinhole_ptr = new PinholeCamera();
-            pinhole_ptr.setEye(new Point3D(100, 10, 500));
-            pinhole_ptr.setLookat(new Point3D(0, 50, 0));
+            pinhole_ptr.setEye(new Point3D(100, 200, 500));
+            pinhole_ptr.setLookat(new Point3D(0, 0, 0));
             pinhole_ptr.setVdp(850.0);
             pinhole_ptr.setZoom(2.5);
             pinhole_ptr.compute_uvw();
@@ -161,6 +162,26 @@ namespace RayTracer
                 foreach (Material m in materialList)
                 {
                     Console.WriteLine(m.ToString());
+                }
+            }
+
+            sceneLoader.LoadObjects();
+            if(GlobalVars.verbose)
+            {
+                Console.WriteLine("Object definitions loaded:");
+                foreach(RenderableObject o in objectList)
+                {
+                    Console.WriteLine(o.ToString());
+                }
+            }
+
+            sceneLoader.LoadWorld();
+            if(GlobalVars.verbose)
+            {
+                Console.WriteLine("Scene loaded!");
+                foreach(RenderableObject o in renderList)
+                {
+                    Console.WriteLine(o.ToString());
                 }
             }
         }
@@ -277,6 +298,73 @@ namespace RayTracer
                 joinedImage.DrawImageUnscaled(threadedBitmapList[7], new Point(3*vp.hres/4, vp.vres/2));
             }
 
+        }
+
+        public Material getMaterialById(string idarg)
+        {
+            //idarg will be null if no node is returned by the XmlProcessor
+            if (idarg == null)
+            {
+                return new MatteShader();
+            }
+            else
+            {
+                int numMats = materialList.Count;
+                bool foundMat = false;
+
+                int matIndex = 0;
+                for (int i = 0; i < numMats; i++)
+                {
+                    if (materialList[i].id.Equals(idarg))
+                    {
+                        foundMat = true;
+                        matIndex = i;
+                        break;
+                    }
+                }
+
+                if (foundMat)
+                {
+                    return materialList[matIndex];
+                }
+                else
+                {
+                    return new MatteShader();
+                }
+            }
+        }
+
+        public RenderableObject getObjectById(string objarg)
+        {
+            if(objarg == null)
+            {
+                return null;
+            }
+            else
+            {
+                int numObjs = objectList.Count;
+                bool foundObj = false;
+                int objIndex = 0;
+
+                for(int i = 0; i < numObjs; i++)
+                {
+                    if (objectList[i].id.Equals(objarg))
+                    {
+                        foundObj = true;
+                        objIndex = i;
+                        break;
+                    }
+                }
+
+                if(foundObj)
+                {
+                    return objectList[objIndex];
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
     } 
 }

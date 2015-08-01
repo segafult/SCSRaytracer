@@ -63,6 +63,44 @@ namespace RayTracer
             ycoord = p.ycoord;
             zcoord = p.zcoord;
         }
+
+        public override string ToString()
+        {
+            return "[" + xcoord + "," + ycoord + "," + zcoord + "]";
+        }
+
+        //Generators
+        /// <summary>
+        /// Generates a normal from a 3 element CSV string
+        /// </summary>
+        /// <param name="input">String to generate Normal from</param>
+        /// <returns>Normal(x,y,z) if input is well formed, otherwise null.</returns>
+        public static Normal FromCsv(string input)
+        {
+            try
+            {
+                string[] args = input.Split(',');
+                if(args.Length == 3)
+                {
+                    double[] vals = new double[3];
+                    for(int i = 0;i<3;i++)
+                    {
+                        vals[i] = Convert.ToDouble(args[i]);
+                    }
+
+                    return new Normal(vals[0], vals[1], vals[2]);
+                }
+                else
+                {
+                    throw new System.FormatException();
+                }
+            }
+            catch(System.FormatException e)
+            {
+                Console.WriteLine(e.ToString());
+                return null;
+            }
+        }
         
 
         //Gets and sets

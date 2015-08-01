@@ -103,14 +103,14 @@ namespace RayTracer
 
         public override Material getMaterial()
         {
-            if (getMaterial() == null)
-            {
+            //if (getMaterial() == null)
+            //{
                 return payload.getMaterial();
-            }
-            else
-            {
-                return getMaterial();
-            }
+            //}
+            //else
+            //{
+            //    return base.getMaterial();
+            //}
         }
     }
 }

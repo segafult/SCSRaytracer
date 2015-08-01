@@ -33,7 +33,7 @@ namespace RayTracer
             w.camera.render_scene_multithreaded(w,8);
             w.drawPlan.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
             w.drawPlan.Save("E:\\test.bmp");
-            //Console.ReadKey();
+            Console.ReadKey();
         }
     }
 }
