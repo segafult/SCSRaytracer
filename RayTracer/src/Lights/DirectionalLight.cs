@@ -15,12 +15,6 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RayTracer
 {
     /// <summary>
@@ -31,28 +25,34 @@ namespace RayTracer
     {
         private double intensity;
         private Vect3D direction;
-        private RGBColor color;
 
         //Constructors
+        public DirectionalLight()
+        {
+            direction = (new Vect3D(-1, -1, -1)).hat();
+            intensity = 0.5;
+            color = new RGBColor(1, 1, 1);
+            shadows = false;
+        }
         public DirectionalLight(Vect3D d)
         {
             direction = d.hat();
             intensity = 0.5;
             color = new RGBColor(1, 1, 1);
+            shadows = false;
         }
         public DirectionalLight(RGBColor c, double i, Vect3D d)
         {
             color = new RGBColor(c);
             intensity = i;
             direction = d.hat();
+            shadows = false;
         }
 
         //Gets and sets
-        public void setColor(RGBColor c) { color = new RGBColor(c); }
         public void setDirection(Vect3D d) { direction = d.hat(); }
         public void setIntensity(double i) { intensity = i; }
         public void setShadows(bool shad) { shadows = shad; }
-        public RGBColor getColor() { return color; }
         public Vect3D getDirection() { return direction; }
         public double getIntensity() { return intensity; }
          

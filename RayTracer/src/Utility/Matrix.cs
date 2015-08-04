@@ -88,6 +88,10 @@ namespace RayTracer
         {
             return rotateZ(rot * invThreeSixtyTwoPi);
         }
+        public static Matrix rotateDeg(Vect3D rotations)
+        {
+            return rotateXDeg(rotations.xcoord) * rotateYDeg(rotations.ycoord) * rotateZDeg(rotations.zcoord);
+        }
 
         ///----------------------------------------------------------------------------------------------------
         /// Static scaling related functions
@@ -172,7 +176,6 @@ namespace RayTracer
                 (mat.tfVals[2, 0] * p.xcoord) + (mat.tfVals[2, 1] * p.ycoord) + (mat.tfVals[2, 2] * p.zcoord) + mat.tfVals[2, 3]
                 );
         }
-        //Applying a transformation matrix to a normal
 
         //4x4 Matrix multiplication
         public static Matrix operator *(Matrix l, Matrix r)

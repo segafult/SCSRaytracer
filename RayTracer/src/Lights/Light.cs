@@ -15,12 +15,6 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RayTracer
 {
     /// <summary>
@@ -29,13 +23,14 @@ namespace RayTracer
     abstract public class Light
     {
         protected bool shadows;
+        protected RGBColor color;
+
         abstract public RGBColor L(ShadeRec sr);
         public virtual bool inShadow(ShadeRec sr, Ray ray) { return false; }
-        public virtual Vect3D getDirection(ShadeRec sr)
-        {
-            return new Vect3D(0, 0, 0);
-        }
+        public virtual Vect3D getDirection(ShadeRec sr) { return new Vect3D(0, 0, 0); }
         public virtual bool castsShadows() { return shadows; }
-        
+        public virtual void setShadow(bool shad) { shadows = shad; }
+        public RGBColor getColor() { return color; }
+        public void setColor(RGBColor c) { color = new RGBColor(c); }
     }
 }

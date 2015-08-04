@@ -16,10 +16,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
@@ -126,7 +122,7 @@ namespace RayTracer
         /// </summary>
         public void build()
         {
-            
+            /*
             vp.set_hres(1920);
             vp.set_vres(1080);
             vp.set_pixel_size(1.0F);
@@ -136,8 +132,9 @@ namespace RayTracer
             RegularSampler mySampler = new RegularSampler(vp.numSamples);
             mySampler.generate_samples();
             vp.set_sampler(mySampler);
+            
 
-            bg_color = GlobalVars.color_black;
+            
             tracer = new Whitted(this);
 
             PinholeCamera pinhole_ptr = new PinholeCamera();
@@ -147,14 +144,18 @@ namespace RayTracer
             pinhole_ptr.setZoom(2.5);
             pinhole_ptr.compute_uvw();
             set_camera(pinhole_ptr);
+            */
+            bg_color = GlobalVars.color_black;
 
+            /*
             PointLight light_ptr = new PointLight(new Point3D(0,500,259.8));
             light_ptr.setIntensity(5.0);
             light_ptr.setShadow(true);
             light_ptr.setColor(new RGBColor(1.0, 1.0, 1.0));
             add_Light(light_ptr);
+            */
 
-            XMLProcessor sceneLoader = new XMLProcessor("scene.xml", this);
+            XMLProcessor sceneLoader = new XMLProcessor(GlobalVars.inFile, this);
             sceneLoader.LoadMaterials();
             if (GlobalVars.verbose)
             {
@@ -333,7 +334,6 @@ namespace RayTracer
                 }
             }
         }
-
         public RenderableObject getObjectById(string objarg)
         {
             if(objarg == null)

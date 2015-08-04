@@ -15,12 +15,6 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RayTracer
 {
     /// <summary>
@@ -103,14 +97,14 @@ namespace RayTracer
 
         public override Material getMaterial()
         {
-            //if (getMaterial() == null)
-            //{
+            if (mat == null)
+            {
                 return payload.getMaterial();
-            //}
-            //else
-            //{
-            //    return base.getMaterial();
-            //}
+            }
+            else
+            {
+                return mat;
+            }
         }
     }
 }

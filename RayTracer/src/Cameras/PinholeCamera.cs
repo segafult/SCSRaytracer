@@ -17,9 +17,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -32,6 +29,15 @@ namespace RayTracer
         private double d; //Distance between pinhole and viewplane
         private double zoom; //Zoom factor
 
+        public PinholeCamera()
+        {
+            d = 850;
+            zoom = 1.0;
+            this.setEye(new Point3D(0, 0, 0));
+            this.setExposure(1.0);
+            this.setLookat(new Point3D(0, 0, 500));
+            this.compute_uvw();
+        }
         public void setVdp(double distance)
         {
             d = distance;
