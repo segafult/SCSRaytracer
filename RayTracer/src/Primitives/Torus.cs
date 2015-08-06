@@ -16,10 +16,7 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
 
 namespace RayTracer
 {
@@ -34,7 +31,7 @@ namespace RayTracer
             a = 2.0;
             b = 1.0;
 
-            bb = new BoundingBox(-a + b, a + b, -b, b, -a + b, a + b);
+            bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
         }
 
         public Torus(double a_arg, double b_arg)
@@ -44,6 +41,31 @@ namespace RayTracer
 
             bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
         }
+
+        //Gets and sets
+        public void setA(double a_arg)
+        {
+            a = a_arg;
+            bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
+        }
+        public void setB(double b_arg)
+        {
+            b = b_arg;
+            bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
+        }
+
+        public override string ToString()
+        {
+            return "Torus primitive:\n" +
+                "  ID: " + id + "\n" +
+                "  Mat: " + this.getMaterial().id + "\n" +
+                "  A: " + a + "\n" +
+                "  B: " + b;
+
+        }
+        public double getA() { return a; }
+        public double getB() { return b; }
+        public BoundingBox getBB() { return bb; }
 
         public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
         {
@@ -186,6 +208,39 @@ namespace RayTracer
             result.normalize();
 
             return result;
+        }
+
+        public static Torus LoadTorus(XmlElement def, World w)
+        {
+            Torus toReturn = new Torus();
+            toReturn.id = def.GetAttribute("id");
+            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
+
+            //Load a if provided
+            try
+            {
+                XmlNode a = def.SelectSingleNode("a");
+                if (a != null)
+                {
+                    double aDouble = Convert.ToDouble(((XmlText)a.FirstChild).Data);
+                    toReturn.setA(aDouble);
+                }
+            }
+            catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
+
+            //Load b if provided
+            try
+            {
+                XmlNode b = def.SelectSingleNode("b");
+                if (b != null)
+                {
+                    double bDouble = Convert.ToDouble(((XmlText)b.FirstChild).Data);
+                    toReturn.setB(bDouble);
+
+                }
+            }
+            catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
+            return toReturn;
         }
     }
 }

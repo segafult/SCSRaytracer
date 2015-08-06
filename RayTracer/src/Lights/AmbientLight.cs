@@ -16,10 +16,7 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
 
 namespace RayTracer
 {
@@ -29,7 +26,7 @@ namespace RayTracer
     public class AmbientLight : Light
     {
         private double intensity;
-        private RGBColor color;
+        
 
         //Default constructor
         public AmbientLight()
@@ -44,10 +41,12 @@ namespace RayTracer
         }
 
         //Gets and sets
-        public void setColor(RGBColor c) { color = new RGBColor(c); }
         public void setIntensity(double i) { intensity = i; }
-        public RGBColor getColor() { return color; }
         public double getIntensity() { return intensity; }
+        public override bool castsShadows()
+        {
+            return false;
+        }
 
         public override RGBColor L(ShadeRec sr)
         {
@@ -58,6 +57,28 @@ namespace RayTracer
         {
             //Ambient light has no direction
             return new Vect3D(0, 0, 0);
+        }
+
+        public static AmbientLight LoadAmbient(XmlElement lightRoot)
+        {
+            AmbientLight toReturn = new AmbientLight();
+
+            XmlNode node_intensity = lightRoot.SelectSingleNode("intensity");
+            if (node_intensity != null)
+            {
+                string str_intensity = ((XmlText)node_intensity.FirstChild).Data;
+                double intensity = Convert.ToDouble(str_intensity);
+                toReturn.setIntensity(intensity);
+            }
+
+            XmlNode node_color = lightRoot.SelectSingleNode("color");
+            if (node_color != null)
+            {
+                string str_color = ((XmlText)node_color.FirstChild).Data;
+                RGBColor color = new RGBColor(System.Drawing.ColorTranslator.FromHtml(str_color));
+                toReturn.setColor(color);
+            }
+            return toReturn;
         }
     }
 }

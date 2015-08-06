@@ -16,10 +16,8 @@
 //
 
 using System;
+using System.Xml;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
 namespace RayTracer
@@ -61,6 +59,16 @@ namespace RayTracer
             y1 = y1_arg;
             z0 = z0_arg;
             z1 = z1_arg;
+        }
+
+        public void setPoints(Point3D p1, Point3D p2)
+        {
+            x0 = p1.xcoord < p2.xcoord ? p1.xcoord : p2.xcoord;
+            x1 = p1.xcoord > p2.xcoord ? p1.xcoord : p2.xcoord;
+            y0 = p1.ycoord < p2.ycoord ? p1.ycoord : p2.ycoord;
+            y1 = p1.ycoord > p2.ycoord ? p1.ycoord : p2.ycoord;
+            z0 = p1.zcoord < p2.zcoord ? p1.zcoord : p2.zcoord;
+            z1 = p1.zcoord > p2.zcoord ? p1.zcoord : p2.zcoord;
         }
         public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
         {
@@ -275,6 +283,29 @@ namespace RayTracer
             }
 
             return null;
+        }
+
+        public static Box LoadBox(XmlElement def, World w)
+        {
+            Box toReturn = new Box();
+
+            toReturn.id = def.GetAttribute("id");
+            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
+
+            XmlNodeList points = def.SelectNodes("point");
+            if (points.Count == 2)
+            {
+                List<Point3D> plist = new List<Point3D>();
+                plist.Add(Point3D.FromCsv(((XmlText)points[0].FirstChild).Data));
+                plist.Add(Point3D.FromCsv(((XmlText)points[1].FirstChild).Data));
+
+                toReturn.setPoints(plist[0], plist[1]);
+            }
+            else
+            {
+                Console.WriteLine("Error: Box requires 2 points to be defined.");
+            }
+            return toReturn;
         }
     }
 }

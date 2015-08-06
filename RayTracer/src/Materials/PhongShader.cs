@@ -15,12 +15,6 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RayTracer
 {
     /// <summary>
@@ -28,19 +22,19 @@ namespace RayTracer
     /// </summary>
     public class PhongShader : Material
     {
-        Lambertian ambient_brdf;
-        Lambertian diffuse_brdf;
-        GlossySpecular specular_brdf;
+        protected Lambertian ambient_brdf;
+        protected Lambertian diffuse_brdf;
+        protected GlossySpecular specular_brdf;
 
         public override string ToString()
         {
-            string toReturn = "Phong Shader:\n";
-            toReturn += "   ID: " + id + "\n";
-            toReturn += "   Ka: " + ambient_brdf.getKd() + "\n";
-            toReturn += "   Kd: " + diffuse_brdf.getKd() + "\n";
-            toReturn += "   Cd: " + ambient_brdf.getCd() + "\n";
-            toReturn += "   Exp: " + specular_brdf.getExp() + "\n";
-            toReturn += "   Ks: " + specular_brdf.getKs();
+            string toReturn = "Phong shader:\n";
+            toReturn += "  ID: " + id + "\n";
+            toReturn += "  Ka: " + ambient_brdf.getKd() + "\n";
+            toReturn += "  Kd: " + diffuse_brdf.getKd() + "\n";
+            toReturn += "  Cd: " + ambient_brdf.getCd() + "\n";
+            toReturn += "  Exp: " + specular_brdf.getExp() + "\n";
+            toReturn += "  Ks: " + specular_brdf.getKs();
 
             return toReturn;
         }

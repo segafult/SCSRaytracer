@@ -15,19 +15,13 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RayTracer
 {
     public abstract class RenderableObject
     {
         public string id;
         //public RGBColor color;
-        private Material mat;
+        protected Material mat;
 
         public virtual bool hit(Ray r, ref double tmin, ref ShadeRec sr)
         {
@@ -42,5 +36,7 @@ namespace RayTracer
         {
             mat = m;
         }
+
+
     }
 }

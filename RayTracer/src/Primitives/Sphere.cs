@@ -16,10 +16,7 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
 using System.Runtime.CompilerServices;
 
 namespace RayTracer
@@ -40,7 +37,15 @@ namespace RayTracer
             c = new Point3D(center);
             r = radius;
         }
-        
+
+        public override string ToString()
+        {
+            return "Sphere primitive:\n" +
+                "  ID: " + id + "\n" +
+                "  Mat: " + this.getMaterial().id + "\n" +
+                "  c: " + c.ToString() + "\n" +
+                "  r: " + r;
+        }
         public void set_center(Point3D center)
         {
             c = new Point3D(center.xcoord, center.ycoord, center.zcoord);
@@ -163,6 +168,42 @@ namespace RayTracer
 
             //Codepath shouldn't get here
             return false;
+        }
+
+        public static Sphere LoadSphere(XmlElement def, World w)
+        {
+            Sphere toReturn = new Sphere();
+            toReturn.id = def.GetAttribute("id");
+            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
+
+            //Load center of the sphere if provided
+            XmlNode c = def.SelectSingleNode("point");
+            if (c != null)
+            {
+                string cText = ((XmlText)c.FirstChild).Data;
+                Point3D cObj = Point3D.FromCsv(cText);
+                if (cObj != null)
+                {
+                    toReturn.set_center(cObj);
+                }
+            }
+
+            try
+            {
+                //Load radius of the sphere if provided
+                XmlNode r = def.SelectSingleNode("r");
+                if (r != null)
+                {
+                    double rDouble = Convert.ToDouble(((XmlText)r.FirstChild).Data);
+                    toReturn.set_radius(rDouble);
+                }
+            }
+            catch (System.FormatException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return toReturn;
         }
     }
 }

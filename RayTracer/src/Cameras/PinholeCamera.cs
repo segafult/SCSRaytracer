@@ -17,13 +17,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
+using System.Xml;
 
 namespace RayTracer
 {
@@ -32,6 +30,15 @@ namespace RayTracer
         private double d; //Distance between pinhole and viewplane
         private double zoom; //Zoom factor
 
+        public PinholeCamera()
+        {
+            d = 850;
+            zoom = 1.0;
+            this.setEye(new Point3D(0, 0, 0));
+            this.setExposure(1.0);
+            this.setLookat(new Point3D(0, 0, 500));
+            this.compute_uvw();
+        }
         public void setVdp(double distance)
         {
             d = distance;
@@ -181,6 +188,27 @@ namespace RayTracer
             Vect3D dir = p.x * u + p.y * v - d * w;
             dir.normalize();
             return dir;
+        }
+
+        public static PinholeCamera LoadPinholeCamera(XmlElement camRoot)
+        {
+            PinholeCamera toReturn = new PinholeCamera();
+
+            XmlNode node_zoom = camRoot.SelectSingleNode("zoom");
+            if (node_zoom != null)
+            {
+                string str_zoom = ((XmlText)node_zoom.FirstChild).Data;
+                double zoom = Convert.ToDouble(str_zoom);
+                toReturn.setZoom(zoom);
+            }
+            XmlNode node_vdp = camRoot.SelectSingleNode("vdp");
+            if (node_vdp != null)
+            {
+                string str_vdp = ((XmlText)node_vdp.FirstChild).Data;
+                double vdp = Convert.ToDouble(str_vdp);
+                toReturn.setVdp(vdp);
+            }
+            return toReturn;
         }
     }
 }

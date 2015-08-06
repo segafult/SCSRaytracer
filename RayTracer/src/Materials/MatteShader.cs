@@ -15,12 +15,6 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RayTracer
 {
     /// <summary>
@@ -33,7 +27,7 @@ namespace RayTracer
 
         public override string ToString()
         {
-            string toreturn = "Matte Shader:\n";
+            string toreturn = "Matte shader:\n";
             toreturn += "  ID = " + this.id + "\n";
             toreturn += "  Ka = " + ambient_brdf.getKd() + "\n";
             toreturn += "  Kd = " + diffuse_brdf.getKd() + "\n";

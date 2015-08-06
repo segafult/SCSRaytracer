@@ -17,9 +17,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
 
 namespace RayTracer
 {
@@ -44,6 +42,13 @@ namespace RayTracer
             v3 = v3_arg;
         }
 
+        public override string ToString()
+        {
+            return "Triangle primitive:\n" +
+                "  ID: " + id + "\n" +
+                "  Mat: " + this.getMaterial().id + "\n" +
+                "  Vertices: " + v1.ToString() + v2.ToString() + v3.ToString();
+        }
         //Gets and sets
         public void setVertices(Point3D v1_arg, Point3D v2_arg, Point3D v3_arg)
         {
@@ -191,6 +196,38 @@ namespace RayTracer
                 return true;
             }
             else return false;
+        }
+
+        public static Triangle LoadTrianglePrimitive(XmlElement def, World w)
+        {
+            Triangle toReturn = new Triangle();
+
+            toReturn.id = def.GetAttribute("id");
+            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
+
+            //Check if a list of vertices have been defined
+            XmlNode vertRoot = def.SelectSingleNode("vertices");
+            if (vertRoot != null)
+            {
+                //Get a list of all defined points
+                XmlNodeList vertList = vertRoot.SelectNodes("point");
+                //Need to be 3 vertices defined
+                if (vertList.Count == 3)
+                {
+                    List<Point3D> verts_objs = new List<Point3D>(3);
+                    foreach (XmlNode element in vertList)
+                    {
+                        verts_objs.Add(Point3D.FromCsv(((XmlText)element.FirstChild).Data));
+                    }
+                    toReturn.setVertices(verts_objs[0], verts_objs[1], verts_objs[2]);
+                }
+                else
+                {
+                    Console.WriteLine("Error: Exactly 3 vertices must be defined for a triangle primitive if <vertices> tags present.");
+                }
+            }
+
+            return toReturn;
         }
     }
 }
