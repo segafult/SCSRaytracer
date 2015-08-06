@@ -36,5 +36,7 @@ namespace RayTracer
         {
             mat = m;
         }
+
+
     }
 }

@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Xml;
 using System.Runtime.CompilerServices;
 
 namespace RayTracer
@@ -167,6 +168,42 @@ namespace RayTracer
 
             //Codepath shouldn't get here
             return false;
+        }
+
+        public static Sphere LoadSphere(XmlElement def, World w)
+        {
+            Sphere toReturn = new Sphere();
+            toReturn.id = def.GetAttribute("id");
+            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
+
+            //Load center of the sphere if provided
+            XmlNode c = def.SelectSingleNode("point");
+            if (c != null)
+            {
+                string cText = ((XmlText)c.FirstChild).Data;
+                Point3D cObj = Point3D.FromCsv(cText);
+                if (cObj != null)
+                {
+                    toReturn.set_center(cObj);
+                }
+            }
+
+            try
+            {
+                //Load radius of the sphere if provided
+                XmlNode r = def.SelectSingleNode("r");
+                if (r != null)
+                {
+                    double rDouble = Convert.ToDouble(((XmlText)r.FirstChild).Data);
+                    toReturn.set_radius(rDouble);
+                }
+            }
+            catch (System.FormatException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return toReturn;
         }
     }
 }

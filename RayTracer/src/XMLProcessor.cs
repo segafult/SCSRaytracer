@@ -88,6 +88,7 @@ namespace RayTracer
                     this.LoadSpheres(objRoot, 0);
                     this.LoadToruses(objRoot, 0);
                     this.LoadTrianglePrimitives(objRoot, 0);
+                    this.LoadBoxes(objRoot, 0);
                 }
             }
             catch (XmlException e)
@@ -110,6 +111,7 @@ namespace RayTracer
                 this.LoadSpheres(scene, 1);
                 this.LoadToruses(scene, 1);
                 this.LoadTrianglePrimitives(scene, 1);
+                this.LoadBoxes(scene, 1);
                 this.LoadInstances(scene);
             }
             catch (XmlException e)
@@ -349,7 +351,7 @@ namespace RayTracer
                 //Filter all objects without an id handle
                 if (((XmlElement)definition).HasAttribute("id"))
                 {
-                    Plane plane = LoadPlane((XmlElement)definition);
+                    Plane plane = Plane.LoadPlane((XmlElement)definition, w);
 
                     switch (flag)
                     {
@@ -367,38 +369,6 @@ namespace RayTracer
                 }
             }
         }
-        private Plane LoadPlane(XmlElement def)
-        {
-            Plane toReturn = new Plane();
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
-
-            //Load point if provided
-            XmlNode p = def.SelectSingleNode("point");
-            if (p != null)
-            {
-                string pText = ((XmlText)p.FirstChild).Data;
-                Point3D pObj = Point3D.FromCsv(pText);
-                if (pObj != null)
-                {
-                    toReturn.setP(pObj);
-                }
-            }
-
-            //Load normal if provided
-            XmlNode n = def.SelectSingleNode("normal");
-            if (n != null)
-            {
-                string nText = ((XmlText)n.FirstChild).Data;
-                Normal nObj = Normal.FromCsv(nText);
-                if (nObj != null)
-                {
-                    toReturn.setN(nObj);
-                }
-            }
-
-            return toReturn;
-        }
         private void LoadSpheres(XmlNode objRoot, int flag)
         {
             XmlNodeList currentContext = objRoot.SelectNodes("sphere");
@@ -407,7 +377,7 @@ namespace RayTracer
                 //Filter all objects without an id handle
                 if (((XmlElement)definition).HasAttribute("id"))
                 {
-                    Sphere sphere = LoadSphere((XmlElement)definition);
+                    Sphere sphere = Sphere.LoadSphere((XmlElement)definition, w);
 
                     switch (flag)
                     {
@@ -424,41 +394,7 @@ namespace RayTracer
                     Console.WriteLine("Warning: Sphere definition lacks an id handle and will be skipped.");
                 }
             }
-        }
-        private Sphere LoadSphere(XmlElement def)
-        {
-            Sphere toReturn = new Sphere();
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
-
-            //Load center of the sphere if provided
-            XmlNode c = def.SelectSingleNode("point");
-            if (c != null)
-            {
-                string cText = ((XmlText)c.FirstChild).Data;
-                Point3D cObj = Point3D.FromCsv(cText);
-                if (cObj != null)
-                {
-                    toReturn.set_center(cObj);
-                }
-            }
-
-            try {
-                //Load radius of the sphere if provided
-                XmlNode r = def.SelectSingleNode("r");
-                if (r != null)
-                {
-                    double rDouble = Convert.ToDouble(((XmlText)r.FirstChild).Data);
-                    toReturn.set_radius(rDouble);
-                }
-            }
-            catch (System.FormatException e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-
-            return toReturn;
-        }
+        }        
         private void LoadToruses(XmlNode objRoot, int flag)
         {
             XmlNodeList currentContext = objRoot.SelectNodes("torus");
@@ -467,7 +403,7 @@ namespace RayTracer
                 //Filter all objects without an id handle
                 if (((XmlElement)definition).HasAttribute("id"))
                 {
-                    Torus torus = LoadTorus((XmlElement)definition);
+                    Torus torus = Torus.LoadTorus((XmlElement)definition, w);
 
                     switch (flag)
                     {
@@ -485,38 +421,6 @@ namespace RayTracer
                 }
             }
         }
-        private Torus LoadTorus(XmlElement def)
-        {
-            Torus toReturn = new Torus();
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
-
-            //Load a if provided
-            try
-            {
-                XmlNode a = def.SelectSingleNode("a");
-                if (a != null)
-                {
-                    double aDouble = Convert.ToDouble(((XmlText)a.FirstChild).Data);
-                    toReturn.setA(aDouble);
-                }
-            }
-            catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
-
-            //Load b if provided
-            try
-            {
-                XmlNode b = def.SelectSingleNode("b");
-                if (b != null)
-                {
-                    double bDouble = Convert.ToDouble(((XmlText)b.FirstChild).Data);
-                    toReturn.setB(bDouble);
-
-                }
-            }
-            catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
-            return toReturn;
-        }
         private void LoadTrianglePrimitives(XmlNode objRoot, int flag)
         {
             XmlNodeList currentContext = objRoot.SelectNodes("triangle");
@@ -525,7 +429,7 @@ namespace RayTracer
                 //Filter all objects without an id handle
                 if (((XmlElement)definition).HasAttribute("id"))
                 {
-                    Triangle triangle = LoadTrianglePrimitive((XmlElement)definition);
+                    Triangle triangle = Triangle.LoadTrianglePrimitive((XmlElement)definition, w);
 
                     switch (flag)
                     {
@@ -543,35 +447,31 @@ namespace RayTracer
                 }
             }
         }
-        public Triangle LoadTrianglePrimitive(XmlElement def)
+        private void LoadBoxes(XmlNode objRoot, int flag)
         {
-            Triangle toReturn = new Triangle();
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
-
-            //Check if a list of vertices have been defined
-            XmlNode vertRoot = def.SelectSingleNode("vertices");
-            if (vertRoot != null)
+            XmlNodeList currentContext = objRoot.SelectNodes("box");
+            foreach(XmlNode definition in currentContext)
             {
-                //Get a list of all defined points
-                XmlNodeList vertList = vertRoot.SelectNodes("point");
-                //Need to be 3 vertices defined
-                if (vertList.Count == 3)
+                //Filter all objects without an id handle
+                if (((XmlElement)definition).HasAttribute("id"))
                 {
-                    List<Point3D> verts_objs = new List<Point3D>(3);
-                    foreach (XmlNode element in vertList)
+                    Box box = Box.LoadBox((XmlElement)definition, w);
+
+                    switch (flag)
                     {
-                        verts_objs.Add(Point3D.FromCsv(((XmlText)element.FirstChild).Data));
+                        case 0:
+                            w.objectList.Add(box);
+                            break;
+                        case 1:
+                            w.add_Object(box);
+                            break;
                     }
-                    toReturn.setVertices(verts_objs[0], verts_objs[1], verts_objs[2]);
                 }
                 else
                 {
-                    Console.WriteLine("Error: Exactly 3 vertices must be defined for a triangle primitive if <vertices> tags present.");
+                    Console.WriteLine("Warning: Box definition lacks an id handle and will be skipped.");
                 }
             }
-
-            return toReturn;
         }
         //-------------------------------------------------------------------------------------------------------
         //   END OBJECT LOADERS
@@ -589,7 +489,7 @@ namespace RayTracer
                 //Filter all objects without an id handle
                 if (((XmlElement)definition).HasAttribute("id"))
                 {
-                    Instance instance = LoadInstance((XmlElement)definition);
+                    Instance instance = Instance.LoadInstance((XmlElement)definition, w);
 
                     w.add_Object(instance);
                 }
@@ -598,85 +498,6 @@ namespace RayTracer
                     Console.WriteLine("Warning: Instance definition lacks an id handle and will be skipped.");
                 }
             }
-        }
-        private Instance LoadInstance(XmlElement def)
-        {
-            Instance toReturn = new Instance();
-            toReturn.id = def.GetAttribute("id");
-            try {
-                if (def.HasAttribute("mat"))
-                {
-                    toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
-                }
-
-                if (def.HasAttribute("obj"))
-                {
-                    //Verify that object definition has been previously defined.
-                    RenderableObject objRef = w.getObjectById(def.GetAttribute("obj"));
-                    if (objRef != null)
-                    {
-                        toReturn.setHandle(objRef);
-                    }
-                    else
-                    {
-                        throw new XmlException("Error: No object definition with handle: " + def.GetAttribute("obj"));
-                    }
-
-                    Matrix baseTransformation = new Matrix();
-
-                    //If defined, get rotation data
-                    XmlNode rotNode = def.SelectSingleNode("rotate");
-                    if (rotNode != null)
-                    {
-                        string rotString = ((XmlText)rotNode.FirstChild).Data;
-                        Vect3D rotations = Vect3D.FromCsv(rotString);
-                        //Rotation format valid?
-                        if (rotations != null)
-                        {
-                            //Accumulate rotation on base transformation matrix
-                            baseTransformation = baseTransformation * Matrix.rotateDeg(rotations);
-                        }
-                    }
-
-                    //If defined, get scaling data
-                    XmlNode scaleNode = def.SelectSingleNode("scale");
-                    if (scaleNode != null)
-                    {
-                        string scaleString = ((XmlText)scaleNode.FirstChild).Data;
-                        Vect3D scaling = Vect3D.FromCsv(scaleString);
-                        //Scaling format valid?
-                        if (scaling != null)
-                        {
-                            //Accumulate scaling on base transformation matrix
-                            baseTransformation = baseTransformation * Matrix.scale(scaling);
-                        }
-                    }
-
-                    //If defined, get translation data
-                    XmlNode transNode = def.SelectSingleNode("translate");
-                    if (transNode != null)
-                    {
-                        string transString = ((XmlText)transNode.FirstChild).Data;
-                        Vect3D translation = Vect3D.FromCsv(transString);
-                        //Translation format valid?
-                        if (translation != null)
-                        {
-                            //Accumulate translation on base transformation matrix
-                            baseTransformation = baseTransformation * Matrix.translate(translation);
-                        }
-                    }
-
-                    //Apply accumulated transformations to instance
-                    toReturn.applyTransformation(baseTransformation);
-                }
-                else
-                {
-                    throw new XmlException("Error: Cannot create instance without obj paired with an object id.");
-                }
-            }
-            catch (XmlException e) { Console.WriteLine(e.ToString()); }
-
-            return toReturn;
         }
         private void SetupWorldParameters(XmlElement scene)
         {
@@ -772,7 +593,7 @@ namespace RayTracer
                 XmlNode node_cam = scene.SelectSingleNode("camera[@id=\"" + str_cam + "\"]");
                 if (node_cam != null)
                 {
-                    w.set_camera(LoadCamera((XmlElement)node_cam));
+                    w.set_camera(Camera.LoadCamera((XmlElement)node_cam));
                 }
                 else
                 {
@@ -788,80 +609,6 @@ namespace RayTracer
             w.vp.vpSampler.generate_samples();
             w.camera.compute_uvw();
         }
-        private Camera LoadCamera(XmlElement camRoot)
-        {
-            string cam_type = camRoot.GetAttribute("type");
-            Camera toReturn = new PinholeCamera();
-            //If no camera type is defined, then return a default pinhole camera.
-            if (!cam_type.Equals(""))
-            {
-                //Load subtype specific parameters in their own methods
-                if (cam_type.Equals("pinhole"))
-                {
-                    toReturn = LoadPinholeCamera(camRoot);
-                }
-                else
-                {
-                    Console.WriteLine("Unknown camera type: " + cam_type);
-                }
-
-                //Load common attributes afterwards.
-                XmlNode node_point = camRoot.SelectSingleNode("point");
-                if (node_point != null)
-                {
-                    string str_point = ((XmlText)node_point.FirstChild).Data;
-                    Point3D point = Point3D.FromCsv(str_point);
-                    if (point != null)
-                    {
-                        toReturn.setEye(point);
-                    }
-                }
-                XmlNode node_lookat = camRoot.SelectSingleNode("lookat");
-                if (node_lookat != null)
-                {
-                    string str_lookat = ((XmlText)node_lookat.FirstChild).Data;
-                    Point3D lookat = Point3D.FromCsv(str_lookat);
-                    if (lookat != null)
-                    {
-                        toReturn.setLookat(lookat);
-                    }
-                }
-                XmlNode node_exp = camRoot.SelectSingleNode("exposure");
-                if (node_exp != null)
-                {
-                    string str_exp = ((XmlText)node_exp.FirstChild).Data;
-                    double exposure = Convert.ToDouble(str_exp);
-                    toReturn.setExposure(exposure);
-                }
-
-                return toReturn;
-            }
-            else
-            {
-                Console.WriteLine("Camera type for camera " + camRoot.GetAttribute("id") + " not defined.");
-                return toReturn;
-            }
-        }
-        private PinholeCamera LoadPinholeCamera(XmlElement camRoot)
-        {
-            PinholeCamera toReturn = new PinholeCamera();
-
-            XmlNode node_zoom = camRoot.SelectSingleNode("zoom");
-            if (node_zoom != null)
-            {
-                string str_zoom = ((XmlText)node_zoom.FirstChild).Data;
-                double zoom = Convert.ToDouble(str_zoom);
-                toReturn.setZoom(zoom);
-            }
-            XmlNode node_vdp = camRoot.SelectSingleNode("vdp");
-            if (node_vdp != null)
-            {
-                string str_vdp = ((XmlText)node_vdp.FirstChild).Data;
-                double vdp = Convert.ToDouble(str_vdp);
-                toReturn.setVdp(vdp);
-            }
-            return toReturn;
-        }
         private void LoadLights(XmlElement scene)
         {
             //First obtain reference to ambient light as defined in the body of the scene
@@ -871,7 +618,7 @@ namespace RayTracer
                 XmlNode node_amb = scene.SelectSingleNode("light[@id=\"" + str_amb + "\" and @type=\"ambient\"]");
                 if (node_amb != null)
                 {
-                    w.set_ambient_light(LoadAmbient((XmlElement)node_amb));
+                    w.set_ambient_light(AmbientLight.LoadAmbient((XmlElement)node_amb));
                 }
                 else
                 {
@@ -884,112 +631,9 @@ namespace RayTracer
 
             foreach (XmlNode light in light_list)
             {
-                XmlElement light_element = (XmlElement)light;
-                string light_type = light_element.GetAttribute("type");
-                Light toAdd = new PointLight();
-                if (light_type.Equals("point"))
-                {
-                    toAdd = LoadPointLight(light_element);
-                }
-                else if (light_type.Equals("directional"))
-                {
-                    toAdd = LoadDirectionalLight(light_element);
-                }
-                else
-                {
-                    Console.WriteLine("Unknown light type " + light_type + ", treating as point light");
-                }
-
-                //Load attributes common to all lights
-                string node_shadow = light_element.GetAttribute("shadow");
-                if (!node_shadow.Equals(""))
-                {
-                    toAdd.setShadow(Convert.ToBoolean(node_shadow));
-                }
-                XmlNode node_color = light_element.SelectSingleNode("color");
-                if (node_color != null)
-                {
-                    string str_color = ((XmlText)node_color.FirstChild).Data;
-                    RGBColor color = new RGBColor(System.Drawing.ColorTranslator.FromHtml(str_color));
-                    if (color != null)
-                    {
-                        toAdd.setColor(color);
-                    }
-                }
-
+                Light toAdd = Light.LoadLight((XmlElement)light);
                 w.add_Light(toAdd);
             }
-        }
-        private AmbientLight LoadAmbient(XmlElement lightRoot)
-        {
-            AmbientLight toReturn = new AmbientLight();
-
-            XmlNode node_intensity = lightRoot.SelectSingleNode("intensity");
-            if (node_intensity != null)
-            {
-                string str_intensity = ((XmlText)node_intensity.FirstChild).Data;
-                double intensity = Convert.ToDouble(str_intensity);
-                toReturn.setIntensity(intensity);
-            }
-
-            XmlNode node_color = lightRoot.SelectSingleNode("color");
-            if (node_color != null)
-            {
-                string str_color = ((XmlText)node_color.FirstChild).Data;
-                RGBColor color = new RGBColor(System.Drawing.ColorTranslator.FromHtml(str_color));
-                toReturn.setColor(color);
-            }
-            return toReturn;
-        }
-        private PointLight LoadPointLight(XmlElement lightRoot)
-        {
-            PointLight toReturn = new PointLight();
-
-            //Load all provided attributes unique to point lights
-            XmlNode node_point = lightRoot.SelectSingleNode("point");
-            if (node_point != null)
-            {
-                string str_point = ((XmlText)node_point.FirstChild).Data;
-                Point3D point = Point3D.FromCsv(str_point);
-                if (point != null)
-                {
-                    toReturn.setLocation(point);
-                }
-            }
-            XmlNode node_int = lightRoot.SelectSingleNode("intensity");
-            if (node_int != null)
-            {
-                string str_int = ((XmlText)node_int.FirstChild).Data;
-                double intensity = Convert.ToDouble(str_int);
-                toReturn.setIntensity(intensity);
-            }
-
-            return toReturn;
-        }
-        private DirectionalLight LoadDirectionalLight(XmlElement lightRoot)
-        {
-            DirectionalLight toReturn = new DirectionalLight();
-
-            //Load all attributes unique to directional lights
-            XmlNode node_dir = lightRoot.SelectSingleNode("vector");
-            if(node_dir != null)
-            {
-                string str_dir = ((XmlText)node_dir.FirstChild).Data;
-                Vect3D direction = Vect3D.FromCsv(str_dir);
-                if(direction != null)
-                {
-                    toReturn.setDirection(direction);
-                }
-            }
-            XmlNode node_int = lightRoot.SelectSingleNode("intensity");
-            if (node_int != null)
-            {
-                string str_int = ((XmlText)node_int.FirstChild).Data;
-                double intensity = Convert.ToDouble(str_int);
-                toReturn.setIntensity(intensity);
-            }
-
-            return toReturn;
         }
     }
 }

@@ -15,6 +15,9 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Xml;
+
 namespace RayTracer
 {
     public class Torus : RenderableObject
@@ -205,6 +208,39 @@ namespace RayTracer
             result.normalize();
 
             return result;
+        }
+
+        public static Torus LoadTorus(XmlElement def, World w)
+        {
+            Torus toReturn = new Torus();
+            toReturn.id = def.GetAttribute("id");
+            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
+
+            //Load a if provided
+            try
+            {
+                XmlNode a = def.SelectSingleNode("a");
+                if (a != null)
+                {
+                    double aDouble = Convert.ToDouble(((XmlText)a.FirstChild).Data);
+                    toReturn.setA(aDouble);
+                }
+            }
+            catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
+
+            //Load b if provided
+            try
+            {
+                XmlNode b = def.SelectSingleNode("b");
+                if (b != null)
+                {
+                    double bDouble = Convert.ToDouble(((XmlText)b.FirstChild).Data);
+                    toReturn.setB(bDouble);
+
+                }
+            }
+            catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
+            return toReturn;
         }
     }
 }

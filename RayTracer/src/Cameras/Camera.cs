@@ -15,6 +15,9 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Xml;
+
 namespace RayTracer
 {
     public abstract class Camera
@@ -44,5 +47,60 @@ namespace RayTracer
         public abstract void render_scene(World w);
         public abstract void render_scene_multithreaded(World w, int numthreads);
         protected abstract void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo);
+
+        public static Camera LoadCamera(XmlElement camRoot)
+        {
+            string cam_type = camRoot.GetAttribute("type");
+            Camera toReturn = new PinholeCamera();
+            //If no camera type is defined, then return a default pinhole camera.
+            if (!cam_type.Equals(""))
+            {
+                //Load subtype specific parameters in their own methods
+                if (cam_type.Equals("pinhole"))
+                {
+                    toReturn = PinholeCamera.LoadPinholeCamera(camRoot);
+                }
+                else
+                {
+                    Console.WriteLine("Unknown camera type: " + cam_type);
+                }
+
+                //Load common attributes afterwards.
+                XmlNode node_point = camRoot.SelectSingleNode("point");
+                if (node_point != null)
+                {
+                    string str_point = ((XmlText)node_point.FirstChild).Data;
+                    Point3D point = Point3D.FromCsv(str_point);
+                    if (point != null)
+                    {
+                        toReturn.setEye(point);
+                    }
+                }
+                XmlNode node_lookat = camRoot.SelectSingleNode("lookat");
+                if (node_lookat != null)
+                {
+                    string str_lookat = ((XmlText)node_lookat.FirstChild).Data;
+                    Point3D lookat = Point3D.FromCsv(str_lookat);
+                    if (lookat != null)
+                    {
+                        toReturn.setLookat(lookat);
+                    }
+                }
+                XmlNode node_exp = camRoot.SelectSingleNode("exposure");
+                if (node_exp != null)
+                {
+                    string str_exp = ((XmlText)node_exp.FirstChild).Data;
+                    double exposure = Convert.ToDouble(str_exp);
+                    toReturn.setExposure(exposure);
+                }
+
+                return toReturn;
+            }
+            else
+            {
+                Console.WriteLine("Camera type for camera " + camRoot.GetAttribute("id") + " not defined.");
+                return toReturn;
+            }
+        }
     }
 }

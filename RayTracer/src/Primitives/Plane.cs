@@ -15,6 +15,8 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
+using System.Xml;
+
 namespace RayTracer
 {
 
@@ -86,6 +88,39 @@ namespace RayTracer
             }
             //Intersection is behind camera
             return false;
+        }
+
+        public static Plane LoadPlane(XmlElement def, World w)
+        {
+            Plane toReturn = new Plane();
+            toReturn.id = def.GetAttribute("id");
+            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
+
+            //Load point if provided
+            XmlNode p = def.SelectSingleNode("point");
+            if (p != null)
+            {
+                string pText = ((XmlText)p.FirstChild).Data;
+                Point3D pObj = Point3D.FromCsv(pText);
+                if (pObj != null)
+                {
+                    toReturn.setP(pObj);
+                }
+            }
+
+            //Load normal if provided
+            XmlNode n = def.SelectSingleNode("normal");
+            if (n != null)
+            {
+                string nText = ((XmlText)n.FirstChild).Data;
+                Normal nObj = Normal.FromCsv(nText);
+                if (nObj != null)
+                {
+                    toReturn.setN(nObj);
+                }
+            }
+
+            return toReturn;
         }
     }
 }

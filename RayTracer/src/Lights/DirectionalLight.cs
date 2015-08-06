@@ -15,6 +15,9 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Xml;
+
 namespace RayTracer
 {
     /// <summary>
@@ -65,6 +68,36 @@ namespace RayTracer
         {
             ShadeRec tempSr = sr.w.hit_objects(ray);
             return tempSr.hit_an_object;
+        }
+        public override Vect3D getDirection(ShadeRec sr)
+        {
+            return -direction;
+        }
+
+        public static DirectionalLight LoadDirectionalLight(XmlElement lightRoot)
+        {
+            DirectionalLight toReturn = new DirectionalLight();
+
+            //Load all attributes unique to directional lights
+            XmlNode node_dir = lightRoot.SelectSingleNode("vector");
+            if (node_dir != null)
+            {
+                string str_dir = ((XmlText)node_dir.FirstChild).Data;
+                Vect3D direction = Vect3D.FromCsv(str_dir);
+                if (direction != null)
+                {
+                    toReturn.setDirection(direction);
+                }
+            }
+            XmlNode node_int = lightRoot.SelectSingleNode("intensity");
+            if (node_int != null)
+            {
+                string str_int = ((XmlText)node_int.FirstChild).Data;
+                double intensity = Convert.ToDouble(str_int);
+                toReturn.setIntensity(intensity);
+            }
+
+            return toReturn;
         }
     }
 }

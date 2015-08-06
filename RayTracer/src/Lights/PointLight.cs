@@ -15,6 +15,9 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Xml;
+
 namespace RayTracer
 {
     /// <summary>
@@ -82,6 +85,32 @@ namespace RayTracer
                 }
             }
             return false;
+        }
+
+        public static PointLight LoadPointLight(XmlElement lightRoot)
+        {
+            PointLight toReturn = new PointLight();
+
+            //Load all provided attributes unique to point lights
+            XmlNode node_point = lightRoot.SelectSingleNode("point");
+            if (node_point != null)
+            {
+                string str_point = ((XmlText)node_point.FirstChild).Data;
+                Point3D point = Point3D.FromCsv(str_point);
+                if (point != null)
+                {
+                    toReturn.setLocation(point);
+                }
+            }
+            XmlNode node_int = lightRoot.SelectSingleNode("intensity");
+            if (node_int != null)
+            {
+                string str_int = ((XmlText)node_int.FirstChild).Data;
+                double intensity = Convert.ToDouble(str_int);
+                toReturn.setIntensity(intensity);
+            }
+
+            return toReturn;
         }
     }
 }

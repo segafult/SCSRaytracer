@@ -21,6 +21,7 @@ using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
+using System.Xml;
 
 namespace RayTracer
 {
@@ -187,6 +188,27 @@ namespace RayTracer
             Vect3D dir = p.x * u + p.y * v - d * w;
             dir.normalize();
             return dir;
+        }
+
+        public static PinholeCamera LoadPinholeCamera(XmlElement camRoot)
+        {
+            PinholeCamera toReturn = new PinholeCamera();
+
+            XmlNode node_zoom = camRoot.SelectSingleNode("zoom");
+            if (node_zoom != null)
+            {
+                string str_zoom = ((XmlText)node_zoom.FirstChild).Data;
+                double zoom = Convert.ToDouble(str_zoom);
+                toReturn.setZoom(zoom);
+            }
+            XmlNode node_vdp = camRoot.SelectSingleNode("vdp");
+            if (node_vdp != null)
+            {
+                string str_vdp = ((XmlText)node_vdp.FirstChild).Data;
+                double vdp = Convert.ToDouble(str_vdp);
+                toReturn.setVdp(vdp);
+            }
+            return toReturn;
         }
     }
 }

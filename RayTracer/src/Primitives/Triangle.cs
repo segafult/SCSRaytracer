@@ -15,6 +15,10 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Collections.Generic;
+using System.Xml;
+
 namespace RayTracer
 {
     /// <summary>
@@ -192,6 +196,38 @@ namespace RayTracer
                 return true;
             }
             else return false;
+        }
+
+        public static Triangle LoadTrianglePrimitive(XmlElement def, World w)
+        {
+            Triangle toReturn = new Triangle();
+
+            toReturn.id = def.GetAttribute("id");
+            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
+
+            //Check if a list of vertices have been defined
+            XmlNode vertRoot = def.SelectSingleNode("vertices");
+            if (vertRoot != null)
+            {
+                //Get a list of all defined points
+                XmlNodeList vertList = vertRoot.SelectNodes("point");
+                //Need to be 3 vertices defined
+                if (vertList.Count == 3)
+                {
+                    List<Point3D> verts_objs = new List<Point3D>(3);
+                    foreach (XmlNode element in vertList)
+                    {
+                        verts_objs.Add(Point3D.FromCsv(((XmlText)element.FirstChild).Data));
+                    }
+                    toReturn.setVertices(verts_objs[0], verts_objs[1], verts_objs[2]);
+                }
+                else
+                {
+                    Console.WriteLine("Error: Exactly 3 vertices must be defined for a triangle primitive if <vertices> tags present.");
+                }
+            }
+
+            return toReturn;
         }
     }
 }

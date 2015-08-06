@@ -15,6 +15,9 @@
 //    along with this program.If not, see<http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Xml;
+
 namespace RayTracer
 {
     /// <summary>
@@ -54,6 +57,28 @@ namespace RayTracer
         {
             //Ambient light has no direction
             return new Vect3D(0, 0, 0);
+        }
+
+        public static AmbientLight LoadAmbient(XmlElement lightRoot)
+        {
+            AmbientLight toReturn = new AmbientLight();
+
+            XmlNode node_intensity = lightRoot.SelectSingleNode("intensity");
+            if (node_intensity != null)
+            {
+                string str_intensity = ((XmlText)node_intensity.FirstChild).Data;
+                double intensity = Convert.ToDouble(str_intensity);
+                toReturn.setIntensity(intensity);
+            }
+
+            XmlNode node_color = lightRoot.SelectSingleNode("color");
+            if (node_color != null)
+            {
+                string str_color = ((XmlText)node_color.FirstChild).Data;
+                RGBColor color = new RGBColor(System.Drawing.ColorTranslator.FromHtml(str_color));
+                toReturn.setColor(color);
+            }
+            return toReturn;
         }
     }
 }
