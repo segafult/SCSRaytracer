@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayTracer", "RayTracer\RayTracer.csproj", "{196A4503-A55F-4948-A5A2-C175C706599E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCSRaytracer", "RayTracer\SCSRaytracer.csproj", "{196A4503-A55F-4948-A5A2-C175C706599E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{988A8E00-4632-4491-A18A-7EDB08109BD4}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

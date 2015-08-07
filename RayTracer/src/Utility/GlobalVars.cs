@@ -29,8 +29,11 @@ namespace RayTracer
         static public bool verbose = true;
         static public string inFile = null;
         static public string outFile = null;
+        
 
         static public readonly RGBColor color_black = new RGBColor(0, 0, 0);
         static public readonly RGBColor color_red = new RGBColor(1.0, 0, 0);
+        static public readonly int hres = 800;
+        static public readonly int vres = 600;
     }
 }

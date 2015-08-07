@@ -17,6 +17,7 @@
 
 using System;
 using System.IO;
+using SFML.Graphics;
 
 namespace RayTracer
 {
@@ -122,10 +123,15 @@ namespace RayTracer
                     w.camera.render_scene_multithreaded(w, threads);
                     break;
             }
-            
-            w.drawPlan.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
-            w.drawPlan.Save(GlobalVars.outFile);
-            
+
+            w.save_displayed_image(GlobalVars.outFile);
+
+            //w.drawPlan.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
+            //w.drawPlan.Save(GlobalVars.outFile);
+            while(w.get_window_thread().IsAlive)
+            {
+                w.poll_events();
+            }
         }
     }
 }
