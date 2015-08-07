@@ -18,8 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Xml;
 
@@ -79,6 +77,9 @@ namespace RayTracer
                     L /= vp.numSamples;
                     L *= exposure_time;
                     w.display_pixel(row, column, L);
+
+                    //Poll events in live render view
+                    w.poll_events();
                 }
             }
         }
@@ -86,7 +87,7 @@ namespace RayTracer
         public override void render_scene_multithreaded(World w, int numThreads)
         {
             ViewPlane vp = w.vp;
-            w.open_window_threaded(vp.hres, vp.vres, numThreads);
+            w.open_window(vp.hres, vp.vres);
 
             vp.s /= zoom;
             List<Thread> threads = new List<Thread>();
@@ -125,12 +126,21 @@ namespace RayTracer
             }
 
             //Spinwait for all threads
-            foreach (Thread t in threads)
+            bool allDone = false;
+            do
             {
-                t.Join();
-            }
+                allDone = true;
+                foreach (Thread t in threads)
+                {
+                    if (t.IsAlive)
+                    {
+                        allDone = false;
+                    }
+                }
+                w.poll_events();
+            } while (!allDone);
 
-            w.join_bitmaps(numThreads);
+            //w.join_bitmaps(numThreads);
         }
 
         /// <summary>
@@ -139,10 +149,10 @@ namespace RayTracer
         protected override void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo)
         {
             //For thread safety, use a local bitmap, and lock image for direct byte writing.
-            Bitmap renderBmp = new Bitmap(x2 - x1, y2 - y1);
-            BitmapData renderData = renderBmp.LockBits(new Rectangle(0,0,renderBmp.Width,renderBmp.Height), 
-                System.Drawing.Imaging.ImageLockMode.ReadWrite,
-                System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            //Bitmap renderBmp = new Bitmap(x2 - x1, y2 - y1);
+            //BitmapData renderData = renderBmp.LockBits(new Rectangle(0,0,renderBmp.Width,renderBmp.Height), 
+            //    System.Drawing.Imaging.ImageLockMode.ReadWrite,
+            //    System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
             //To avoid clashes with other threads accessing sampler, clone the main world sampler
             Sampler localSampler = w.vp.vpSampler.clone();
@@ -175,11 +185,13 @@ namespace RayTracer
                     L /= vp.numSamples;
                     L *= exposure_time;
 
-                    w.display_pixel_threadsafe(row, column, L, ref renderData);
+                    //w.display_pixel_threadsafe(row, column, L, ref renderData);
+                    //w.update_liveimage_threadsafe(row+y1, column+x1, L);
+                    w.display_pixel(row + y1, column + x1, L);
                 }
             }
-            renderBmp.UnlockBits(renderData);
-            w.threadedBitmapList[threadNo] = renderBmp;
+            //renderBmp.UnlockBits(renderData);
+            //w.threadedBitmapList[threadNo] = renderBmp;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

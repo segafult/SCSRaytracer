@@ -19,6 +19,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
+using System.Threading;
+
+using SFML;
+using SFML.Graphics;
+using SFML.Window;
+using SFML.System;
+using SFML.Audio;
 
 namespace RayTracer
 {
@@ -40,9 +47,11 @@ namespace RayTracer
 
         public List<Material> materialList;
 
-        public Bitmap drawPlan;
+        //public Bitmap drawPlan;
         public List<Bitmap> threadedBitmapList; //Only initialized when multithread rendering
 
+        LiveViewer live_view;
+        
         public World ()
         {
             vp = new ViewPlane();
@@ -194,9 +203,12 @@ namespace RayTracer
         /// <param name="vres"></param>
         public void open_window(int hres, int vres)
         {
-            drawPlan = new Bitmap(hres, vres);
+            //drawPlan = new Bitmap(hres, vres);
+            live_view = new LiveViewer(this);
+            live_view.set_up_liveview();
         }
 
+        /*
         /// <summary>
         /// Sets up a rendering field for a multithreaded render
         /// </summary>
@@ -205,7 +217,7 @@ namespace RayTracer
         /// <param name="numThreads">Number of threads (2, 4, or 16)</param>
         public void open_window_threaded(int hres, int vres, int numThreads)
         {
-            drawPlan = new Bitmap(hres, vres);
+            //drawPlan = new Bitmap(hres, vres);
             threadedBitmapList = new List<Bitmap>();
             int xsize = 0;
             int ysize = 0;
@@ -237,7 +249,12 @@ namespace RayTracer
             {
                 threadedBitmapList.Add(new Bitmap(xsize, ysize));
             }
+
+            //Set up the live view window
+            live_view = new LiveViewer(this);
+            live_view.set_up_liveview();
         }
+        */
 
         /// <summary>
         /// Performs the required colorspace conversions
@@ -248,9 +265,31 @@ namespace RayTracer
         public void display_pixel(int row, int column, RGBColor pixel_color)
         {
             RGBColor disp_color = pixel_color.clamp();
-            drawPlan.SetPixel(column, row, Color.FromArgb(255, (int)(disp_color.r * 250), (int)(disp_color.g * 250), (int)(disp_color.b * 250)));
+            byte r = (byte)(disp_color.r * 255);
+            byte g = (byte)(disp_color.g * 255);
+            byte b = (byte)(disp_color.b * 255);
+
+            live_view.live_image.SetPixel((uint)column, (uint)(vp.vres-1-row), new SFML.Graphics.Color(r, g, b));
+            //drawPlan.SetPixel(column, row, System.Drawing.Color.FromArgb(255, r, g, b));
+            //live_image.SetPixel((uint)column, (uint)(vp.vres - row - 1), new SFML.Graphics.Color((byte)r, (byte)g, (byte)b));
+            //live_window.DispatchEvents();
         }
 
+        public Thread get_window_thread()
+        {
+            return live_view.get_thread();
+        }
+        public void poll_events()
+        {
+            live_view.poll_events();
+        }
+        public void save_displayed_image(string path)
+        {
+            live_view.live_image.SaveToFile(path);
+        }
+
+
+        /*
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void display_pixel_threadsafe(int row, int column, RGBColor pixel_color, ref BitmapData bmp)
         {
@@ -268,19 +307,31 @@ namespace RayTracer
             }
             //bmp.SetPixel(column, row, Color.FromArgb(255, (int)(disp_color.r * 250), (int)(disp_color.g * 250), (int)(disp_color.b * 250)));
         }
-
+        
+        public void update_liveimage_threadsafe(int row, int column, RGBColor pixel_color)
+        {
+            RGBColor disp_color = pixel_color.clamp();
+            
+            byte[] color = new byte[4];
+            byte r = (byte)(255 * disp_color.r);
+            byte g = (byte)(255 * disp_color.g);
+            byte b = (byte)(255 * disp_color.b);
+            //live_image.SetPixel((uint)column, (uint)(vp.vres-row-1), new SFML.Graphics.Color(r, g, b));
+            
+        }
+        
         public void join_bitmaps(int numThreads)
         {
             Graphics joinedImage = Graphics.FromImage(drawPlan);
             if(numThreads == 2)
             {
-                joinedImage.Clear(Color.Black);
+                joinedImage.Clear(System.Drawing.Color.Black);
                 joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
                 joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres / 2, 0));
             }
             else if(numThreads == 4)
             {
-                joinedImage.Clear(Color.Black);
+                joinedImage.Clear(System.Drawing.Color.Black);
                 joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
                 joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres / 2, 0));
                 joinedImage.DrawImageUnscaled(threadedBitmapList[2], new Point(0, vp.vres / 2));
@@ -288,7 +339,7 @@ namespace RayTracer
             }
             else if(numThreads == 8)
             {
-                joinedImage.Clear(Color.Black);
+                joinedImage.Clear(System.Drawing.Color.Black);
                 joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
                 joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres/4, 0));
                 joinedImage.DrawImageUnscaled(threadedBitmapList[2], new Point(vp.hres/2, 0));
@@ -298,8 +349,8 @@ namespace RayTracer
                 joinedImage.DrawImageUnscaled(threadedBitmapList[6], new Point(vp.hres/2, vp.vres/2));
                 joinedImage.DrawImageUnscaled(threadedBitmapList[7], new Point(3*vp.hres/4, vp.vres/2));
             }
-
         }
+        */
 
         public Material getMaterialById(string idarg)
         {

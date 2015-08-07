@@ -42,6 +42,13 @@ namespace RayTracer
             this.setMaterial(null);
         }
 
+        public override string ToString()
+        {
+            return "Instanced object:\n" +
+                "  ID: " + id + "\n" +
+                "  Obj: " + payload.id+ "\n"+
+                "  Mat: " + (mat == null ? payload.getMaterial().id : mat.id);
+        }
         public RenderableObject getHandle()
         {
             return payload;

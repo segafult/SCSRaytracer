@@ -502,8 +502,8 @@ namespace RayTracer
         private void SetupWorldParameters(XmlElement scene)
         {
             //Setup world according to default parameters before doing anything.
-            w.vp.set_hres(800);
-            w.vp.set_vres(600);
+            w.vp.set_hres(GlobalVars.hres);
+            w.vp.set_vres(GlobalVars.vres);
             w.vp.set_gamma(1.0);
             w.vp.set_pixel_size(1.0);
             w.vp.set_max_depth(5);
