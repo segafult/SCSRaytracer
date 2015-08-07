@@ -85,6 +85,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Loaders\MeshLoader.cs" />
+    <Compile Include="src\Loaders\OFFLoader.cs" />
+    <Compile Include="src\Primitives\TriangleMesh.cs" />
     <Compile Include="src\Program\LiveViewer.cs" />
     <Compile Include="src\Cameras\Camera.cs" />
     <Compile Include="src\Cameras\PinholeCamera.cs" />

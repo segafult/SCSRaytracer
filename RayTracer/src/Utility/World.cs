@@ -194,6 +194,13 @@ namespace RayTracer
                     Console.WriteLine(o.ToString());
                 }
             }
+
+            TriangleMesh monkey = new TriangleMesh();
+            monkey.loadFromFile("E:\\monkey.off");
+            monkey.setMaterial(getMaterialById("myreflective"));
+            Instance monkeyInstance = new Instance(monkey);
+            monkeyInstance.applyTransformation(Matrix.scale(new Vect3D(50,50,50)));
+            add_Object(monkeyInstance);
         }
 
         /// <summary>
