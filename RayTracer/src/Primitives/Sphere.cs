@@ -205,5 +205,10 @@ namespace RayTracer
 
             return toReturn;
         }
+
+        public override BoundingBox get_bounding_box()
+        {
+            return new BoundingBox(c.xcoord - r, c.xcoord + r, c.ycoord - r, c.ycoord + r, c.zcoord - r, c.zcoord + r);
+        }
     }
 }

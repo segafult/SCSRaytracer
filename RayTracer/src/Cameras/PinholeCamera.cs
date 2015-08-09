@@ -89,8 +89,11 @@ namespace RayTracer
             ViewPlane vp = w.vp;
             w.open_window(vp.hres, vp.vres);
 
+
             vp.s /= zoom;
-            List<Thread> threads = new List<Thread>();
+            //while (true)
+            //{
+                List<Thread> threads = new List<Thread>();
 
             if(numThreads == 2)
             {
@@ -120,27 +123,30 @@ namespace RayTracer
                 Console.WriteLine("Multithreading only supported for 2, 4, or 8 threads");
             }
 
-            foreach (Thread t in threads)
-            {
-                t.Start();
-            }
 
-            //Spinwait for all threads
-            bool allDone = false;
-            do
-            {
-                allDone = true;
+
+
                 foreach (Thread t in threads)
                 {
-                    if (t.IsAlive)
-                    {
-                        allDone = false;
-                    }
+                    t.Start();
                 }
-                w.poll_events();
-            } while (!allDone);
+                //Spinwait for all threads
+                bool allDone = false;
+                do
+                {
+                    allDone = true;
+                    foreach (Thread t in threads)
+                    {
+                        if (t.IsAlive)
+                        {
+                            allDone = false;
+                        }
+                    }
+                    w.poll_events();
 
-            //w.join_bitmaps(numThreads);
+                } while (!allDone);
+            //}
+           
         }
 
         /// <summary>

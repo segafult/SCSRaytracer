@@ -17,7 +17,6 @@
 
 using System;
 using System.IO;
-using SFML.Graphics;
 
 namespace RayTracer
 {

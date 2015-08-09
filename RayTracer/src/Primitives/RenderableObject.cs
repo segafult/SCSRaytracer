@@ -32,11 +32,15 @@ namespace RayTracer
             return false;
         }
         public virtual Material getMaterial() { return mat; }
-        public void setMaterial(Material m)
+        public virtual void setMaterial(Material m)
         {
             mat = m;
         }
 
+        public virtual BoundingBox get_bounding_box()
+        {
+            return new BoundingBox();
+        }
 
     }
 }

@@ -32,6 +32,7 @@ namespace RayTracer
         Sprite live_sprite;
         Thread render_thread;
 
+        double lookat = 0;
         World w;
 
         public LiveViewer(World worldref)
@@ -44,6 +45,7 @@ namespace RayTracer
             //Live view window
             live_window = new RenderWindow(new VideoMode((uint)w.vp.hres, (uint)w.vp.vres), "Live render view");
             live_window.Closed += new EventHandler(LiveviewOnClose);
+            live_window.KeyPressed += new EventHandler<KeyEventArgs>(LiveviewOnKeypress);
             live_window.SetActive();
 
             //Initialize render targets
@@ -69,6 +71,11 @@ namespace RayTracer
         {
             Window window = (Window)sender;
             window.Close();
+        }
+        private void LiveviewOnKeypress(Object sender, EventArgs e)
+        {
+            w.camera.setLookat(new Point3D(lookat += 10, 0, 0));
+            w.camera.compute_uvw();
         }
         public Thread get_thread()
         {

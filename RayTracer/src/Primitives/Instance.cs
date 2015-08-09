@@ -117,6 +117,11 @@ namespace RayTracer
             }
         }
 
+        public override BoundingBox get_bounding_box()
+        {
+            return payload.get_bounding_box();
+        }
+
         public static Instance LoadInstance(XmlElement def, World w)
         {
             Instance toReturn = new Instance();

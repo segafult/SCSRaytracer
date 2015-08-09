@@ -229,5 +229,13 @@ namespace RayTracer
 
             return toReturn;
         }
+        /*
+        public override BoundingBox get_bounding_box()
+        {
+            //Find the smallest x coordinate
+            double xmin = GlobalVars.kHugeValue;
+            //xmin = (v1.xcoord < )
+        }
+        */
     }
 }

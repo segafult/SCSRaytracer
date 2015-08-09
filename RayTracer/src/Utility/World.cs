@@ -163,44 +163,71 @@ namespace RayTracer
             light_ptr.setColor(new RGBColor(1.0, 1.0, 1.0));
             add_Light(light_ptr);
             */
-
-            XMLProcessor sceneLoader = new XMLProcessor(GlobalVars.inFile, this);
-            sceneLoader.LoadMaterials();
-            if (GlobalVars.verbose)
+            if (GlobalVars.inFile != null)
             {
-                Console.WriteLine("Materials loaded:");
-                foreach (Material m in materialList)
+                XMLProcessor sceneLoader = new XMLProcessor(GlobalVars.inFile, this);
+                sceneLoader.LoadMaterials();
+                if (GlobalVars.verbose)
                 {
-                    Console.WriteLine(m.ToString());
+                    Console.WriteLine("Materials loaded:");
+                    foreach (Material m in materialList)
+                    {
+                        Console.WriteLine(m.ToString());
+                    }
                 }
-            }
 
-            sceneLoader.LoadObjects();
-            if(GlobalVars.verbose)
+                sceneLoader.LoadObjects();
+                if (GlobalVars.verbose)
+                {
+                    Console.WriteLine("Object definitions loaded:");
+                    foreach (RenderableObject o in objectList)
+                    {
+                        Console.WriteLine(o.ToString());
+                    }
+                }
+
+                sceneLoader.LoadWorld();
+                if (GlobalVars.verbose)
+                {
+                    Console.WriteLine("Scene loaded!");
+                    foreach (RenderableObject o in renderList)
+                    {
+                        Console.WriteLine(o.ToString());
+                    }
+                }
+
+                UniformGrid grid = new UniformGrid();
+                Sphere mySphere = new Sphere(new Point3D(0, 0, 0), 10);
+                mySphere.setMaterial(getMaterialById("myphong"));
+                for (int x = -1000; x < 1000; x += 115)
+                {
+                    for(int y = -10000; y < 500; y+= 115)
+                    {
+                        for(int z = -10000; z < 500; z+= 115)
+                        {
+                            Sphere sphereinstance = new Sphere(new Point3D(x,y,z),10);
+                            sphereinstance.setMaterial(getMaterialById("myreflective"));
+                            grid.add_object(sphereinstance);
+                        }
+                    }
+                }
+                //grid.add_object(mySphere);
+                Console.WriteLine("Baking grid accelerator...");
+                grid.setup_cells();
+                Console.WriteLine("Grid baked, rendering...");
+                add_Object(grid);
+            }
+            //Custom build function if no input file specified
+            else
             {
-                Console.WriteLine("Object definitions loaded:");
-                foreach(RenderableObject o in objectList)
-                {
-                    Console.WriteLine(o.ToString());
-                }
-            }
+                //TriangleMesh monkey = new TriangleMesh();
+                //monkey.loadFromFile("E:\\utah_teapot.off");
+                //monkey.setMaterial(getMaterialById("myreflective"));
+                //Instance monkeyInstance = new Instance(monkey);
+                //monkeyInstance.applyTransformation(Matrix.scale(new Vect3D(50, 50, 50)));
+                //add_Object(monkeyInstance);
 
-            sceneLoader.LoadWorld();
-            if(GlobalVars.verbose)
-            {
-                Console.WriteLine("Scene loaded!");
-                foreach(RenderableObject o in renderList)
-                {
-                    Console.WriteLine(o.ToString());
-                }
             }
-
-            TriangleMesh monkey = new TriangleMesh();
-            monkey.loadFromFile("E:\\monkey.off");
-            monkey.setMaterial(getMaterialById("myreflective"));
-            Instance monkeyInstance = new Instance(monkey);
-            monkeyInstance.applyTransformation(Matrix.scale(new Vect3D(50,50,50)));
-            add_Object(monkeyInstance);
         }
 
         /// <summary>

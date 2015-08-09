@@ -23,7 +23,11 @@ using System.Threading.Tasks;
 
 namespace RayTracer
 {
-    class TriangleMesh : RenderableObject
+
+    /// <summary>
+    /// Simple triangle mesh. Similar to a compound object + grid, but lacks any sort of acceleration scheme.
+    /// </summary>
+    class TriangleMesh : CompoundRenderable
     {
         List<Triangle> mesh_faces;
         List<Point3D> mesh_vertices;
@@ -59,7 +63,7 @@ namespace RayTracer
             {
                 //Extract all the necessary data from the files
                 mesh_vertices = loader.parseVertices();
-                mesh_faces = loader.parseFaces(mesh_vertices);
+                objs = loader.parseFaces(mesh_vertices);
                 bb = loader.getBoundingBox();
             }
             else
@@ -68,6 +72,7 @@ namespace RayTracer
             }
         }
 
+        
         public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
         {
             //Check for intersection with bounding box
@@ -76,23 +81,9 @@ namespace RayTracer
                 return false;
             }
 
-            ShadeRec dummySr = new ShadeRec(sr.w);
-            int numFaces = mesh_faces.Count;
-            double t = GlobalVars.kHugeValue;
-            bool hit_a_face = false;
-            
-            //Traverse list of triangles and intersect to find tmin
-            for(int i = 0; i < numFaces; i++)
-            {
-                if(mesh_faces[i].hit(r, ref t, ref sr) && (t < tmin))
-                {
-                    hit_a_face = true;
-                    tmin = t;
-                }
-            }
-
-            return hit_a_face;
+            return base.hit(r, ref tmin, ref sr);
         }
+        
 
         public override bool hit(Ray r, double tmin)
         {

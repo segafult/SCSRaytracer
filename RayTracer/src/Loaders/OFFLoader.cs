@@ -1,8 +1,22 @@
-﻿using System;
+﻿//    
+//    Copyright(C) 2015  Elanna Stephenson
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.If not, see<http://www.gnu.org/licenses/>.
+//
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RayTracer
 {
@@ -91,9 +105,9 @@ namespace RayTracer
             return toReturn;
         }
 
-        public override List<Triangle> parseFaces(List<Point3D> verts)
+        public override List<RenderableObject> parseFaces(List<Point3D> verts)
         {
-            List<Triangle> toReturn = new List<Triangle>();
+            List<RenderableObject> toReturn = new List<RenderableObject>();
             int past_last_index = index_of_faces + numfaces;
             int[] indexs = new int[5];
 
@@ -102,7 +116,6 @@ namespace RayTracer
                 string[] tokens = fileLines[i].Split(' ');
                 int numVerts = Convert.ToInt32(tokens[0]);
 
-                //Described face is a triangle
                 switch(numVerts)
                 {
                     case 3: //Face is a triangle

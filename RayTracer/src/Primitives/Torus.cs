@@ -242,5 +242,10 @@ namespace RayTracer
             catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
             return toReturn;
         }
+
+        public override BoundingBox get_bounding_box()
+        {
+            return bb;
+        }
     }
 }
