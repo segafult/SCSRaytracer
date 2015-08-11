@@ -560,9 +560,15 @@ namespace RayTracer
             {
                 //Determine sampler type and load accordingly.
                 if (str_sampler.Equals("regular"))
-                {
                     w.vp.set_sampler(new RegularSampler(w.vp.numSamples));
-                }
+                else if (str_sampler.Equals("random"))
+                    w.vp.set_sampler(new RandomSampler(w.vp.numSamples));
+                else if (str_sampler.Equals("jittered"))
+                    w.vp.set_sampler(new JitteredSampler(w.vp.numSamples));
+                else if (str_sampler.Equals("nrooks"))
+                    w.vp.set_sampler(new NRooksSampler(w.vp.numSamples));
+                else if (str_sampler.Equals("multijittered"))
+                    w.vp.set_sampler(new MultiJitteredSampler(w.vp.numSamples));
                 else
                 {
                     Console.WriteLine("Unknown sampler type: " + str_sampler);

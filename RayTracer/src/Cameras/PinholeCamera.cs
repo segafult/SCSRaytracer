@@ -26,7 +26,6 @@ namespace RayTracer
     public class PinholeCamera : Camera
     {
         private double d; //Distance between pinhole and viewplane
-        private double zoom; //Zoom factor
 
         public PinholeCamera()
         {
@@ -40,10 +39,6 @@ namespace RayTracer
         public void setVdp(double distance)
         {
             d = distance;
-        }
-        public void setZoom(double z)
-        {
-            zoom = z;
         }
 
         public override void render_scene(World w)
@@ -82,74 +77,6 @@ namespace RayTracer
                     w.poll_events();
                 }
             }
-        }
-
-        public override void render_scene_multithreaded(World w, int numThreads)
-        {
-            ViewPlane vp = w.vp;
-            
-
-            //if(GlobalVars.frameno == 0)
-            //{
-                vp.s /= zoom;
-            //}
-            
-            //while (true)
-            //{
-                List<Thread> threads = new List<Thread>();
-
-            if(numThreads == 2)
-            {
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, (int)vp.hres / 2, 0, vp.vres, 0)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (int)vp.hres / 2, vp.hres, 0, vp.vres, 1)));
-            }
-            else if (numThreads == 4)
-            {
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, vp.hres / 2, 0, vp.vres / 2, 0)));
-                threads.Add(new Thread(() => render_scene_fragment(w, vp.hres / 2, vp.hres, 0, vp.vres / 2, 1)));
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, vp.hres / 2, vp.vres / 2, vp.vres, 2)));
-                threads.Add(new Thread(() => render_scene_fragment(w, vp.hres / 2, vp.hres, vp.vres / 2, vp.vres, 3)));
-            }
-            else if (numThreads == 8)
-            {
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, (vp.hres / 4), 0, vp.vres / 2, 0)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 4), (vp.hres / 2), 0, vp.vres / 2, 1)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 2), (3*vp.hres / 4), 0, vp.vres / 2, 2)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (3 * vp.hres / 4), vp.hres, 0, vp.vres / 2, 3)));
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, (vp.hres / 4), vp.vres/2, vp.vres, 4)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 4), (vp.hres / 2), vp.vres / 2, vp.vres, 5)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 2), (3 * vp.hres / 4), vp.vres / 2, vp.vres, 6)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (3 * vp.hres / 4), vp.hres, vp.vres / 2, vp.vres, 7)));
-            }
-            else
-            {
-                Console.WriteLine("Multithreading only supported for 2, 4, or 8 threads");
-            }
-
-
-
-
-                foreach (Thread t in threads)
-                {
-                    t.Start();
-                }
-                //Spinwait for all threads
-                bool allDone = false;
-                do
-                {
-                    allDone = true;
-                    foreach (Thread t in threads)
-                    {
-                        if (t.IsAlive)
-                        {
-                            allDone = false;
-                        }
-                    }
-                    w.poll_events();
-
-                } while (!allDone);
-            //}
-           
         }
 
         /// <summary>

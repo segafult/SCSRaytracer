@@ -16,52 +16,46 @@
 //
 
 using System;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RayTracer
 {
-    /// <summary>
-    /// Regularly spaced subpixel sampler for simple antialiasing.
-    /// </summary>
-    public class RegularSampler : Sampler
+    class JitteredSampler : Sampler
     {
+        Random randomgen;
 
-        public RegularSampler(int s) : base(s)
+        public JitteredSampler(int s) : base(s)
         {
-
+            randomgen = new Random();
         }
-        public RegularSampler(Sampler clone) : base(clone)
+        public JitteredSampler(Sampler clone) : base(clone)
         {
-
+            randomgen = new Random();
         }
 
         public override void generate_samples()
         {
+            //Jittered sampler must be a perfect square
             int n = (int)Math.Sqrt(numsamples);
-            bitmask = (ulong)numsamples - 1;
 
-            for(int setloop = 0; setloop<numsets; setloop++)
+            for(int s = 0; s < numsets; s++)
             {
                 for(int j = 0; j < n; j++)
                 {
                     for(int k = 0; k < n; k++)
                     {
-                        samples.Add(new Point2D((double)k / (double)n, (double)j / (double)n));
+                        samples.Add(new Point2D((k + randomgen.NextDouble()) / n, (j + randomgen.NextDouble()) / n));
                     }
                 }
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override Point2D sample_unit_square()
-        {
-            //Bit masked fast modulus, special case for simple antialiasing
-            return samples[(int)(count++ & bitmask)];
-        }
-
         public override Sampler clone()
         {
-            return new RegularSampler(this);
+            return new JitteredSampler(this);
         }
     }
 }

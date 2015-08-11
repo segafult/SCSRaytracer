@@ -112,6 +112,10 @@
     <Compile Include="src\Primitives\Instance.cs" />
     <Compile Include="src\Primitives\Torus.cs" />
     <Compile Include="src\Primitives\Triangle.cs" />
+    <Compile Include="src\Samplers\JitteredSampler.cs" />
+    <Compile Include="src\Samplers\MultiJitteredSampler.cs" />
+    <Compile Include="src\Samplers\NRooksSampler.cs" />
+    <Compile Include="src\Samplers\RandomSampler.cs" />
     <Compile Include="src\Samplers\RegularSampler.cs" />
     <Compile Include="src\Samplers\Sampler.cs" />
     <Compile Include="src\Tracers\RayCaster.cs" />

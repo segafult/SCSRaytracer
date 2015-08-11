@@ -108,12 +108,12 @@ namespace RayTracer
             Point3D p0 = parent.vertices[index0];
             Point3D p1 = parent.vertices[index1];
             Point3D p2 = parent.vertices[index2];
-            double xmin = FastMath.min(FastMath.min(p0.xcoord, p1.xcoord), p2.xcoord);
-            double xmax = FastMath.max(FastMath.max(p0.xcoord, p1.xcoord), p2.xcoord);
-            double ymin = FastMath.min(FastMath.min(p0.ycoord, p1.ycoord), p2.ycoord);
-            double ymax = FastMath.max(FastMath.max(p0.ycoord, p1.ycoord), p2.ycoord);
-            double zmin = FastMath.min(FastMath.min(p0.zcoord, p1.zcoord), p2.zcoord);
-            double zmax = FastMath.max(FastMath.max(p0.zcoord, p1.zcoord), p2.zcoord);
+            double xmin = FastMath.min(FastMath.min(p0.xcoord, p1.xcoord), p2.xcoord) - GlobalVars.kEpsilon;
+            double xmax = FastMath.max(FastMath.max(p0.xcoord, p1.xcoord), p2.xcoord) + GlobalVars.kEpsilon;
+            double ymin = FastMath.min(FastMath.min(p0.ycoord, p1.ycoord), p2.ycoord) - GlobalVars.kEpsilon;
+            double ymax = FastMath.max(FastMath.max(p0.ycoord, p1.ycoord), p2.ycoord) + GlobalVars.kEpsilon;
+            double zmin = FastMath.min(FastMath.min(p0.zcoord, p1.zcoord), p2.zcoord) - GlobalVars.kEpsilon;
+            double zmax = FastMath.max(FastMath.max(p0.zcoord, p1.zcoord), p2.zcoord) + GlobalVars.kEpsilon;
             return new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
         }
     }
