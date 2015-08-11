@@ -87,10 +87,13 @@ namespace RayTracer
         public override void render_scene_multithreaded(World w, int numThreads)
         {
             ViewPlane vp = w.vp;
-            w.open_window(vp.hres, vp.vres);
+            
 
-
-            vp.s /= zoom;
+            //if(GlobalVars.frameno == 0)
+            //{
+                vp.s /= zoom;
+            //}
+            
             //while (true)
             //{
                 List<Thread> threads = new List<Thread>();

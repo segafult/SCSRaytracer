@@ -131,38 +131,8 @@ namespace RayTracer
         /// </summary>
         public void build()
         {
-            /*
-            vp.set_hres(1920);
-            vp.set_vres(1080);
-            vp.set_pixel_size(1.0F);
-            vp.set_gamma(1.0F);
-            vp.set_samples(16);
-            vp.set_max_depth(5);
-            RegularSampler mySampler = new RegularSampler(vp.numSamples);
-            mySampler.generate_samples();
-            vp.set_sampler(mySampler);
-            
-
-            
-            tracer = new Whitted(this);
-
-            PinholeCamera pinhole_ptr = new PinholeCamera();
-            pinhole_ptr.setEye(new Point3D(100, 200, 500));
-            pinhole_ptr.setLookat(new Point3D(0, 0, 0));
-            pinhole_ptr.setVdp(850.0);
-            pinhole_ptr.setZoom(2.5);
-            pinhole_ptr.compute_uvw();
-            set_camera(pinhole_ptr);
-            */
             bg_color = GlobalVars.color_black;
 
-            /*
-            PointLight light_ptr = new PointLight(new Point3D(0,500,259.8));
-            light_ptr.setIntensity(5.0);
-            light_ptr.setShadow(true);
-            light_ptr.setColor(new RGBColor(1.0, 1.0, 1.0));
-            add_Light(light_ptr);
-            */
             if (GlobalVars.inFile != null)
             {
                 XMLProcessor sceneLoader = new XMLProcessor(GlobalVars.inFile, this);
@@ -196,37 +166,31 @@ namespace RayTracer
                     }
                 }
 
-                UniformGrid grid = new UniformGrid();
-                Sphere mySphere = new Sphere(new Point3D(0, 0, 0), 10);
-                mySphere.setMaterial(getMaterialById("myphong"));
-                for (int x = -1000; x < 1000; x += 115)
-                {
-                    for(int y = -10000; y < 500; y+= 115)
-                    {
-                        for(int z = -10000; z < 500; z+= 115)
-                        {
-                            Sphere sphereinstance = new Sphere(new Point3D(x,y,z),10);
-                            sphereinstance.setMaterial(getMaterialById("myreflective"));
-                            grid.add_object(sphereinstance);
-                        }
-                    }
-                }
-                //grid.add_object(mySphere);
+                Mesh myMesh = new Mesh();
+                myMesh.loadFromFile("E:\\dragon_hires.off");
                 Console.WriteLine("Baking grid accelerator...");
-                grid.setup_cells();
+                myMesh.setup_cells();
                 Console.WriteLine("Grid baked, rendering...");
-                add_Object(grid);
+                myMesh.setMaterial(getMaterialById("myphong"));
+
+                Instance meshinstance = new Instance(myMesh);
+                meshinstance.scale(100, 100, 100);
+                meshinstance.rotate(90, 30, 0);
+                meshinstance.translate(10, 10, 10);
+                add_Object(meshinstance);
+                
             }
             //Custom build function if no input file specified
             else
             {
-                //TriangleMesh monkey = new TriangleMesh();
-                //monkey.loadFromFile("E:\\utah_teapot.off");
-                //monkey.setMaterial(getMaterialById("myreflective"));
-                //Instance monkeyInstance = new Instance(monkey);
-                //monkeyInstance.applyTransformation(Matrix.scale(new Vect3D(50, 50, 50)));
-                //add_Object(monkeyInstance);
+                    ///---------------------------------------------------------------------------------------
+                    ///Insert your build function here
 
+
+
+
+
+                    ///----------------------------------------------------------------------------------------
             }
         }
 
@@ -304,9 +268,6 @@ namespace RayTracer
             byte b = (byte)(disp_color.b * 255);
 
             live_view.live_image.SetPixel((uint)column, (uint)(vp.vres-1-row), new SFML.Graphics.Color(r, g, b));
-            //drawPlan.SetPixel(column, row, System.Drawing.Color.FromArgb(255, r, g, b));
-            //live_image.SetPixel((uint)column, (uint)(vp.vres - row - 1), new SFML.Graphics.Color((byte)r, (byte)g, (byte)b));
-            //live_window.DispatchEvents();
         }
 
         public Thread get_window_thread()

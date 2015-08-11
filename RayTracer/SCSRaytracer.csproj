@@ -85,11 +85,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\CompoundObjects\FlatMeshTriangle.cs" />
+    <Compile Include="src\CompoundObjects\Mesh.cs" />
+    <Compile Include="src\CompoundObjects\MeshTriangle.cs" />
+    <Compile Include="src\CompoundObjects\SmoothMeshTriangle.cs" />
     <Compile Include="src\CompoundObjects\UniformGrid.cs" />
     <Compile Include="src\Loaders\MeshLoader.cs" />
     <Compile Include="src\Loaders\OFFLoader.cs" />
     <Compile Include="src\CompoundObjects\CompoundRenderable.cs" />
-    <Compile Include="src\CompoundObjects\TriangleMesh.cs" />
     <Compile Include="src\Program\LiveViewer.cs" />
     <Compile Include="src\Cameras\Camera.cs" />
     <Compile Include="src\Cameras\PinholeCamera.cs" />

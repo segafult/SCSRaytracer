@@ -45,7 +45,7 @@ namespace RayTracer
         ///----------------------------------------------------------------------------------------------------
         /// Static rotation related functions
         ///----------------------------------------------------------------------------------------------------
-        public static Matrix rotateX(double rot)
+        public static Matrix inv_rotateX(double rot)
         {
             Matrix toReturn = new Matrix();
             //Set up transformation matrix
@@ -56,6 +56,51 @@ namespace RayTracer
 
             return toReturn;
         }
+        public static Matrix inv_rotateXDeg(double rot)
+        {
+            return inv_rotateX(rot * invThreeSixtyTwoPi);
+        }
+        public static Matrix inv_rotateY(double rot)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 0] = Math.Cos(rot);
+            toReturn.tfVals[2, 0] = Math.Sin(rot);
+            toReturn.tfVals[0, 2] = -Math.Sin(rot);
+            toReturn.tfVals[2, 2] = Math.Cos(rot);
+
+            return toReturn;
+        }
+        public static Matrix inv_rotateYDeg(double rot)
+        {
+            return inv_rotateY(rot * invThreeSixtyTwoPi);
+        }
+        public static Matrix inv_rotateZ(double rot)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 0] = Math.Cos(rot);
+            toReturn.tfVals[1, 0] = -Math.Sin(rot);
+            toReturn.tfVals[0, 1] = Math.Sin(rot);
+            toReturn.tfVals[1, 1] = Math.Cos(rot);
+
+            return toReturn;
+        }
+        public static Matrix inv_rotateZDeg(double rot)
+        {
+            return inv_rotateZ(rot * invThreeSixtyTwoPi);
+        }
+        public static Matrix inv_rotateDeg(Vect3D rotations)
+        {
+            return inv_rotateXDeg(rotations.xcoord) * inv_rotateYDeg(rotations.ycoord) * inv_rotateZDeg(rotations.zcoord);
+        }
+        public static Matrix rotateX(double rot)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[1, 1] = Math.Cos(rot);
+            toReturn.tfVals[2, 1] = Math.Sin(rot);
+            toReturn.tfVals[1, 2] = -Math.Sin(rot);
+            toReturn.tfVals[2, 2] = Math.Cos(rot);
+            return toReturn;
+        }
         public static Matrix rotateXDeg(double rot)
         {
             return rotateX(rot * invThreeSixtyTwoPi);
@@ -64,10 +109,9 @@ namespace RayTracer
         {
             Matrix toReturn = new Matrix();
             toReturn.tfVals[0, 0] = Math.Cos(rot);
-            toReturn.tfVals[2, 0] = Math.Sin(rot);
-            toReturn.tfVals[0, 2] = -Math.Sin(rot);
+            toReturn.tfVals[2, 0] = -Math.Sin(rot);
+            toReturn.tfVals[0, 2] = Math.Sin(rot);
             toReturn.tfVals[2, 2] = Math.Cos(rot);
-
             return toReturn;
         }
         public static Matrix rotateYDeg(double rot)
@@ -78,10 +122,9 @@ namespace RayTracer
         {
             Matrix toReturn = new Matrix();
             toReturn.tfVals[0, 0] = Math.Cos(rot);
+            toReturn.tfVals[1, 0] = Math.Sin(rot);
             toReturn.tfVals[1, 0] = -Math.Sin(rot);
-            toReturn.tfVals[0, 1] = Math.Sin(rot);
             toReturn.tfVals[1, 1] = Math.Cos(rot);
-
             return toReturn;
         }
         public static Matrix rotateZDeg(double rot)
@@ -90,13 +133,13 @@ namespace RayTracer
         }
         public static Matrix rotateDeg(Vect3D rotations)
         {
-            return rotateXDeg(rotations.xcoord) * rotateYDeg(rotations.ycoord) * rotateZDeg(rotations.zcoord);
+            return rotateZDeg(rotations.zcoord) * rotateYDeg(rotations.ycoord) * rotateXDeg(rotations.xcoord);
         }
 
         ///----------------------------------------------------------------------------------------------------
         /// Static scaling related functions
         ///----------------------------------------------------------------------------------------------------
-        public static Matrix scale(Vect3D scaleFactor)
+        public static Matrix inv_scale(Vect3D scaleFactor)
         {
             Matrix toReturn = new Matrix();
             toReturn.tfVals[0, 0] = 1 / scaleFactor.xcoord;
@@ -105,7 +148,7 @@ namespace RayTracer
 
             return toReturn;
         }
-        public static Matrix scale(double x, double y, double z)
+        public static Matrix inv_scale(double x, double y, double z)
         {
             Matrix toReturn = new Matrix();
             toReturn.tfVals[0, 0] = 1 / x;
@@ -114,11 +157,27 @@ namespace RayTracer
 
             return toReturn;
         }
+        public static Matrix scale(Vect3D scalefactor)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 0] = scalefactor.xcoord;
+            toReturn.tfVals[1, 1] = scalefactor.ycoord;
+            toReturn.tfVals[2, 2] = scalefactor.zcoord;
+            return toReturn;
+        }
+        public static Matrix scale(double x, double y, double z)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 0] = x;
+            toReturn.tfVals[1, 1] = y;
+            toReturn.tfVals[2, 2] = z;
+            return toReturn;
+        }
 
         ///----------------------------------------------------------------------------------------------------
         /// Static translation related functions
         ///----------------------------------------------------------------------------------------------------
-        public static Matrix translate(Vect3D translation)
+        public static Matrix inv_translate(Vect3D translation)
         {
             Matrix toReturn = new Matrix();
             toReturn.tfVals[0, 3] = -translation.xcoord;
@@ -127,7 +186,7 @@ namespace RayTracer
 
             return toReturn;
         }
-        public static Matrix translate(double x, double y, double z)
+        public static Matrix inv_translate(double x, double y, double z)
         {
             Matrix toReturn = new Matrix();
             toReturn.tfVals[0, 3] = -x;
@@ -136,19 +195,20 @@ namespace RayTracer
 
             return toReturn;
         }
-
-        ///----------------------------------------------------------------------------------------------------
-        /// Polytransformation functions
-        ///----------------------------------------------------------------------------------------------------
-        
-        public static Matrix standardTransformDeg(Vect3D rot,Vect3D scale,Vect3D translate)
+        public static Matrix translate(Vect3D translation)
         {
-            //Scale first
-            Matrix toReturn = Matrix.scale(scale);
-            //Standard order of rotations are x rotation, y rotation, then z rotation
-            toReturn = toReturn * Matrix.rotateXDeg(rot.xcoord) * Matrix.rotateYDeg(rot.ycoord) * Matrix.rotateZDeg(rot.zcoord);
-            //Translate last
-            toReturn = toReturn * Matrix.translate(translate);
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 3] = translation.xcoord;
+            toReturn.tfVals[1, 3] = translation.ycoord;
+            toReturn.tfVals[2, 3] = translation.zcoord;
+            return toReturn;
+        }
+        public static Matrix translate(double x, double y, double z)
+        {
+            Matrix toReturn = new Matrix();
+            toReturn.tfVals[0, 3] = x;
+            toReturn.tfVals[1, 3] = y;
+            toReturn.tfVals[2, 3] = z;
             return toReturn;
         }
 

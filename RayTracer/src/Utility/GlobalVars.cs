@@ -35,5 +35,11 @@ namespace RayTracer
         static public readonly RGBColor color_red = new RGBColor(1.0, 0, 0);
         static public readonly int hres = 800;
         static public readonly int vres = 600;
+
+        static public double cam_zcoord = 500;
+        static public double lookat_zcoord= 0;
+
+        static public string path = "E:\\renderimages\\";
+        static public int frameno = 0;
     }
 }

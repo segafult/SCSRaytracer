@@ -34,8 +34,8 @@ namespace RayTracer
 
         public override bool openFile(string filename)
         {
-            if(System.IO.File.Exists(filename))
-            {
+            //if(System.IO.File.Exists(filename))
+            //{
                 fileLines = System.IO.File.ReadAllLines(filename);
 
                 //To be a valid .off file, must start with 'OFF'
@@ -59,25 +59,16 @@ namespace RayTracer
                 {
                     return false;
                 }
-            }
-            else
-            {
-                return false;
-            }
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
 
-        public override List<Point3D> parseVertices()
+        public override void parseVertices(Mesh parent)
         {
-            List<Point3D> toReturn = new List<Point3D>();
             int past_last_index = index_of_verts + numverts;
-
-            //Values for computing bounding box
-            double xmin = GlobalVars.kHugeValue;
-            double xmax = -GlobalVars.kHugeValue;
-            double ymin = GlobalVars.kHugeValue;
-            double ymax = -GlobalVars.kHugeValue;
-            double zmin = GlobalVars.kHugeValue;
-            double zmax = -GlobalVars.kHugeValue;
 
             for(int i = index_of_verts;i<past_last_index;i++)
             {
@@ -85,31 +76,21 @@ namespace RayTracer
                 string[] vert_data = fileLines[i].Split(' ');
 
                 double x = Convert.ToDouble(vert_data[0]);
-                xmin = (x < xmin) ? x : xmin;
-                xmax = (x > xmax) ? x : xmax;
-
                 double y = Convert.ToDouble(vert_data[1]);
-                ymin = (y < ymin) ? y : ymin;
-                ymax = (y > ymax) ? y : ymax;
-
                 double z = Convert.ToDouble(vert_data[2]);
-                zmin = (z < zmin) ? z : zmin;
-                zmax = (z > zmax) ? z : zmax;
 
-                toReturn.Add(new Point3D(x, y, z));
+                parent.vertices.Add(new Point3D(x, y, z));
+                parent.vertex_faces.Add(new List<int>());
+                parent.normals.Add(null);
+                parent.num_verts++;
             }
-
-            //Construct bounding box
-            bb = new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
-
-            return toReturn;
         }
 
-        public override List<RenderableObject> parseFaces(List<Point3D> verts)
+        public override void parseFaces(Mesh parent, bool smooth)
         {
-            List<RenderableObject> toReturn = new List<RenderableObject>();
             int past_last_index = index_of_faces + numfaces;
             int[] indexs = new int[5];
+            MeshTriangle tri_ptr;
 
             for(int i = index_of_faces; i < past_last_index; i++)
             {
@@ -123,7 +104,18 @@ namespace RayTracer
                         {
                             indexs[j] = Convert.ToInt32(tokens[j]);
                         }
-                        toReturn.Add(new Triangle(verts[indexs[1]], verts[indexs[2]], verts[indexs[3]]));
+                        //Create new triangle
+                        if (smooth)
+                            tri_ptr = new SmoothMeshTriangle(parent);
+                        else
+                            tri_ptr = new FlatMeshTriangle(parent);
+                        tri_ptr.setVertexIndices(indexs[1], indexs[2], indexs[3]);
+                        //Update list of faces for given vertexs using current index
+                        parent.vertex_faces[indexs[1]].Add(parent.num_triangles);
+                        parent.vertex_faces[indexs[2]].Add(parent.num_triangles);
+                        parent.vertex_faces[indexs[3]].Add(parent.num_triangles);
+                        parent.num_triangles++;
+                        parent.add_object(tri_ptr);
                         break;
 
                     case 4: //Face is a quad
@@ -131,17 +123,38 @@ namespace RayTracer
                         {
                             indexs[j] = Convert.ToInt32(tokens[j]);
                         }
-                        toReturn.Add(new Triangle(verts[indexs[1]], verts[indexs[2]], verts[indexs[3]]));
-                        toReturn.Add(new Triangle(verts[indexs[3]], verts[indexs[4]], verts[indexs[1]]));
+                        //Create new triangle
+                        if (smooth)
+                            tri_ptr = new SmoothMeshTriangle(parent);
+                        else
+                            tri_ptr = new FlatMeshTriangle(parent);
+                        tri_ptr.setVertexIndices(indexs[1], indexs[2], indexs[3]);
+                        //Update list of faces for given vertexs using current index
+                        parent.vertex_faces[indexs[1]].Add(parent.num_triangles);
+                        parent.vertex_faces[indexs[2]].Add(parent.num_triangles);
+                        parent.vertex_faces[indexs[3]].Add(parent.num_triangles);
+                        parent.num_triangles++;
+                        parent.add_object(tri_ptr);
+                        //Create new triangle
+                        if (smooth)
+                            tri_ptr = new SmoothMeshTriangle(parent);
+                        else
+                            tri_ptr = new FlatMeshTriangle(parent);
+                        tri_ptr.setVertexIndices(indexs[3], indexs[4], indexs[1]);
+                        //Update list of faces for given vertexs using current index
+                        parent.vertex_faces[indexs[3]].Add(parent.num_triangles);
+                        parent.vertex_faces[indexs[4]].Add(parent.num_triangles);
+                        parent.vertex_faces[indexs[1]].Add(parent.num_triangles);
+                        parent.num_triangles++;
+                        parent.add_object(tri_ptr);
                         break;
 
                     default: //What the fuck kind of input are you feeding this poor parser?
                         throw new System.FormatException("Invalid token at line " + (i + 1) +
                             ": " + numVerts + "is not a valid number of vertices for a face.");
-                }
+                }  
             }
-
-            return toReturn;
+            calculateNormals(parent);
         }
 
         private string getOFFHeader()
