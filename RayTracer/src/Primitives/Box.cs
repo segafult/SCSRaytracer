@@ -285,12 +285,9 @@ namespace RayTracer
             return null;
         }
 
-        public static Box LoadBox(XmlElement def, World w)
+        public static Box LoadBox(XmlElement def)
         {
             Box toReturn = new Box();
-
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
 
             XmlNodeList points = def.SelectNodes("point");
             if (points.Count == 2)

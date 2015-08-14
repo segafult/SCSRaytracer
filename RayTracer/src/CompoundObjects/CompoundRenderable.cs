@@ -16,6 +16,7 @@
 //
 
 using System.Collections.Generic;
+using System.Xml;
 
 namespace RayTracer
 {
@@ -76,6 +77,23 @@ namespace RayTracer
             {
                 objs[i].setMaterial(m);
             }
+        }
+
+        public static CompoundRenderable LoadCompoundRenderable(XmlElement def)
+        {
+            CompoundRenderable toReturn = new CompoundRenderable();
+
+            //Select all renderable children of this compound object container
+            XmlNodeList children = def.SelectNodes("renderable");
+            foreach(XmlElement e in children)
+            {
+                //Load each child and store in list
+                RenderableObject rend = RenderableObject.LoadRenderableObject(e);
+                if (rend != null)
+                    toReturn.add_object(rend);
+            }
+
+            return toReturn;
         }
     }
 }

@@ -223,21 +223,21 @@ namespace RayTracer
             bbox = new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
         }
 
-        public static Instance LoadInstance(XmlElement def, World w)
+        public static Instance LoadInstance(XmlElement def)
         {
             Instance toReturn = new Instance();
-            toReturn.id = def.GetAttribute("id");
+
             try
             {
                 if (def.HasAttribute("mat"))
                 {
-                    toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
+                    toReturn.setMaterial(GlobalVars.worldref.getMaterialById(def.GetAttribute("mat")));
                 }
 
                 if (def.HasAttribute("obj"))
                 {
                     //Verify that object definition has been previously defined.
-                    RenderableObject objRef = w.getObjectById(def.GetAttribute("obj"));
+                    RenderableObject objRef = GlobalVars.worldref.getObjectById(def.GetAttribute("obj"));
                     if (objRef != null)
                     {
                         toReturn.setHandle(objRef);
@@ -245,55 +245,58 @@ namespace RayTracer
                     else
                     {
                         throw new XmlException("Error: No object definition with handle: " + def.GetAttribute("obj"));
-                    }
-
-                    Matrix baseTransformation = new Matrix();
-
-                    //If defined, get rotation data
-                    XmlNode rotNode = def.SelectSingleNode("rotate");
-                    if (rotNode != null)
-                    {
-                        string rotString = ((XmlText)rotNode.FirstChild).Data;
-                        Vect3D rotations = Vect3D.FromCsv(rotString);
-                        //Rotation format valid?
-                        if (rotations != null)
-                        {
-                            //Accumulate rotation on base transformation matrix
-                            toReturn.rotate(rotations);
-                        }
-                    }
-
-                    //If defined, get scaling data
-                    XmlNode scaleNode = def.SelectSingleNode("scale");
-                    if (scaleNode != null)
-                    {
-                        string scaleString = ((XmlText)scaleNode.FirstChild).Data;
-                        Vect3D scaling = Vect3D.FromCsv(scaleString);
-                        //Scaling format valid?
-                        if (scaling != null)
-                        {
-                            //Accumulate scaling on base transformation matrix
-                            toReturn.scale(scaling);
-                        }
-                    }
-
-                    //If defined, get translation data
-                    XmlNode transNode = def.SelectSingleNode("translate");
-                    if (transNode != null)
-                    {
-                        string transString = ((XmlText)transNode.FirstChild).Data;
-                        Vect3D translation = Vect3D.FromCsv(transString);
-                        //Translation format valid?
-                        if (translation != null)
-                        {
-                            //Accumulate translation on base transformation matrix
-                            toReturn.translate(translation);
-                        }
-                    }
+                    }  
                 }
                 else
                 {
-                    throw new XmlException("Error: Cannot create instance without obj paired with an object id.");
+                    //See if there's a nested object
+                    XmlNode childobj = def.SelectSingleNode("renderable");
+                    if (childobj != null)
+                        toReturn.setHandle(RenderableObject.LoadRenderableObject((XmlElement)childobj));
+                    else
+                        throw new XmlException("Error: Cannot create instance without obj paired with an object id.");
+                }
+
+                //If defined, get rotation data
+                XmlNode rotNode = def.SelectSingleNode("rotate");
+                if (rotNode != null)
+                {
+                    string rotString = ((XmlText)rotNode.FirstChild).Data;
+                    Vect3D rotations = Vect3D.FromCsv(rotString);
+                    //Rotation format valid?
+                    if (rotations != null)
+                    {
+                        //Accumulate rotation on base transformation matrix
+                        toReturn.rotate(rotations);
+                    }
+                }
+
+                //If defined, get scaling data
+                XmlNode scaleNode = def.SelectSingleNode("scale");
+                if (scaleNode != null)
+                {
+                    string scaleString = ((XmlText)scaleNode.FirstChild).Data;
+                    Vect3D scaling = Vect3D.FromCsv(scaleString);
+                    //Scaling format valid?
+                    if (scaling != null)
+                    {
+                        //Accumulate scaling on base transformation matrix
+                        toReturn.scale(scaling);
+                    }
+                }
+
+                //If defined, get translation data
+                XmlNode transNode = def.SelectSingleNode("translate");
+                if (transNode != null)
+                {
+                    string transString = ((XmlText)transNode.FirstChild).Data;
+                    Vect3D translation = Vect3D.FromCsv(transString);
+                    //Translation format valid?
+                    if (translation != null)
+                    {
+                        //Accumulate translation on base transformation matrix
+                        toReturn.translate(translation);
+                    }
                 }
             }
             catch (XmlException e) { Console.WriteLine(e.ToString()); }

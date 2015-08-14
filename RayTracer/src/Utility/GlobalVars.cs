@@ -37,6 +37,7 @@ namespace RayTracer
         static public readonly int vres = 600;
         static public int num_samples;
         static public Sampler vp_sampler;
+        static public World worldref;
 
         //static public double cam_zcoord = 500;
         //static public double lookat_zcoord= 0;

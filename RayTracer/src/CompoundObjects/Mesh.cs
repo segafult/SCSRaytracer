@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace RayTracer
 {
@@ -48,7 +49,7 @@ namespace RayTracer
             num_triangles = 0;
         }
 
-        public void loadFromFile(string filename)
+        public void loadFromFile(string filename, bool smooth)
         {
             string extension = filename.Substring(filename.LastIndexOf('.') + 1);
             if (extension.ToLower().Equals("off"))
@@ -66,12 +67,31 @@ namespace RayTracer
             }
 
             loader.parseVertices(this);
-            loader.parseFaces(this, true);
+            loader.parseFaces(this, smooth);
         }
 
         public Normal normalForFace(int index)
         {
             return ((MeshTriangle)objs[index]).getNormal();
+        }
+
+        public static Mesh LoadMesh(XmlElement def)
+        {
+            Mesh toReturn = new Mesh();
+
+            if(def.HasAttribute("filename"))
+            {
+                string str_file = def.GetAttribute("filename");
+                bool smooth = false;
+                if (def.HasAttribute("smooth"))
+                    smooth = Convert.ToBoolean(def.GetAttribute("smooth"));
+
+                toReturn.loadFromFile(str_file, smooth);
+            }
+
+            toReturn.setup_cells();
+
+            return toReturn;
         }
     }
 }

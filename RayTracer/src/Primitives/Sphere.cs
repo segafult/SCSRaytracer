@@ -170,11 +170,9 @@ namespace RayTracer
             return false;
         }
 
-        public static Sphere LoadSphere(XmlElement def, World w)
+        public static Sphere LoadSphere(XmlElement def)
         {
             Sphere toReturn = new Sphere();
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
 
             //Load center of the sphere if provided
             XmlNode c = def.SelectSingleNode("point");

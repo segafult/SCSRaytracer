@@ -210,11 +210,9 @@ namespace RayTracer
             return result;
         }
 
-        public static Torus LoadTorus(XmlElement def, World w)
+        public static Torus LoadTorus(XmlElement def)
         {
             Torus toReturn = new Torus();
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
 
             //Load a if provided
             try

@@ -111,6 +111,7 @@ namespace RayTracer
             }
 
             World w = new World();
+            GlobalVars.worldref = w;
             w.build();
             w.open_window(w.vp.hres, w.vp.vres);
             //while (GlobalVars.frameno < 120)

@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Xml;
 
 namespace RayTracer
 {
@@ -649,6 +650,22 @@ namespace RayTracer
                 return xmax;
             }
             else { return x; }
+        }
+
+        public static UniformGrid LoadUniformGrid(XmlElement def)
+        {
+            UniformGrid toReturn = new UniformGrid();
+
+            XmlNodeList children = def.SelectNodes("renderable");
+            foreach(XmlElement child in children)
+            {
+                RenderableObject rend = RenderableObject.LoadRenderableObject(child);
+                if (rend != null)
+                    toReturn.add_object(rend);
+            }
+
+            toReturn.setup_cells();
+            return toReturn;
         }
     }
 }
