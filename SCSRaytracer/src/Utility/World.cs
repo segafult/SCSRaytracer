@@ -128,8 +128,11 @@ namespace RayTracer
 
             if (GlobalVars.inFile != null)
             {
+
                 XMLProcessor sceneLoader = new XMLProcessor(GlobalVars.inFile, this);
+
                 sceneLoader.LoadMaterials();
+
                 if (GlobalVars.verbose)
                 {
                     Console.WriteLine("Materials loaded:");

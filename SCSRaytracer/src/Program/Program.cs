@@ -84,6 +84,7 @@ namespace RayTracer
                     throw new ArgumentException();
                 }
 
+
                 if(File.Exists(GlobalVars.outFile))
                 {
                     GetUserInput:
@@ -101,6 +102,7 @@ namespace RayTracer
                             goto GetUserInput;
                     }
                 }
+                
             }
             catch (ArgumentException e)
             {
@@ -109,9 +111,9 @@ namespace RayTracer
                 Console.WriteLine("Additional options:\n-V: Verbose output, default off\n-T #: Number of threads (2, 4 or 8), default 2");
                 return;
             }
-
             World w = new World();
             GlobalVars.worldref = w;
+
             w.build();
             w.open_window(w.vp.hres, w.vp.vres);
             //while (GlobalVars.frameno < 120)
@@ -138,11 +140,11 @@ namespace RayTracer
             //}
 
 
-            while(w.get_window_thread().IsAlive)
+			while(!GlobalVars.should_close)
             {
                 w.poll_events();
             }
-            w.get_window_thread().Abort();
+            
         }
     }
 }

@@ -138,13 +138,16 @@ namespace RayTracer
         private void LoadMatte(XmlNode matRoot)
         {
             XmlNodeList currentContext = matRoot.SelectNodes("matte");
+
             foreach (XmlNode definition in currentContext)
             {
                 //Filter all material definitions that don't have an id
                 if (((XmlElement)definition).HasAttribute("id"))
                 {
+
                     MatteShader matte = new MatteShader();
                     matte.id = ((XmlElement)definition).GetAttribute("id");
+
 
                     try {
                         //Load Ka value if provided
@@ -174,7 +177,9 @@ namespace RayTracer
                         if (cd != null)
                         {
                             string cdStr = ((XmlText)cd.FirstChild).Data;
-                            matte.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+
+							//matte.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+
                         }
                     }
                     catch (System.Exception e) { Console.WriteLine(e.ToString()); }
@@ -226,7 +231,7 @@ namespace RayTracer
                         if (cd != null)
                         {
                             string cdStr = ((XmlText)cd.FirstChild).Data;
-                            phong.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+                            //phong.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
                         }
                     }
                     catch (System.Exception e) { Console.WriteLine(e.ToString()); }
@@ -300,7 +305,7 @@ namespace RayTracer
                         if (cd != null)
                         {
                             string cdStr = ((XmlText)cd.FirstChild).Data;
-                            reflective.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+                            //reflective.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
                         }
                     }
                     catch (System.Exception e) { Console.WriteLine(e.ToString()); }

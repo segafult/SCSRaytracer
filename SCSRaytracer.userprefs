@@ -1,0 +1,35 @@
+﻿<Properties StartupItem="SCSRaytracer/SCSRaytracer.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="SCSRaytracer/src/Program/LiveViewer.cs">
+    <Files>
+      <File FileName="SCSRaytracer/sfml-graphics-2.dll.config" Line="7" Column="1" />
+      <File FileName="SCSRaytracer/Properties/AssemblyInfo.cs" Line="1" Column="1" />
+      <File FileName="SCSRaytracer/src/Program/Program.cs" Line="143" Column="33" />
+      <File FileName="SCSRaytracer/src/Tracers/Whitted.cs" Line="1" Column="1" />
+      <File FileName="SCSRaytracer/src/Tracers/RayCaster.cs" Line="59" Column="6" />
+      <File FileName="SCSRaytracer/src/Program/XMLProcessor.cs" Line="181" Column="10" />
+      <File FileName="SCSRaytracer/src/Program/LiveViewer.cs" Line="4" Column="27" />
+      <File FileName="SCSRaytracer/src/Cameras/Camera.cs" Line="115" Column="17" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.SCSRaytracer>
+    <MonoDevelop.Ide.CustomExecutionModes>
+      <Data Name="Mono 4.0.3 (Custom)" Id="5992d1ad-b17e-4e85-b498-29b3a0b9f634" ModeId="Mono 4.0.3">
+        <CommandData>
+          <Item Key="MonoDevelop.Ide.Execution.CustomArgsCustomizer">
+            <Value Arguments="-I &quot;/Volumes/AdditionalStorage/Programming/Git/util/world.xml&quot; -O &quot;/Users/elanna/Documents/test.bmp&quot; -V -T 4" WorkingDirectory="/Volumes/AdditionalStorage/Programming/Git/SCSRaytracer/SCSRaytracer/bin/Debug" ctype="CustomArgsExecutionModeData">
+              <EnvironmentVariables />
+            </Value>
+          </Item>
+          <Item Key="MonoDevelop.Ide.Execution.MonoExecutionCustomizer">
+            <Value DebugMode="True" ctype="MonoExecutionParameters" />
+          </Item>
+        </CommandData>
+      </Data>
+    </MonoDevelop.Ide.CustomExecutionModes>
+  </MonoDevelop.Ide.ItemProperties.SCSRaytracer>
+</Properties>

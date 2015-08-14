@@ -42,11 +42,11 @@ namespace RayTracer
 
         public void set_up_liveview()
         {
-            //Live view window
-            live_window = new RenderWindow(new VideoMode((uint)w.vp.hres, (uint)w.vp.vres), "Live render view");
-            live_window.Closed += new EventHandler(LiveviewOnClose);
-            live_window.KeyPressed += new EventHandler<KeyEventArgs>(LiveviewOnKeypress);
-            live_window.SetActive();
+			//Live view window
+			live_window = new RenderWindow(new VideoMode((uint)w.vp.hres, (uint)w.vp.vres), "Live render view");
+			live_window.Closed += new EventHandler(LiveviewOnClose);
+            //live_window.KeyPressed += new EventHandler<KeyEventArgs>(LiveviewOnKeypress);
+            //live_window.SetActive();
 
             //Initialize render targets
             live_image = new SFML.Graphics.Image((uint)w.vp.hres, (uint)w.vp.vres);
@@ -60,16 +60,25 @@ namespace RayTracer
 
         private void live_render_loop(Sprite spr, Texture tex, SFML.Graphics.Image img)
         {
-            while (live_window.IsOpen)
+
+
+			while (live_window!=null && !GlobalVars.should_close)
             {
+				
                 tex.Update(img);
-                live_window.Draw(spr);
-                live_window.Display();
+				if(live_window.IsOpen)
+                	live_window.Draw(spr);
+				if(live_window.IsOpen)
+					live_window.Display();
             }
+				
+			return;
         }
         private void LiveviewOnClose(Object sender, EventArgs e)
         {
             Window window = (Window)sender;
+			GlobalVars.should_close = true;
+			window.SetActive (false);
             window.Close();
         }
         private void LiveviewOnKeypress(Object sender, EventArgs e)

@@ -39,6 +39,8 @@ namespace RayTracer
         static public Sampler vp_sampler;
         static public World worldref;
 
+		static public bool should_close = false;
+
         //static public double cam_zcoord = 500;
         //static public double lookat_zcoord= 0;
 
