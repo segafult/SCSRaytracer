@@ -25,7 +25,6 @@ namespace RayTracer
 {
     class JitteredSampler : Sampler
     {
-        Random randomgen;
 
         public JitteredSampler(int s) : base(s)
         {

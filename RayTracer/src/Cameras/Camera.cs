@@ -31,6 +31,16 @@ namespace RayTracer
         protected double exposure_time;
         protected double zoom;
 
+        public Camera()
+        {
+            this.setUp(new Vect3D(0, 1, 0));
+            this.setEye(new Point3D(0, 0, 0));
+            this.setExposure(1.0);
+            this.setLookat(new Point3D(0, 0, 500));
+            this.setExposure(1.0);
+            this.setZoom(1.0);
+            this.compute_uvw();
+        }
         //Getters and setters
         public void setEye(Point3D e) { eye = new Point3D(e); }
         public void setLookat(Point3D l) { lookat = new Point3D(l); }
@@ -86,9 +96,6 @@ namespace RayTracer
                 Console.WriteLine("Multithreading only supported for 2, 4, or 8 threads");
             }
 
-
-
-
             foreach (Thread t in threads)
             {
                 t.Start();
@@ -125,9 +132,21 @@ namespace RayTracer
                 {
                     toReturn = PinholeCamera.LoadPinholeCamera(camRoot);
                 }
+                else if(cam_type.Equals("thinlens"))
+                {
+                    toReturn = ThinLensCamera.LoadThinLensCamera(camRoot);
+                }
                 else
                 {
                     Console.WriteLine("Unknown camera type: " + cam_type);
+                }
+
+                XmlNode node_zoom = camRoot.SelectSingleNode("zoom");
+                if (node_zoom != null)
+                {
+                    string str_zoom = ((XmlText)node_zoom.FirstChild).Data;
+                    double zoom = Convert.ToDouble(str_zoom);
+                    toReturn.setZoom(zoom);
                 }
 
                 //Load common attributes afterwards.

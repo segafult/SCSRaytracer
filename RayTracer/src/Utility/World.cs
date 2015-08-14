@@ -17,15 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
-using SFML;
-using SFML.Graphics;
-using SFML.Window;
-using SFML.System;
-using SFML.Audio;
 
 namespace RayTracer
 {
@@ -166,19 +159,13 @@ namespace RayTracer
                     }
                 }
 
-                Mesh myMesh = new Mesh();
-                myMesh.loadFromFile("E:\\dragon_hires.off");
-                Console.WriteLine("Baking grid accelerator...");
-                myMesh.setup_cells();
-                Console.WriteLine("Grid baked, rendering...");
-                myMesh.setMaterial(getMaterialById("myphong"));
-
-                Instance meshinstance = new Instance(myMesh);
-                meshinstance.scale(100, 100, 100);
-                meshinstance.rotate(90, 30, 0);
-                meshinstance.translate(10, 10, 10);
-                add_Object(meshinstance);
-                
+                //Sphere mysphere = new Sphere(new Point3D(0, 0, 0), 1000);
+                //mysphere.setMaterial(getMaterialById("myreflective"));
+                //add_Object(mysphere);
+                //((ThinLensCamera)camera).set_sampler(vp.vpSampler);
+                Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
+                groundplane.setMaterial(new DebugCheckerboard());
+                add_Object(groundplane);
             }
             //Custom build function if no input file specified
             else

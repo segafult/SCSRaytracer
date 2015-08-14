@@ -25,7 +25,6 @@ namespace RayTracer
 {
     class NRooksSampler : Sampler
     {
-        Random randomgen;
 
         public NRooksSampler(int s) : base(s)
         {

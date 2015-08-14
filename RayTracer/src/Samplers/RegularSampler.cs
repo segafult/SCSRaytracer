@@ -52,13 +52,6 @@ namespace RayTracer
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override Point2D sample_unit_square()
-        {
-            //Bit masked fast modulus, special case for simple antialiasing
-            return samples[(int)(count++ & bitmask)];
-        }
-
         public override Sampler clone()
         {
             return new RegularSampler(this);

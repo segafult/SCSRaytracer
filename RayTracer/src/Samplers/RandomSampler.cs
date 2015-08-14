@@ -25,7 +25,6 @@ namespace RayTracer
 {
     class RandomSampler : Sampler
     {
-        Random randomgen;
 
         public RandomSampler(int s) : base(s)
         {
@@ -45,21 +44,6 @@ namespace RayTracer
                     samples.Add(new Point2D(randomgen.NextDouble(), randomgen.NextDouble()));
                 }
             }
-        }
-
-        public override Point2D sample_unit_square()
-        {
-            return samples[(int)(count++ % (ulong)numsamples)];
-        }
-
-        public override void shuffle_samples()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void setup_shuffled_indices()
-        {
-            throw new NotImplementedException();
         }
 
         public override Sampler clone()

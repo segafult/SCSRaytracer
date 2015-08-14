@@ -27,14 +27,9 @@ namespace RayTracer
     {
         private double d; //Distance between pinhole and viewplane
 
-        public PinholeCamera()
+        public PinholeCamera() : base()
         {
             d = 850;
-            zoom = 1.0;
-            this.setEye(new Point3D(0, 0, 0));
-            this.setExposure(1.0);
-            this.setLookat(new Point3D(0, 0, 500));
-            this.compute_uvw();
         }
         public void setVdp(double distance)
         {
@@ -49,7 +44,6 @@ namespace RayTracer
             int depth = 0; //Depth of recursion
             Point2D sp = new Point2D(); //Sample point on a unit square
             Point2D pp = new Point2D(); ; //Sample point translated into screen space
-            exposure_time = 1.0;
 
             w.open_window(vp.hres, vp.vres);
             vp.s /= zoom;
@@ -99,7 +93,6 @@ namespace RayTracer
             int depth = 0; //Depth of recursion
             Point2D sp = new Point2D(); //Sample point on a unit square
             Point2D pp = new Point2D(); ; //Sample point translated into screen space
-            exposure_time = 1.0;
             int height = y2 - y1;
             int width = x2 - x1;
 
@@ -142,13 +135,6 @@ namespace RayTracer
         {
             PinholeCamera toReturn = new PinholeCamera();
 
-            XmlNode node_zoom = camRoot.SelectSingleNode("zoom");
-            if (node_zoom != null)
-            {
-                string str_zoom = ((XmlText)node_zoom.FirstChild).Data;
-                double zoom = Convert.ToDouble(str_zoom);
-                toReturn.setZoom(zoom);
-            }
             XmlNode node_vdp = camRoot.SelectSingleNode("vdp");
             if (node_vdp != null)
             {

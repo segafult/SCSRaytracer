@@ -43,6 +43,7 @@ namespace RayTracer
             ambient_brdf = new Lambertian();
             diffuse_brdf = new Lambertian();
             specular_brdf = new GlossySpecular();
+            setExp(200);
         }
 
         public PhongShader(Lambertian ambient_brdf_arg, Lambertian diffuse_brdf_arg, GlossySpecular specular_brdf_arg)

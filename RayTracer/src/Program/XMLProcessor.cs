@@ -548,32 +548,21 @@ namespace RayTracer
                 if (sqrt_samples * sqrt_samples == int_samples)
                 {
                     w.vp.set_numSamples(int_samples);
+                    
                 }
                 else
                 {
                     Console.WriteLine("Given number of samples (" + int_samples + ") is a not a square number, multisampling disabled.");
                 }
             }
+            GlobalVars.num_samples = w.vp.numSamples;
 
             string str_sampler = scene.GetAttribute("sampler");
             if (!str_sampler.Equals(""))
             {
-                //Determine sampler type and load accordingly.
-                if (str_sampler.Equals("regular"))
-                    w.vp.set_sampler(new RegularSampler(w.vp.numSamples));
-                else if (str_sampler.Equals("random"))
-                    w.vp.set_sampler(new RandomSampler(w.vp.numSamples));
-                else if (str_sampler.Equals("jittered"))
-                    w.vp.set_sampler(new JitteredSampler(w.vp.numSamples));
-                else if (str_sampler.Equals("nrooks"))
-                    w.vp.set_sampler(new NRooksSampler(w.vp.numSamples));
-                else if (str_sampler.Equals("multijittered"))
-                    w.vp.set_sampler(new MultiJitteredSampler(w.vp.numSamples));
-                else
-                {
-                    Console.WriteLine("Unknown sampler type: " + str_sampler);
-                }
+                w.vp.set_sampler(Sampler.LoadSampler(str_sampler));
             }
+            GlobalVars.vp_sampler = w.vp.vpSampler;
 
             string str_algorithm = scene.GetAttribute("algorithm");
             if (!str_algorithm.Equals(""))
@@ -612,7 +601,6 @@ namespace RayTracer
             }
 
             //Cleanup
-            w.vp.vpSampler.generate_samples();
             w.camera.compute_uvw();
         }
         private void LoadLights(XmlElement scene)

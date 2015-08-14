@@ -85,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Cameras\ThinLensCamera.cs" />
     <Compile Include="src\CompoundObjects\FlatMeshTriangle.cs" />
     <Compile Include="src\CompoundObjects\Mesh.cs" />
     <Compile Include="src\CompoundObjects\MeshTriangle.cs" />
