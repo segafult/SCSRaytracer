@@ -198,12 +198,9 @@ namespace RayTracer
             else return false;
         }
 
-        public static Triangle LoadTrianglePrimitive(XmlElement def, World w)
+        public static Triangle LoadTrianglePrimitive(XmlElement def)
         {
             Triangle toReturn = new Triangle();
-
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
 
             //Check if a list of vertices have been defined
             XmlNode vertRoot = def.SelectSingleNode("vertices");
@@ -229,5 +226,13 @@ namespace RayTracer
 
             return toReturn;
         }
+        /*
+        public override BoundingBox get_bounding_box()
+        {
+            //Find the smallest x coordinate
+            double xmin = GlobalVars.kHugeValue;
+            //xmin = (v1.xcoord < )
+        }
+        */
     }
 }

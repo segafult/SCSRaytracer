@@ -26,24 +26,14 @@ namespace RayTracer
     public class PinholeCamera : Camera
     {
         private double d; //Distance between pinhole and viewplane
-        private double zoom; //Zoom factor
 
-        public PinholeCamera()
+        public PinholeCamera() : base()
         {
             d = 850;
-            zoom = 1.0;
-            this.setEye(new Point3D(0, 0, 0));
-            this.setExposure(1.0);
-            this.setLookat(new Point3D(0, 0, 500));
-            this.compute_uvw();
         }
         public void setVdp(double distance)
         {
             d = distance;
-        }
-        public void setZoom(double z)
-        {
-            zoom = z;
         }
 
         public override void render_scene(World w)
@@ -54,7 +44,6 @@ namespace RayTracer
             int depth = 0; //Depth of recursion
             Point2D sp = new Point2D(); //Sample point on a unit square
             Point2D pp = new Point2D(); ; //Sample point translated into screen space
-            exposure_time = 1.0;
 
             w.open_window(vp.hres, vp.vres);
             vp.s /= zoom;
@@ -84,65 +73,6 @@ namespace RayTracer
             }
         }
 
-        public override void render_scene_multithreaded(World w, int numThreads)
-        {
-            ViewPlane vp = w.vp;
-            w.open_window(vp.hres, vp.vres);
-
-            vp.s /= zoom;
-            List<Thread> threads = new List<Thread>();
-
-            if(numThreads == 2)
-            {
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, (int)vp.hres / 2, 0, vp.vres, 0)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (int)vp.hres / 2, vp.hres, 0, vp.vres, 1)));
-            }
-            else if (numThreads == 4)
-            {
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, vp.hres / 2, 0, vp.vres / 2, 0)));
-                threads.Add(new Thread(() => render_scene_fragment(w, vp.hres / 2, vp.hres, 0, vp.vres / 2, 1)));
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, vp.hres / 2, vp.vres / 2, vp.vres, 2)));
-                threads.Add(new Thread(() => render_scene_fragment(w, vp.hres / 2, vp.hres, vp.vres / 2, vp.vres, 3)));
-            }
-            else if (numThreads == 8)
-            {
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, (vp.hres / 4), 0, vp.vres / 2, 0)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 4), (vp.hres / 2), 0, vp.vres / 2, 1)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 2), (3*vp.hres / 4), 0, vp.vres / 2, 2)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (3 * vp.hres / 4), vp.hres, 0, vp.vres / 2, 3)));
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, (vp.hres / 4), vp.vres/2, vp.vres, 4)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 4), (vp.hres / 2), vp.vres / 2, vp.vres, 5)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 2), (3 * vp.hres / 4), vp.vres / 2, vp.vres, 6)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (3 * vp.hres / 4), vp.hres, vp.vres / 2, vp.vres, 7)));
-            }
-            else
-            {
-                Console.WriteLine("Multithreading only supported for 2, 4, or 8 threads");
-            }
-
-            foreach (Thread t in threads)
-            {
-                t.Start();
-            }
-
-            //Spinwait for all threads
-            bool allDone = false;
-            do
-            {
-                allDone = true;
-                foreach (Thread t in threads)
-                {
-                    if (t.IsAlive)
-                    {
-                        allDone = false;
-                    }
-                }
-                w.poll_events();
-            } while (!allDone);
-
-            //w.join_bitmaps(numThreads);
-        }
-
         /// <summary>
         /// Subroutine for rendering a given rectangular fragment of a scene, called when multithreading.
         /// </summary>
@@ -163,7 +93,6 @@ namespace RayTracer
             int depth = 0; //Depth of recursion
             Point2D sp = new Point2D(); //Sample point on a unit square
             Point2D pp = new Point2D(); ; //Sample point translated into screen space
-            exposure_time = 1.0;
             int height = y2 - y1;
             int width = x2 - x1;
 
@@ -206,13 +135,6 @@ namespace RayTracer
         {
             PinholeCamera toReturn = new PinholeCamera();
 
-            XmlNode node_zoom = camRoot.SelectSingleNode("zoom");
-            if (node_zoom != null)
-            {
-                string str_zoom = ((XmlText)node_zoom.FirstChild).Data;
-                double zoom = Convert.ToDouble(str_zoom);
-                toReturn.setZoom(zoom);
-            }
             XmlNode node_vdp = camRoot.SelectSingleNode("vdp");
             if (node_vdp != null)
             {

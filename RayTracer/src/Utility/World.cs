@@ -17,15 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
-using SFML;
-using SFML.Graphics;
-using SFML.Window;
-using SFML.System;
-using SFML.Audio;
 
 namespace RayTracer
 {
@@ -131,68 +124,60 @@ namespace RayTracer
         /// </summary>
         public void build()
         {
-            /*
-            vp.set_hres(1920);
-            vp.set_vres(1080);
-            vp.set_pixel_size(1.0F);
-            vp.set_gamma(1.0F);
-            vp.set_samples(16);
-            vp.set_max_depth(5);
-            RegularSampler mySampler = new RegularSampler(vp.numSamples);
-            mySampler.generate_samples();
-            vp.set_sampler(mySampler);
-            
-
-            
-            tracer = new Whitted(this);
-
-            PinholeCamera pinhole_ptr = new PinholeCamera();
-            pinhole_ptr.setEye(new Point3D(100, 200, 500));
-            pinhole_ptr.setLookat(new Point3D(0, 0, 0));
-            pinhole_ptr.setVdp(850.0);
-            pinhole_ptr.setZoom(2.5);
-            pinhole_ptr.compute_uvw();
-            set_camera(pinhole_ptr);
-            */
             bg_color = GlobalVars.color_black;
 
-            /*
-            PointLight light_ptr = new PointLight(new Point3D(0,500,259.8));
-            light_ptr.setIntensity(5.0);
-            light_ptr.setShadow(true);
-            light_ptr.setColor(new RGBColor(1.0, 1.0, 1.0));
-            add_Light(light_ptr);
-            */
-
-            XMLProcessor sceneLoader = new XMLProcessor(GlobalVars.inFile, this);
-            sceneLoader.LoadMaterials();
-            if (GlobalVars.verbose)
+            if (GlobalVars.inFile != null)
             {
-                Console.WriteLine("Materials loaded:");
-                foreach (Material m in materialList)
+                XMLProcessor sceneLoader = new XMLProcessor(GlobalVars.inFile, this);
+                sceneLoader.LoadMaterials();
+                if (GlobalVars.verbose)
                 {
-                    Console.WriteLine(m.ToString());
+                    Console.WriteLine("Materials loaded:");
+                    foreach (Material m in materialList)
+                    {
+                        Console.WriteLine(m.ToString());
+                    }
                 }
+
+                sceneLoader.LoadObjects();
+                if (GlobalVars.verbose)
+                {
+                    Console.WriteLine("Object definitions loaded:");
+                    foreach (RenderableObject o in objectList)
+                    {
+                        Console.WriteLine(o.ToString());
+                    }
+                }
+
+                sceneLoader.LoadWorld();
+                if (GlobalVars.verbose)
+                {
+                    Console.WriteLine("Scene loaded!");
+                    foreach (RenderableObject o in renderList)
+                    {
+                        Console.WriteLine(o.ToString());
+                    }
+                }
+
+                //Sphere mysphere = new Sphere(new Point3D(0, 0, 0), 1000);
+                //mysphere.setMaterial(getMaterialById("myreflective"));
+                //add_Object(mysphere);
+                //((ThinLensCamera)camera).set_sampler(vp.vpSampler);
+                Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
+                groundplane.setMaterial(new DebugCheckerboard());
+                add_Object(groundplane);
             }
-
-            sceneLoader.LoadObjects();
-            if(GlobalVars.verbose)
+            //Custom build function if no input file specified
+            else
             {
-                Console.WriteLine("Object definitions loaded:");
-                foreach(RenderableObject o in objectList)
-                {
-                    Console.WriteLine(o.ToString());
-                }
-            }
+                    ///---------------------------------------------------------------------------------------
+                    ///Insert your build function here
 
-            sceneLoader.LoadWorld();
-            if(GlobalVars.verbose)
-            {
-                Console.WriteLine("Scene loaded!");
-                foreach(RenderableObject o in renderList)
-                {
-                    Console.WriteLine(o.ToString());
-                }
+
+
+
+
+                    ///----------------------------------------------------------------------------------------
             }
         }
 
@@ -270,9 +255,6 @@ namespace RayTracer
             byte b = (byte)(disp_color.b * 255);
 
             live_view.live_image.SetPixel((uint)column, (uint)(vp.vres-1-row), new SFML.Graphics.Color(r, g, b));
-            //drawPlan.SetPixel(column, row, System.Drawing.Color.FromArgb(255, r, g, b));
-            //live_image.SetPixel((uint)column, (uint)(vp.vres - row - 1), new SFML.Graphics.Color((byte)r, (byte)g, (byte)b));
-            //live_window.DispatchEvents();
         }
 
         public Thread get_window_thread()

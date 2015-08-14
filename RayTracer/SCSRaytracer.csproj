@@ -85,6 +85,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Cameras\ThinLensCamera.cs" />
+    <Compile Include="src\CompoundObjects\FlatMeshTriangle.cs" />
+    <Compile Include="src\CompoundObjects\Mesh.cs" />
+    <Compile Include="src\CompoundObjects\MeshTriangle.cs" />
+    <Compile Include="src\CompoundObjects\SmoothMeshTriangle.cs" />
+    <Compile Include="src\CompoundObjects\UniformGrid.cs" />
+    <Compile Include="src\Loaders\MeshLoader.cs" />
+    <Compile Include="src\Loaders\OFFLoader.cs" />
+    <Compile Include="src\CompoundObjects\CompoundRenderable.cs" />
     <Compile Include="src\Program\LiveViewer.cs" />
     <Compile Include="src\Cameras\Camera.cs" />
     <Compile Include="src\Cameras\PinholeCamera.cs" />
@@ -104,6 +113,10 @@
     <Compile Include="src\Primitives\Instance.cs" />
     <Compile Include="src\Primitives\Torus.cs" />
     <Compile Include="src\Primitives\Triangle.cs" />
+    <Compile Include="src\Samplers\JitteredSampler.cs" />
+    <Compile Include="src\Samplers\MultiJitteredSampler.cs" />
+    <Compile Include="src\Samplers\NRooksSampler.cs" />
+    <Compile Include="src\Samplers\RandomSampler.cs" />
     <Compile Include="src\Samplers\RegularSampler.cs" />
     <Compile Include="src\Samplers\Sampler.cs" />
     <Compile Include="src\Tracers\RayCaster.cs" />

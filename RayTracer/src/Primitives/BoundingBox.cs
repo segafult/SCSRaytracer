@@ -27,6 +27,15 @@ namespace RayTracer
         public double y0, y1;
         public double z0, z1;
 
+        public BoundingBox()
+        {
+            x0 = -GlobalVars.kHugeValue;
+            x1 = GlobalVars.kHugeValue;
+            y0 = -GlobalVars.kHugeValue;
+            y1 = GlobalVars.kHugeValue;
+            z0 = -GlobalVars.kHugeValue;
+            z1 = GlobalVars.kHugeValue;
+        }
         public BoundingBox(double x0_arg, double x1_arg, double y0_arg, double y1_arg, double z0_arg, double z1_arg)
         {
             x0 = x0_arg;
@@ -121,6 +130,13 @@ namespace RayTracer
             //If the largest entering t value is less than the smallest exiting t value, then the ray is inside
             //the bounding box for the range of t values t0 to t1;
             return (t0 < t1 && t1 > GlobalVars.kEpsilon);
+        }
+
+        public bool inside(Point3D parg)
+        {
+            return (parg.xcoord > x0 && parg.xcoord < x1) &&
+                (parg.ycoord > y0 && parg.ycoord < y1) &&
+                (parg.zcoord > z0 && parg.zcoord < z1);
         }
     }
 }

@@ -84,11 +84,21 @@ namespace RayTracer
                 if (objs == null)
                     throw new XmlException("Invalid SCSML: No object tags present in XML document.");
                 foreach (XmlNode objRoot in objs) {
-                    this.LoadPlanes(objRoot, 0);
+                    //Get the list of renderables
+                    XmlNodeList renderables = objRoot.SelectNodes("renderable");
+
+                    foreach(XmlElement rendRoot in renderables)
+                    {
+                        RenderableObject rend = RenderableObject.LoadRenderableObject(rendRoot);
+                        if (rend != null)
+                            w.objectList.Add(rend);
+                    }
+                    /*this.LoadPlanes(objRoot, 0);
                     this.LoadSpheres(objRoot, 0);
                     this.LoadToruses(objRoot, 0);
                     this.LoadTrianglePrimitives(objRoot, 0);
                     this.LoadBoxes(objRoot, 0);
+                    */
                 }
             }
             catch (XmlException e)
@@ -107,12 +117,14 @@ namespace RayTracer
                 //Load world according to parameters of scene
                 this.SetupWorldParameters((XmlElement)scene);
                 this.LoadLights((XmlElement)scene);
-                this.LoadPlanes(scene, 1);
-                this.LoadSpheres(scene, 1);
-                this.LoadToruses(scene, 1);
-                this.LoadTrianglePrimitives(scene, 1);
-                this.LoadBoxes(scene, 1);
-                this.LoadInstances(scene);
+
+                XmlNodeList renderables = scene.SelectNodes("renderable");
+                foreach(XmlElement renderable in renderables)
+                {
+                    RenderableObject myrend = RenderableObject.LoadRenderableObject(renderable);
+                    if (myrend != null)
+                        w.add_Object(myrend);
+                }
             }
             catch (XmlException e)
             {
@@ -339,166 +351,6 @@ namespace RayTracer
         //   END MATERIAL LOADERS
         //-------------------------------------------------------------------------------------------------------
 
-
-        //-------------------------------------------------------------------------------------------------------
-        //   OBJECT LOADERS
-        //-------------------------------------------------------------------------------------------------------
-        private void LoadPlanes(XmlNode objRoot, int flag)
-        {
-            XmlNodeList currentContext = objRoot.SelectNodes("plane");
-            foreach (XmlNode definition in currentContext)
-            {
-                //Filter all objects without an id handle
-                if (((XmlElement)definition).HasAttribute("id"))
-                {
-                    Plane plane = Plane.LoadPlane((XmlElement)definition, w);
-
-                    switch (flag)
-                    {
-                        case 0:
-                            w.objectList.Add(plane);
-                            break;
-                        case 1:
-                            w.add_Object(plane);
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Warning: Plane definition lacks an id handle and will be skipped.");
-                }
-            }
-        }
-        private void LoadSpheres(XmlNode objRoot, int flag)
-        {
-            XmlNodeList currentContext = objRoot.SelectNodes("sphere");
-            foreach (XmlNode definition in currentContext)
-            {
-                //Filter all objects without an id handle
-                if (((XmlElement)definition).HasAttribute("id"))
-                {
-                    Sphere sphere = Sphere.LoadSphere((XmlElement)definition, w);
-
-                    switch (flag)
-                    {
-                        case 0:
-                            w.objectList.Add(sphere);
-                            break;
-                        case 1:
-                            w.add_Object(sphere);
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Warning: Sphere definition lacks an id handle and will be skipped.");
-                }
-            }
-        }        
-        private void LoadToruses(XmlNode objRoot, int flag)
-        {
-            XmlNodeList currentContext = objRoot.SelectNodes("torus");
-            foreach (XmlNode definition in currentContext)
-            {
-                //Filter all objects without an id handle
-                if (((XmlElement)definition).HasAttribute("id"))
-                {
-                    Torus torus = Torus.LoadTorus((XmlElement)definition, w);
-
-                    switch (flag)
-                    {
-                        case 0:
-                            w.objectList.Add(torus);
-                            break;
-                        case 1:
-                            w.add_Object(torus);
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Warning: Torus definition lacks an id handle and will be skipped.");
-                }
-            }
-        }
-        private void LoadTrianglePrimitives(XmlNode objRoot, int flag)
-        {
-            XmlNodeList currentContext = objRoot.SelectNodes("triangle");
-            foreach (XmlNode definition in currentContext)
-            {
-                //Filter all objects without an id handle
-                if (((XmlElement)definition).HasAttribute("id"))
-                {
-                    Triangle triangle = Triangle.LoadTrianglePrimitive((XmlElement)definition, w);
-
-                    switch (flag)
-                    {
-                        case 0:
-                            w.objectList.Add(triangle);
-                            break;
-                        case 1:
-                            w.add_Object(triangle);
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Warning: Triangle definition lacks an id handle and will be skipped.");
-                }
-            }
-        }
-        private void LoadBoxes(XmlNode objRoot, int flag)
-        {
-            XmlNodeList currentContext = objRoot.SelectNodes("box");
-            foreach(XmlNode definition in currentContext)
-            {
-                //Filter all objects without an id handle
-                if (((XmlElement)definition).HasAttribute("id"))
-                {
-                    Box box = Box.LoadBox((XmlElement)definition, w);
-
-                    switch (flag)
-                    {
-                        case 0:
-                            w.objectList.Add(box);
-                            break;
-                        case 1:
-                            w.add_Object(box);
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Warning: Box definition lacks an id handle and will be skipped.");
-                }
-            }
-        }
-        //-------------------------------------------------------------------------------------------------------
-        //   END OBJECT LOADERS
-        //-------------------------------------------------------------------------------------------------------
-
-        //-------------------------------------------------------------------------------------------------------
-        //   WORLDSPACE AND INSTANCING LOADERS
-        //-------------------------------------------------------------------------------------------------------
-        private void LoadInstances(XmlNode objRoot)
-        {
-            XmlNodeList currentContext = objRoot.SelectNodes("instance");
-
-            foreach (XmlNode definition in currentContext)
-            {
-                //Filter all objects without an id handle
-                if (((XmlElement)definition).HasAttribute("id"))
-                {
-                    Instance instance = Instance.LoadInstance((XmlElement)definition, w);
-
-                    w.add_Object(instance);
-                }
-                else
-                {
-                    Console.WriteLine("Warning: Instance definition lacks an id handle and will be skipped.");
-                }
-            }
-        }
         private void SetupWorldParameters(XmlElement scene)
         {
             //Setup world according to default parameters before doing anything.
@@ -548,26 +400,21 @@ namespace RayTracer
                 if (sqrt_samples * sqrt_samples == int_samples)
                 {
                     w.vp.set_numSamples(int_samples);
+                    
                 }
                 else
                 {
                     Console.WriteLine("Given number of samples (" + int_samples + ") is a not a square number, multisampling disabled.");
                 }
             }
+            GlobalVars.num_samples = w.vp.numSamples;
 
             string str_sampler = scene.GetAttribute("sampler");
             if (!str_sampler.Equals(""))
             {
-                //Determine sampler type and load accordingly.
-                if (str_sampler.Equals("regular"))
-                {
-                    w.vp.set_sampler(new RegularSampler(w.vp.numSamples));
-                }
-                else
-                {
-                    Console.WriteLine("Unknown sampler type: " + str_sampler);
-                }
+                w.vp.set_sampler(Sampler.LoadSampler(str_sampler));
             }
+            GlobalVars.vp_sampler = w.vp.vpSampler;
 
             string str_algorithm = scene.GetAttribute("algorithm");
             if (!str_algorithm.Equals(""))
@@ -606,7 +453,6 @@ namespace RayTracer
             }
 
             //Cleanup
-            w.vp.vpSampler.generate_samples();
             w.camera.compute_uvw();
         }
         private void LoadLights(XmlElement scene)

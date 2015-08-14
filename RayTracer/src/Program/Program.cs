@@ -17,7 +17,6 @@
 
 using System;
 using System.IO;
-using SFML.Graphics;
 
 namespace RayTracer
 {
@@ -112,26 +111,38 @@ namespace RayTracer
             }
 
             World w = new World();
+            GlobalVars.worldref = w;
             w.build();
+            w.open_window(w.vp.hres, w.vp.vres);
+            //while (GlobalVars.frameno < 120)
+            //{
+            //    w.camera.setEye(new Point3D(200, 200, GlobalVars.cam_zcoord));
+            //    w.camera.setLookat(new Point3D(0, 0, GlobalVars.lookat_zcoord));
+            //    w.camera.compute_uvw();
 
-            switch(multithread)
-            {
-                case false:
-                    w.camera.render_scene(w);
-                    break;
-                case true:
-                    w.camera.render_scene_multithreaded(w, threads);
-                    break;
-            }
+                switch (multithread)
+                {
+                    case false:
+                        w.camera.render_scene(w);
+                        break;
+                    case true:
+                        w.camera.render_scene_multithreaded(w, threads);
+                        break;
+                }
 
-            w.save_displayed_image(GlobalVars.outFile);
+                w.save_displayed_image(GlobalVars.outFile);
 
-            //w.drawPlan.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
-            //w.drawPlan.Save(GlobalVars.outFile);
+            //    GlobalVars.cam_zcoord -= 10;
+            //    GlobalVars.lookat_zcoord -= 10;
+            //    GlobalVars.frameno += 1;
+            //}
+
+
             while(w.get_window_thread().IsAlive)
             {
                 w.poll_events();
             }
+            w.get_window_thread().Abort();
         }
     }
 }

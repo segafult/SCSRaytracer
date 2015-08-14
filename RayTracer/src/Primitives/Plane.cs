@@ -90,11 +90,9 @@ namespace RayTracer
             return false;
         }
 
-        public static Plane LoadPlane(XmlElement def, World w)
+        public static Plane LoadPlane(XmlElement def)
         {
             Plane toReturn = new Plane();
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
 
             //Load point if provided
             XmlNode p = def.SelectSingleNode("point");

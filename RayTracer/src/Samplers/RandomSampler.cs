@@ -16,45 +16,39 @@
 //
 
 using System;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RayTracer
 {
-    /// <summary>
-    /// Regularly spaced subpixel sampler for simple antialiasing.
-    /// </summary>
-    public class RegularSampler : Sampler
+    class RandomSampler : Sampler
     {
 
-        public RegularSampler(int s) : base(s)
+        public RandomSampler(int s) : base(s)
         {
-
+            randomgen = new Random();
         }
-        public RegularSampler(Sampler clone) : base(clone)
+        public RandomSampler(Sampler clone) : base(clone)
         {
-
+            randomgen = new Random();
         }
-
         public override void generate_samples()
         {
-            int n = (int)Math.Sqrt(numsamples);
-            bitmask = (ulong)numsamples - 1;
-
-            for(int setloop = 0; setloop<numsets; setloop++)
+            //Generate random samples
+            for (int s = 0; s < numsets; s++)
             {
-                for(int j = 0; j < n; j++)
+                for (int i = 0; i < numsamples; i++)
                 {
-                    for(int k = 0; k < n; k++)
-                    {
-                        samples.Add(new Point2D((double)k / (double)n, (double)j / (double)n));
-                    }
+                    samples.Add(new Point2D(randomgen.NextDouble(), randomgen.NextDouble()));
                 }
             }
         }
 
         public override Sampler clone()
         {
-            return new RegularSampler(this);
+            return new RandomSampler(this);
         }
     }
 }

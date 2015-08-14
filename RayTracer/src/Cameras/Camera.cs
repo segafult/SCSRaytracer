@@ -16,6 +16,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Xml;
 
 namespace RayTracer
@@ -23,16 +25,28 @@ namespace RayTracer
     public abstract class Camera
     {
         protected Point3D eye;
-        protected Point3D lookat;
+        protected Point3D lookat;  
         protected Vect3D up;
         protected Vect3D u, v, w;
         protected double exposure_time;
+        protected double zoom;
 
+        public Camera()
+        {
+            this.setUp(new Vect3D(0, 1, 0));
+            this.setEye(new Point3D(0, 0, 0));
+            this.setExposure(1.0);
+            this.setLookat(new Point3D(0, 0, 500));
+            this.setExposure(1.0);
+            this.setZoom(1.0);
+            this.compute_uvw();
+        }
         //Getters and setters
         public void setEye(Point3D e) { eye = new Point3D(e); }
         public void setLookat(Point3D l) { lookat = new Point3D(l); }
         public void setUp(Vect3D u) { up = new Vect3D(u); }
         public void setExposure(double e) { exposure_time = e; }
+        public void setZoom(double z) { zoom = z; }
 
         public void compute_uvw() 
         {
@@ -45,7 +59,65 @@ namespace RayTracer
         }
 
         public abstract void render_scene(World w);
-        public abstract void render_scene_multithreaded(World w, int numthreads);
+        public virtual void render_scene_multithreaded(World w, int numThreads)
+        {
+            ViewPlane vp = w.vp;
+
+
+            vp.s /= zoom;
+
+            List<Thread> threads = new List<Thread>();
+
+            if (numThreads == 2)
+            {
+                threads.Add(new Thread(() => render_scene_fragment(w, 0, (int)vp.hres / 2, 0, vp.vres, 0)));
+                threads.Add(new Thread(() => render_scene_fragment(w, (int)vp.hres / 2, vp.hres, 0, vp.vres, 1)));
+            }
+            else if (numThreads == 4)
+            {
+                threads.Add(new Thread(() => render_scene_fragment(w, 0, vp.hres / 2, 0, vp.vres / 2, 0)));
+                threads.Add(new Thread(() => render_scene_fragment(w, vp.hres / 2, vp.hres, 0, vp.vres / 2, 1)));
+                threads.Add(new Thread(() => render_scene_fragment(w, 0, vp.hres / 2, vp.vres / 2, vp.vres, 2)));
+                threads.Add(new Thread(() => render_scene_fragment(w, vp.hres / 2, vp.hres, vp.vres / 2, vp.vres, 3)));
+            }
+            else if (numThreads == 8)
+            {
+                threads.Add(new Thread(() => render_scene_fragment(w, 0, (vp.hres / 4), 0, vp.vres / 2, 0)));
+                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 4), (vp.hres / 2), 0, vp.vres / 2, 1)));
+                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 2), (3 * vp.hres / 4), 0, vp.vres / 2, 2)));
+                threads.Add(new Thread(() => render_scene_fragment(w, (3 * vp.hres / 4), vp.hres, 0, vp.vres / 2, 3)));
+                threads.Add(new Thread(() => render_scene_fragment(w, 0, (vp.hres / 4), vp.vres / 2, vp.vres, 4)));
+                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 4), (vp.hres / 2), vp.vres / 2, vp.vres, 5)));
+                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 2), (3 * vp.hres / 4), vp.vres / 2, vp.vres, 6)));
+                threads.Add(new Thread(() => render_scene_fragment(w, (3 * vp.hres / 4), vp.hres, vp.vres / 2, vp.vres, 7)));
+            }
+            else
+            {
+                Console.WriteLine("Multithreading only supported for 2, 4, or 8 threads");
+            }
+
+            foreach (Thread t in threads)
+            {
+                t.Start();
+            }
+            //Spinwait for all threads
+            bool allDone = false;
+            do
+            {
+                allDone = true;
+                foreach (Thread t in threads)
+                {
+                    if (t.IsAlive)
+                    {
+                        allDone = false;
+                    }
+                }
+                w.poll_events();
+
+            } while (!allDone);
+            //}
+
+        }
         protected abstract void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo);
 
         public static Camera LoadCamera(XmlElement camRoot)
@@ -60,9 +132,21 @@ namespace RayTracer
                 {
                     toReturn = PinholeCamera.LoadPinholeCamera(camRoot);
                 }
+                else if(cam_type.Equals("thinlens"))
+                {
+                    toReturn = ThinLensCamera.LoadThinLensCamera(camRoot);
+                }
                 else
                 {
                     Console.WriteLine("Unknown camera type: " + cam_type);
+                }
+
+                XmlNode node_zoom = camRoot.SelectSingleNode("zoom");
+                if (node_zoom != null)
+                {
+                    string str_zoom = ((XmlText)node_zoom.FirstChild).Data;
+                    double zoom = Convert.ToDouble(str_zoom);
+                    toReturn.setZoom(zoom);
                 }
 
                 //Load common attributes afterwards.

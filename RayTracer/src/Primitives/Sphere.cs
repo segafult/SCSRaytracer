@@ -170,11 +170,9 @@ namespace RayTracer
             return false;
         }
 
-        public static Sphere LoadSphere(XmlElement def, World w)
+        public static Sphere LoadSphere(XmlElement def)
         {
             Sphere toReturn = new Sphere();
-            toReturn.id = def.GetAttribute("id");
-            toReturn.setMaterial(w.getMaterialById(def.GetAttribute("mat")));
 
             //Load center of the sphere if provided
             XmlNode c = def.SelectSingleNode("point");
@@ -204,6 +202,11 @@ namespace RayTracer
             }
 
             return toReturn;
+        }
+
+        public override BoundingBox get_bounding_box()
+        {
+            return new BoundingBox(c.xcoord - r, c.xcoord + r, c.ycoord - r, c.ycoord + r, c.zcoord - r, c.zcoord + r);
         }
     }
 }

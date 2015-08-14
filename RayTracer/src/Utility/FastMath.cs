@@ -284,5 +284,14 @@ namespace RayTracer
 
             return num;
         }
+
+        static public double min(double a, double b)
+        {
+            return (a < b) ? a : b;
+        }
+        static public double max(double a, double b)
+        {
+            return (a > b) ? a : b;
+        }
     }
 }
