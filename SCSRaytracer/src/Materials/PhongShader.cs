@@ -20,7 +20,7 @@ namespace RayTracer
     /// <summary>
     /// Shader for simple phong model of specular reflection (sum of ambient, diffuse and specular components)
     /// </summary>
-    public class PhongShader : Material
+    class PhongShader : Material
     {
         protected Lambertian ambient_brdf;
         protected Lambertian diffuse_brdf;

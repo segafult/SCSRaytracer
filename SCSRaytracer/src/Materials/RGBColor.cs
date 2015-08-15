@@ -51,6 +51,12 @@ namespace RayTracer
             g = (double)col.G / 255.0;
             b = (double)col.B / 255.0;
         }
+        public RGBColor (SFML.Graphics.Color col)
+        {
+            r = (double)col.R / 255.0;
+            g = (double)col.G / 255.0;
+            b = (double)col.B / 255.0;
+        }
         //Copy constructor
         public RGBColor (RGBColor color)
         {
@@ -73,47 +79,7 @@ namespace RayTracer
         {
             this.b = b;
         }
-        /*
-        /// <summary>
-        /// Returns a color that is effectively the sum of two other colors.
-        /// </summary>
-        /// <param name="c2">Color to add</param>
-        /// <returns>Sum of this and c2</returns>
-        public RGBColor addColor(RGBColor c2)
-        {
-            return new RGBColor(this.r + c2.r, this.g + c2.g, this.b + c2.b);
-        }
-
-        /// <summary>
-        /// Scales color by a given scalar value.
-        /// </summary>
-        /// <param name="s">Scalar value to multiply color by</param>
-        /// <returns>New RGBColor with scaled rgb components</returns>
-        public RGBColor multiplyScalar(double s)
-        {
-            return new RGBColor(this.r * s, this.g * s, this.b * s);
-        }
-
-        /// <summary>
-        /// Multiplies two rgb colors together
-        /// </summary>
-        /// <param name="c2">Color to multiply this color by</param>
-        /// <returns>New product rgb color</returns>
-        public RGBColor multiplyColor(RGBColor c2)
-        {
-            return new RGBColor(this.r * c2.r, this.g * c2.g, this.b * c2.b);
-        }
-
-        /// <summary>
-        /// Raises a color to a given power
-        /// </summary>
-        /// <param name="p">Power to raise given color to</param>
-        /// <returns>New RGB color raised to a given power</returns>
-        public RGBColor pow(double p)
-        {
-            return new RGBColor(Math.Pow(this.r, p), Math.Pow(this.g, p), Math.Pow(this.b, p));
-        }
-        */
+  
         public RGBColor clamp()
         {
             double r_c, g_c, b_c;

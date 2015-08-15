@@ -17,10 +17,11 @@
 
 namespace RayTracer
 {
-    public class Lambertian : BRDF
+    class Lambertian : BRDF
     {
         private double kd;
         private RGBColor cd;
+        private Texture cd_tex = null;
 
         public Lambertian()
         {
@@ -43,14 +44,21 @@ namespace RayTracer
         public RGBColor getCd() { return cd; }
         public void setKd(double kdarg) { kd = kdarg; }
         public void setCd(RGBColor cdarg) { cd = cdarg; }
+        public void setCd(Texture texarg) { cd_tex = texarg; }
         
         public override RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo)
         {
-            return (kd * cd * GlobalVars.invPI);
+            if (cd_tex == null)
+                return (kd * cd * GlobalVars.invPI);
+            else
+                return (kd * cd_tex.getColor(sr) * GlobalVars.invPI);
         }
         public override RGBColor rho(ShadeRec sr, Vect3D wo)
         {
-            return (kd * cd);
+            if (cd_tex == null)
+                return (kd * cd);
+            else
+                return (kd * cd_tex.getColor(sr));
         }
     }
 }

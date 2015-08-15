@@ -20,7 +20,7 @@ namespace RayTracer
     /// <summary>
     /// Simple shader for matte materials
     /// </summary>
-    public class MatteShader : Material
+    class MatteShader : Material
     {
         private Lambertian ambient_brdf;
         private Lambertian diffuse_brdf;
@@ -44,6 +44,7 @@ namespace RayTracer
         public void setKa(double ka) { ambient_brdf.setKd(ka); }
         public void setKd(double kd) { diffuse_brdf.setKd(kd); }
         public void setCd(RGBColor c) { ambient_brdf.setCd(c); diffuse_brdf.setCd(c); }
+        public void setCd(Texture tex) { ambient_brdf.setCd(tex); diffuse_brdf.setCd(tex); }
 
         public override RGBColor shade(ShadeRec sr)
         {

@@ -178,6 +178,8 @@ namespace RayTracer
                     toReturn.setExposure(exposure);
                 }
 
+                toReturn.compute_uvw();
+
                 return toReturn;
             }
             else

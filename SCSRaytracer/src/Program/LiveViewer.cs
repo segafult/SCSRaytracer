@@ -28,7 +28,7 @@ namespace RayTracer
         public SFML.Graphics.Image live_image;
 
         RenderWindow live_window;
-        Texture live_texture;
+        SFML.Graphics.Texture live_texture;
         Sprite live_sprite;
         Thread render_thread;
 
@@ -50,7 +50,7 @@ namespace RayTracer
 
             //Initialize render targets
             live_image = new SFML.Graphics.Image((uint)w.vp.hres, (uint)w.vp.vres);
-            live_texture = new Texture(live_image);
+            live_texture = new SFML.Graphics.Texture(live_image);
             live_sprite = new Sprite(live_texture);
 
             //Dispatch thread for window.
@@ -58,7 +58,7 @@ namespace RayTracer
             render_thread.Start();
         }
 
-        private void live_render_loop(Sprite spr, Texture tex, SFML.Graphics.Image img)
+        private void live_render_loop(Sprite spr, SFML.Graphics.Texture tex, SFML.Graphics.Image img)
         {
 
 

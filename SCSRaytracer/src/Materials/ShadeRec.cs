@@ -35,6 +35,9 @@ namespace RayTracer
         public int depth; //Recursion depth (reflection)
         public Vect3D dir; //Area lighting
 
+        public double u; //UV coordinates
+        public double v;
+
         //Constructor
         public ShadeRec(World worldRef)
         {

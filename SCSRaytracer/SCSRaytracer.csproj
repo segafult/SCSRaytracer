@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RayTracer</RootNamespace>
     <AssemblyName>RayTracer</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -113,11 +113,16 @@
     <Compile Include="src\Samplers\RandomSampler.cs" />
     <Compile Include="src\Samplers\RegularSampler.cs" />
     <Compile Include="src\Samplers\Sampler.cs" />
+    <Compile Include="src\Textures\ImageTexture.cs" />
+    <Compile Include="src\Textures\Mappers\Mapper.cs" />
+    <Compile Include="src\Textures\Mappers\SphericalMapper.cs" />
+    <Compile Include="src\Textures\Texture.cs" />
     <Compile Include="src\Tracers\RayCaster.cs" />
     <Compile Include="src\Tracers\Whitted.cs" />
     <Compile Include="src\Utility\FastMath.cs" />
     <Compile Include="src\Utility\GlobalVars.cs" />
     <Compile Include="src\Lights\Light.cs" />
+    <Compile Include="src\Utility\Image.cs" />
     <Compile Include="src\Utility\Matrix.cs" />
     <Compile Include="src\Utility\Normal.cs" />
     <Compile Include="src\Primitives\Plane.cs" />
@@ -153,7 +158,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="lib\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="csfml-graphics-2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -225,8 +232,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="lib\" />
-    <Folder Include="freetype.framework\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

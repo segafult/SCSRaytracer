@@ -169,8 +169,47 @@ namespace RayTracer
                 Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
                 groundplane.setMaterial(new DebugCheckerboard());
                 add_Object(groundplane);
+
+                SphericalMapper sphere_map = new SphericalMapper();
+                Image my_image = new Image();
+                my_image.loadFromFile("E:\\earth.jpg");
+
+                ImageTexture my_tex = new ImageTexture();
+                my_tex.setMapper(sphere_map);
+                my_tex.set_image(my_image);
+
+                MatteShader mymatte = new MatteShader();
+                mymatte.setCd(my_tex);
+                mymatte.setKa(0.9);
+
+                Sphere mysphere = new Sphere(new Point3D(0, 0, 0), 20);
+                mysphere.setMaterial(mymatte);
+
+                Instance myinstance = new Instance(mysphere);
+                myinstance.scale(new Vect3D(5, 5, 5));
+                myinstance.rotate(new Vect3D(23.5, 90, 0));
+                add_Object(myinstance);
+
+                Image my_skybox = new Image();
+                my_skybox.loadFromFile("E:\\skybox.jpg");
+
+                my_tex = new ImageTexture();
+                my_tex.setMapper(sphere_map);
+                my_tex.set_image(my_skybox);
+
+                MatteShader skymatte = new MatteShader();
+                skymatte.setCd(my_tex);
+                skymatte.setKa(1.0);
+
+                Sphere skybox = new Sphere(new Point3D(0, 0, 0),1000);
+                skybox.setMaterial(skymatte);
+                add_Object(skybox);
+
             }
             //Custom build function if no input file specified
+
+
+            
             else
             {
                     ///---------------------------------------------------------------------------------------

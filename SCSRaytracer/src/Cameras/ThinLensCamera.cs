@@ -36,6 +36,7 @@ namespace RayTracer
             d = 250;
             f = 500;
             radius = 20;
+            setUp(new Vect3D(0, 1, 0));
         }
         public void set_sampler(Sampler sp)
         {
@@ -80,8 +81,8 @@ namespace RayTracer
                         //Sample on unit square
                         sp = vp.vpSampler.sample_unit_square();
                         //Sample in screenspace
-                        pp.x = vp.s * (c - vp.hres / 2.0 + sp.x);
-                        pp.y = vp.s * (r - vp.hres / 2.0 + sp.y);
+                        pp.x = vp.s * (c - vp.hres * 0.5 + sp.x);
+                        pp.y = vp.s * (r - vp.vres * 0.5 + sp.y);
 
                         dp = depth_sampler.sample_disk();
                         lp.x = dp.x * radius;
@@ -126,8 +127,8 @@ namespace RayTracer
                         //Sample on unit square
                         sp = screen_sampler_clone.sample_unit_square();
                         //Sample in screenspace
-                        pp.x = vp.s * (c - vp.hres / 2.0 + sp.x);
-                        pp.y = vp.s * (r - vp.hres / 2.0 + sp.y);
+                        pp.x = vp.s * (c - vp.hres * 0.5 + sp.x);
+                        pp.y = vp.s * (r - vp.vres * 0.5 + sp.y);
 
                         dp = lens_sampler_clone.sample_disk();
                         lp.x = dp.x * radius;

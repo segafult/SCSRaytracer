@@ -131,7 +131,7 @@ namespace RayTracer
                 //Transform the computed normal into worldspace
                 sr.normal = inv_net_mat * sr.normal;
                 sr.normal.normalize();
-                sr.hit_point_local = r.origin + tmin * r.direction;
+                //sr.hit_point_local = r.origin + tmin * r.direction;
                 return true;
             }
             else

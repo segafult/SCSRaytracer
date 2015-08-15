@@ -17,7 +17,7 @@
 
 namespace RayTracer
 {
-    public class ReflectiveShader : PhongShader
+    class ReflectiveShader : PhongShader
     {
         private PerfectSpecular reflective_brdf;
 
