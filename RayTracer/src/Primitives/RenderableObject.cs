@@ -25,8 +25,10 @@ namespace RayTracer
 {
     public abstract class RenderableObject
     {
-        public RGBColor color;
+        public string id;
+        //public RGBColor color;
         private Material mat;
+
         public virtual bool hit(Ray r, ref double tmin, ref ShadeRec sr)
         {
             return false;

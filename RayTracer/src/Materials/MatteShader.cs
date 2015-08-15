@@ -31,6 +31,15 @@ namespace RayTracer
         private Lambertian ambient_brdf;
         private Lambertian diffuse_brdf;
 
+        public override string ToString()
+        {
+            string toreturn = "Matte Shader:\n";
+            toreturn += "  ID = " + this.id + "\n";
+            toreturn += "  Ka = " + ambient_brdf.getKd() + "\n";
+            toreturn += "  Kd = " + diffuse_brdf.getKd() + "\n";
+            toreturn += "  Cd = " + ambient_brdf.getCd().ToString();
+            return toreturn;
+        }
         public MatteShader()
         {
             ambient_brdf = new Lambertian();

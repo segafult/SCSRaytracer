@@ -30,6 +30,8 @@ namespace RayTracer
         public const double kHugeValue = 1.0e6;
         public const double invPI = 1 / Math.PI;
 
+        static public bool verbose = true;
+
         static public readonly RGBColor color_black = new RGBColor(0, 0, 0);
         static public readonly RGBColor color_red = new RGBColor(1.0, 0, 0);
     }

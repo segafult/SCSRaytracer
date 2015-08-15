@@ -36,19 +36,19 @@ namespace RayTracer
         public Lambertian(double kdarg, RGBColor cdarg)
         {
             kd = kdarg;
-            cdarg = new RGBColor(cdarg);
+            cd = cdarg;
         }
         //Copy constructor
         public Lambertian(Lambertian clone)
         {
             kd = clone.getKd();
-            cd = new RGBColor(clone.getCd());
+            cd = clone.getCd();
         }
 
         public double getKd() { return kd; }
         public RGBColor getCd() { return cd; }
         public void setKd(double kdarg) { kd = kdarg; }
-        public void setCd(RGBColor cdarg) { cd = new RGBColor(cdarg); }
+        public void setCd(RGBColor cdarg) { cd = cdarg; }
         
         public override RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo)
         {

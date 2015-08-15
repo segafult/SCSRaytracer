@@ -35,12 +35,14 @@ namespace RayTracer
         public Instance()
         {
             inv_net_mat = new Matrix();
+            this.setMaterial(null);
         }
         //Constructor with handle
         public Instance(RenderableObject handle)
         {
             inv_net_mat = new Matrix();
             payload = handle;
+            this.setMaterial(null);
         }
 
         public RenderableObject getHandle()
@@ -101,7 +103,14 @@ namespace RayTracer
 
         public override Material getMaterial()
         {
-            return payload.getMaterial();
+            if (getMaterial() == null)
+            {
+                return payload.getMaterial();
+            }
+            else
+            {
+                return getMaterial();
+            }
         }
     }
 }

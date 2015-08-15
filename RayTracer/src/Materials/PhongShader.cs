@@ -32,6 +32,18 @@ namespace RayTracer
         Lambertian diffuse_brdf;
         GlossySpecular specular_brdf;
 
+        public override string ToString()
+        {
+            string toReturn = "Phong Shader:\n";
+            toReturn += "   ID: " + id + "\n";
+            toReturn += "   Ka: " + ambient_brdf.getKd() + "\n";
+            toReturn += "   Kd: " + diffuse_brdf.getKd() + "\n";
+            toReturn += "   Cd: " + ambient_brdf.getCd() + "\n";
+            toReturn += "   Exp: " + specular_brdf.getExp() + "\n";
+            toReturn += "   Ks: " + specular_brdf.getKs();
+
+            return toReturn;
+        }
         public PhongShader()
         {
             ambient_brdf = new Lambertian();
