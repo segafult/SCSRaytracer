@@ -17,13 +17,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
     /// <summary>
     /// Abstract base class of all samplers for subpixel multisampling.
     /// </summary>
-    abstract public class Sampler
+    abstract class Sampler
     {
         protected int numsamples; //Number of samples per pixel
         protected int numsets; //Number of stored "sample sets"
@@ -150,12 +151,16 @@ namespace RayTracer
                 index[swapindex] = tmp;
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual Point2D sample_unit_square()
         {
             if (count % (ulong)numsamples == 0)
                 jump = (randomgen.Next() % numsets);
             return (samples[jump + shuffledIndices[(int)((ulong)jump + count++ % (ulong)(numsamples))]]);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual Point2D sample_disk()
         {
             if(count%(ulong)numsamples == 0)

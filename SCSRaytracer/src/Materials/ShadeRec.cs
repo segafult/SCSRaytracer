@@ -20,7 +20,7 @@ namespace RayTracer
     /// <summary>
     /// Convenient bundle for passing information between shader subroutines.
     /// </summary>
-    public class ShadeRec
+    class ShadeRec
     {
         public bool hit_an_object; //Whether ray hit an object
         public Material obj_material; //Material reference for shading

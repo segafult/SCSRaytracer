@@ -23,7 +23,7 @@ namespace RayTracer
     /// <summary>
     /// Regularly spaced subpixel sampler for simple antialiasing.
     /// </summary>
-    public class RegularSampler : Sampler
+    class RegularSampler : Sampler
     {
 
         public RegularSampler(int s) : base(s)

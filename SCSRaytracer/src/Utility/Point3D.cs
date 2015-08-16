@@ -23,18 +23,12 @@ namespace RayTracer
     /// <summary>
     /// Representation of a point in 3D space
     /// </summary>
-    sealed public class Point3D
+    struct Point3D
     {
         public double xcoord, ycoord, zcoord;
 
         //Constructors
         //Default constructor at origin
-        public Point3D()
-        {
-            xcoord = 0.0;
-            ycoord = 0.0;
-            zcoord = 0.0;
-        }
         public Point3D(double x, double y, double z)
         {
             xcoord = x;
@@ -101,7 +95,7 @@ namespace RayTracer
             catch(System.FormatException e)
             {
                 Console.WriteLine(e.ToString());
-                return null;
+                return new Point3D(0,0,0);
             }
         }
 

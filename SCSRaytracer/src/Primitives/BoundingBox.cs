@@ -21,7 +21,7 @@ namespace RayTracer
     /// Axis aligned bounding box for expensive ray-object intersections.
     /// Won't cast shadows, and won't appear in renderings.
     /// </summary>
-    public class BoundingBox : RenderableObject
+    class BoundingBox : RenderableObject
     {
         public double x0, x1;
         public double y0, y1;

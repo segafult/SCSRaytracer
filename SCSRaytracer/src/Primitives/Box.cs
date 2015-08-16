@@ -22,7 +22,7 @@ using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
-    public class Box : RenderableObject
+    class Box : RenderableObject
     {
         private double x0, x1;
         private double y0, y1;

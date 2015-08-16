@@ -23,7 +23,7 @@ namespace RayTracer
     /// <summary>
     /// Template class, Light.
     /// </summary>
-    abstract public class Light
+    abstract class Light
     {
         protected bool shadows;
         protected RGBColor color;
@@ -67,10 +67,10 @@ namespace RayTracer
             {
                 string str_color = ((XmlText)node_color.FirstChild).Data;
                 RGBColor color = new RGBColor(System.Drawing.ColorTranslator.FromHtml(str_color));
-                if (color != null)
-                {
+                //if (color.r != null)
+                //{
                     toReturn.setColor(color);
-                }
+                //}
             }
             return toReturn;
         }

@@ -24,7 +24,7 @@ namespace RayTracer
     /// Directional light, has no point source nor distance attenuation.
     /// Similar to sunslight
     /// </summary>
-    public class DirectionalLight : Light
+    class DirectionalLight : Light
     {
         private double intensity;
         private Vect3D direction;
@@ -84,10 +84,10 @@ namespace RayTracer
             {
                 string str_dir = ((XmlText)node_dir.FirstChild).Data;
                 Vect3D direction = Vect3D.FromCsv(str_dir);
-                if (direction != null)
-                {
+                //if (direction != null)
+                //{
                     toReturn.setDirection(direction);
-                }
+                //}
             }
             XmlNode node_int = lightRoot.SelectSingleNode("intensity");
             if (node_int != null)

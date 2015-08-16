@@ -21,7 +21,7 @@ using System.Xml;
 
 namespace RayTracer
 {
-    public class XMLProcessor
+    class XMLProcessor
     {
         private XmlDocument sceneXML;
         private XmlReader sceneReader;

@@ -23,7 +23,7 @@ namespace RayTracer
     /// <summary>
     /// Infinitely small light with a point of origin, color and intensity. Subject to distance attenuation.
     /// </summary>
-    public class PointLight : Light
+    class PointLight : Light
     {
         private double intensity;
         private Point3D location;
@@ -97,10 +97,10 @@ namespace RayTracer
             {
                 string str_point = ((XmlText)node_point.FirstChild).Data;
                 Point3D point = Point3D.FromCsv(str_point);
-                if (point != null)
-                {
+                //if (point != 0)
+                //{
                     toReturn.setLocation(point);
-                }
+                //}
             }
             XmlNode node_int = lightRoot.SelectSingleNode("intensity");
             if (node_int != null)

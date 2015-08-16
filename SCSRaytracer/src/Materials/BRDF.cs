@@ -17,7 +17,7 @@
 
 namespace RayTracer
 {
-    abstract public class BRDF
+    abstract class BRDF
     {
         protected Sampler sampler_ptr;
         protected Normal normal;

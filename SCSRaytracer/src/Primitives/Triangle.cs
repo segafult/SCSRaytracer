@@ -22,9 +22,9 @@ using System.Xml;
 namespace RayTracer
 {
     /// <summary>
-    /// Triangle! ^______^
+    /// Simple representation of a triangle which stores its own vertices as points.
     /// </summary>
-    public class Triangle : RenderableObject
+    class Triangle : RenderableObject
     {
         private Point3D v1, v2, v3; //Vertexes
 
@@ -76,7 +76,7 @@ namespace RayTracer
                 case 2: return v2;
                 case 3: return v3;
             }
-            return null;
+            return new Point3D(0,0,0);
         }
         public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
         {

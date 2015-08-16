@@ -23,7 +23,7 @@ using System.Xml;
 
 namespace RayTracer
 {
-    public class PinholeCamera : Camera
+    class PinholeCamera : Camera
     {
         private double d; //Distance between pinhole and viewplane
 

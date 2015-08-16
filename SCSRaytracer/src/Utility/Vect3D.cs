@@ -21,20 +21,13 @@ using System.Runtime.CompilerServices;
 namespace RayTracer
 {
     /// <summary>
-    /// Class: Vect3D, a simple representation of a 3 dimensional Vector
+    /// Struct: Vect3D, a simple representation of a 3 dimensional Vector
     /// </summary>
-    sealed public class Vect3D
+    struct Vect3D
     {
         public double xcoord, ycoord, zcoord;
         
         //Constructors
-        //Default coordinates at origin
-        public Vect3D()
-        {
-            xcoord = 0.0;
-            ycoord = 0.0;
-            zcoord = 0.0;
-        }
         public Vect3D(double x, double y, double z)
         {
             xcoord = x;
@@ -96,7 +89,7 @@ namespace RayTracer
             catch (System.FormatException e)
             {
                 Console.WriteLine(e.ToString());
-                return null;
+                return new Vect3D(0,0,0);
             }
         }
 

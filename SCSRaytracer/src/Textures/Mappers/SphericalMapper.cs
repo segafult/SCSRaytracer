@@ -36,7 +36,6 @@ namespace RayTracer
             double z = hit_normalized.zcoord;
 
             double phi = Math.Atan2(x, z) + Math.PI;
-            //phi *= 4;
             double omega = Math.Acos(y);
 
             //Calculate spherical UV coordinates

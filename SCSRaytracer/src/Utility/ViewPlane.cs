@@ -17,7 +17,7 @@
 
 namespace RayTracer
 {
-    public class ViewPlane
+    class ViewPlane
     {
         public int hres;
         public int vres;

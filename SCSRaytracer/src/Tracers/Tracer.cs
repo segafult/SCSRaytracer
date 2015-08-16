@@ -20,7 +20,7 @@ namespace RayTracer
     /// <summary>
     /// Template class for all other tracers
     /// </summary>
-    public abstract class Tracer
+    abstract class Tracer
     {
         protected World world_pointer;
 

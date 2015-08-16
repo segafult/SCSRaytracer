@@ -23,7 +23,7 @@ namespace RayTracer
     /// <summary>
     /// Ambient light for basic world illumination
     /// </summary>
-    public class AmbientLight : Light
+    class AmbientLight : Light
     {
         private double intensity;
         

@@ -20,7 +20,7 @@ using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
-    public class RGBColor
+    public struct RGBColor
     {
         public double r;
         public double g;
@@ -32,13 +32,7 @@ namespace RayTracer
                 Convert.ToByte(g * 255.0).ToString("x") + 
                 Convert.ToByte(b * 255.0).ToString("x");
         }
-        public RGBColor()
-        {
-            //Default color = grey
-            r = 0.5;
-            g = 0.5;
-            b = 0.5;
-        }
+
         public RGBColor (double red, double green, double blue)
         {
             r = red;
@@ -80,6 +74,7 @@ namespace RayTracer
             this.b = b;
         }
   
+        
         public RGBColor clamp()
         {
             double r_c, g_c, b_c;
@@ -88,7 +83,7 @@ namespace RayTracer
             b_c = clamp_to_range(b, 0.0, 1.0);
             return new RGBColor(r_c, g_c, b_c);
         }
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private double clamp_to_range(double value, double lowerbound, double upperbound)
         {

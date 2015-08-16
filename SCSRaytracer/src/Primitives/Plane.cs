@@ -100,10 +100,10 @@ namespace RayTracer
             {
                 string pText = ((XmlText)p.FirstChild).Data;
                 Point3D pObj = Point3D.FromCsv(pText);
-                if (pObj != null)
-                {
+                //if (pObj != null)
+                //{
                     toReturn.setP(pObj);
-                }
+                //}
             }
 
             //Load normal if provided

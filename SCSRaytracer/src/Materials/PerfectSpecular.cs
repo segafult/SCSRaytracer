@@ -17,7 +17,7 @@
 
 namespace RayTracer
 {
-    public class PerfectSpecular : BRDF
+    class PerfectSpecular : BRDF
     {
         private double kr;
         private RGBColor cr;

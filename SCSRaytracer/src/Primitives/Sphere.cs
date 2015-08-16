@@ -21,7 +21,7 @@ using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
-    public sealed class Sphere : RenderableObject
+    sealed class Sphere : RenderableObject
     {
         private Point3D c;
         private double r;
@@ -180,10 +180,10 @@ namespace RayTracer
             {
                 string cText = ((XmlText)c.FirstChild).Data;
                 Point3D cObj = Point3D.FromCsv(cText);
-                if (cObj != null)
-                {
+                //if (cObj != null)
+                //{
                     toReturn.set_center(cObj);
-                }
+                //}
             }
 
             try

@@ -34,15 +34,15 @@ namespace RayTracer
         //Default constructor
         public Instance()
         {
-            inv_net_mat = new Matrix();
-            net_mat = new Matrix();
+            inv_net_mat = new Matrix(1);
+            net_mat = new Matrix(1);
             this.setMaterial(null);
         }
         //Constructor with handle
         public Instance(RenderableObject handle)
         {
-            inv_net_mat = new Matrix();
-            net_mat = new Matrix();
+            inv_net_mat = new Matrix(1);
+            net_mat = new Matrix(1);
             payload = handle;
             this.setMaterial(null);
         }
@@ -264,11 +264,11 @@ namespace RayTracer
                     string rotString = ((XmlText)rotNode.FirstChild).Data;
                     Vect3D rotations = Vect3D.FromCsv(rotString);
                     //Rotation format valid?
-                    if (rotations != null)
-                    {
+                    //if (rotations != null)
+                    //{
                         //Accumulate rotation on base transformation matrix
                         toReturn.rotate(rotations);
-                    }
+                    //}
                 }
 
                 //If defined, get scaling data
@@ -278,11 +278,11 @@ namespace RayTracer
                     string scaleString = ((XmlText)scaleNode.FirstChild).Data;
                     Vect3D scaling = Vect3D.FromCsv(scaleString);
                     //Scaling format valid?
-                    if (scaling != null)
-                    {
+                    //if (scaling != null)
+                    //{
                         //Accumulate scaling on base transformation matrix
                         toReturn.scale(scaling);
-                    }
+                    //}
                 }
 
                 //If defined, get translation data
@@ -292,11 +292,11 @@ namespace RayTracer
                     string transString = ((XmlText)transNode.FirstChild).Data;
                     Vect3D translation = Vect3D.FromCsv(transString);
                     //Translation format valid?
-                    if (translation != null)
-                    {
+                    //if (translation != null)
+                    //{
                         //Accumulate translation on base transformation matrix
                         toReturn.translate(translation);
-                    }
+                    //}
                 }
             }
             catch (XmlException e) { Console.WriteLine(e.ToString()); }

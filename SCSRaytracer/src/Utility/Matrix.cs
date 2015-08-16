@@ -33,13 +33,13 @@ namespace RayTracer
         public static double invThreeSixtyTwoPi = 1.0 / 360.0 * 2.0 * Math.PI;
 
         //Default constructor (identity matrix)
-        public Matrix()
+        public Matrix(int scale)
         {
             tfVals = new double[4, 4] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
-            tfVals[0, 0] = 1;
-            tfVals[1, 1] = 1;
-            tfVals[2, 2] = 1;
-            tfVals[3, 3] = 1;
+            tfVals[0, 0] = scale;
+            tfVals[1, 1] = scale;
+            tfVals[2, 2] = scale;
+            tfVals[3, 3] = scale;
         }
 
         ///----------------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ namespace RayTracer
         ///----------------------------------------------------------------------------------------------------
         public static Matrix inv_rotateX(double rot)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             //Set up transformation matrix
             toReturn.tfVals[1, 1] = Math.Cos(rot);
             toReturn.tfVals[2, 1] = -Math.Sin(rot);
@@ -62,7 +62,7 @@ namespace RayTracer
         }
         public static Matrix inv_rotateY(double rot)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 0] = Math.Cos(rot);
             toReturn.tfVals[2, 0] = Math.Sin(rot);
             toReturn.tfVals[0, 2] = -Math.Sin(rot);
@@ -76,7 +76,7 @@ namespace RayTracer
         }
         public static Matrix inv_rotateZ(double rot)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 0] = Math.Cos(rot);
             toReturn.tfVals[1, 0] = -Math.Sin(rot);
             toReturn.tfVals[0, 1] = Math.Sin(rot);
@@ -94,7 +94,7 @@ namespace RayTracer
         }
         public static Matrix rotateX(double rot)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[1, 1] = Math.Cos(rot);
             toReturn.tfVals[2, 1] = Math.Sin(rot);
             toReturn.tfVals[1, 2] = -Math.Sin(rot);
@@ -107,7 +107,7 @@ namespace RayTracer
         }
         public static Matrix rotateY(double rot)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 0] = Math.Cos(rot);
             toReturn.tfVals[2, 0] = -Math.Sin(rot);
             toReturn.tfVals[0, 2] = Math.Sin(rot);
@@ -120,7 +120,7 @@ namespace RayTracer
         }
         public static Matrix rotateZ(double rot)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 0] = Math.Cos(rot);
             toReturn.tfVals[1, 0] = Math.Sin(rot);
             toReturn.tfVals[1, 0] = -Math.Sin(rot);
@@ -141,7 +141,7 @@ namespace RayTracer
         ///----------------------------------------------------------------------------------------------------
         public static Matrix inv_scale(Vect3D scaleFactor)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 0] = 1 / scaleFactor.xcoord;
             toReturn.tfVals[1, 1] = 1 / scaleFactor.ycoord;
             toReturn.tfVals[2, 2] = 1 / scaleFactor.zcoord;
@@ -150,7 +150,7 @@ namespace RayTracer
         }
         public static Matrix inv_scale(double x, double y, double z)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 0] = 1 / x;
             toReturn.tfVals[1, 1] = 1 / y;
             toReturn.tfVals[2, 2] = 1 / z;
@@ -159,7 +159,7 @@ namespace RayTracer
         }
         public static Matrix scale(Vect3D scalefactor)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 0] = scalefactor.xcoord;
             toReturn.tfVals[1, 1] = scalefactor.ycoord;
             toReturn.tfVals[2, 2] = scalefactor.zcoord;
@@ -167,7 +167,7 @@ namespace RayTracer
         }
         public static Matrix scale(double x, double y, double z)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 0] = x;
             toReturn.tfVals[1, 1] = y;
             toReturn.tfVals[2, 2] = z;
@@ -179,7 +179,7 @@ namespace RayTracer
         ///----------------------------------------------------------------------------------------------------
         public static Matrix inv_translate(Vect3D translation)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 3] = -translation.xcoord;
             toReturn.tfVals[1, 3] = -translation.ycoord;
             toReturn.tfVals[2, 3] = -translation.zcoord;
@@ -188,7 +188,7 @@ namespace RayTracer
         }
         public static Matrix inv_translate(double x, double y, double z)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 3] = -x;
             toReturn.tfVals[1, 3] = -y;
             toReturn.tfVals[2, 3] = -z;
@@ -197,7 +197,7 @@ namespace RayTracer
         }
         public static Matrix translate(Vect3D translation)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 3] = translation.xcoord;
             toReturn.tfVals[1, 3] = translation.ycoord;
             toReturn.tfVals[2, 3] = translation.zcoord;
@@ -205,7 +205,7 @@ namespace RayTracer
         }
         public static Matrix translate(double x, double y, double z)
         {
-            Matrix toReturn = new Matrix();
+            Matrix toReturn = new Matrix(1);
             toReturn.tfVals[0, 3] = x;
             toReturn.tfVals[1, 3] = y;
             toReturn.tfVals[2, 3] = z;
@@ -240,7 +240,7 @@ namespace RayTracer
         //4x4 Matrix multiplication
         public static Matrix operator *(Matrix l, Matrix r)
         {
-            Matrix result = new Matrix();
+            Matrix result = new Matrix(1);
             //First row
             result.tfVals[0, 0] =   (l.tfVals[0, 0] * r.tfVals[0, 0]) +
                                     (l.tfVals[0, 1] * r.tfVals[1, 0]) +

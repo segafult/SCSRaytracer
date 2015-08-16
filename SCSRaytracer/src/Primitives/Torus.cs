@@ -20,7 +20,7 @@ using System.Xml;
 
 namespace RayTracer
 {
-    public class Torus : RenderableObject
+    class Torus : RenderableObject
     {
         private double a, b;
        

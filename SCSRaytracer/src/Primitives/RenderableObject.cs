@@ -19,7 +19,7 @@ using System.Xml;
 
 namespace RayTracer
 {
-    public abstract class RenderableObject
+    abstract class RenderableObject
     {
         public string id;
         //public RGBColor color;

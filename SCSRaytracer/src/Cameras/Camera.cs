@@ -22,7 +22,7 @@ using System.Xml;
 
 namespace RayTracer
 {
-    public abstract class Camera
+    abstract class Camera
     {
         protected Point3D eye;
         protected Point3D lookat;  
@@ -155,20 +155,20 @@ namespace RayTracer
                 {
                     string str_point = ((XmlText)node_point.FirstChild).Data;
                     Point3D point = Point3D.FromCsv(str_point);
-                    if (point != null)
-                    {
+                    //if (point != null)
+                    //{
                         toReturn.setEye(point);
-                    }
+                    //}
                 }
                 XmlNode node_lookat = camRoot.SelectSingleNode("lookat");
                 if (node_lookat != null)
                 {
                     string str_lookat = ((XmlText)node_lookat.FirstChild).Data;
                     Point3D lookat = Point3D.FromCsv(str_lookat);
-                    if (lookat != null)
-                    {
+                    //if (lookat != null)
+                    //{
                         toReturn.setLookat(lookat);
-                    }
+                    //}
                 }
                 XmlNode node_exp = camRoot.SelectSingleNode("exposure");
                 if (node_exp != null)

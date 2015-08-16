@@ -22,7 +22,7 @@ namespace RayTracer
     /// <summary>
     /// A Whitted style recursive raycaster
     /// </summary>
-    public class Whitted : Tracer
+    class Whitted : Tracer
     {
         public Whitted(World wptr) : base(wptr)
         {

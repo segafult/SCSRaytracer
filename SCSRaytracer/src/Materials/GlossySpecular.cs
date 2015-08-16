@@ -19,7 +19,7 @@ using System;
 
 namespace RayTracer
 {
-    public class GlossySpecular : BRDF
+    class GlossySpecular : BRDF
     {
         private double exp;
         private double ks;

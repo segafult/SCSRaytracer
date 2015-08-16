@@ -22,7 +22,7 @@ namespace RayTracer
     /// <summary>
     /// A tracer that traces a ray using the ray casting algorithm.
     /// </summary>
-    public class RayCaster : Tracer
+    class RayCaster : Tracer
     {
         public RayCaster(World w)
         {

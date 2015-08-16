@@ -23,7 +23,7 @@ namespace RayTracer
     /// <summary>
     /// Representation of a normal vector
     /// </summary>
-    sealed public class Normal
+    sealed class Normal
     {
         public double xcoord, ycoord, zcoord;
 

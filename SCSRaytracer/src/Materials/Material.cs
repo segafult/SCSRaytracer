@@ -17,7 +17,7 @@
 
 namespace RayTracer
 {
-    public abstract class Material
+    abstract class Material
     {
         public string id;
         public abstract RGBColor shade(ShadeRec sr);

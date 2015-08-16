@@ -25,10 +25,13 @@ using SFML.System;
 
 namespace RayTracer
 {
+
     class Image
     {
         int rows, cols;
         byte[] pixels;
+        private readonly double INVTWOFITTYFI = 1.0 / 255.0;
+
 
         public Image()
         {
@@ -59,26 +62,56 @@ namespace RayTracer
         public RGBColor get_color_at_uv(double u, double v, bool interpolate)
         {
             //Convert provided UV coordinates to texel coordinates
-            int row0 = (int)((rows-1) * v);
-            int col0 = (int)((cols-1) * u);
-            double inv255 = 1.0 / 255.0;
-            if(row0 < 0 || row0 > rows || col0 < 0 || col0 > cols)
-            {
-                return new RGBColor(1, 0, 0);
-            }
+            double rv0 = v * (rows - 1) - 0.5;
+            double cu0 = u * (cols - 1) - 0.5;
+            int row0 = (int)(rv0);
+            int col0 = (int)(cu0);
+
+            double r0 = (double)pixels[(row0 * cols * 3) + (3 * col0)] * INVTWOFITTYFI;
+            double g0 = (double)pixels[(row0 * cols * 3) + (3 * col0) + 1] * INVTWOFITTYFI;
+            double b0 = (double)pixels[(row0 * cols * 3) + (3 * col0) + 2] * INVTWOFITTYFI;
+
             if(!interpolate)
             {
                 //Return the floored texture value
-                double r = (double)pixels[(row0 * cols * 3) + (3 * col0)] * inv255;
-                double g = (double)pixels[(row0 * cols * 3) + (3 * col0) + 1] *inv255;
-                double b = (double)pixels[(row0 * cols * 3) + (3 * col0) + 2] * inv255;
-                return new RGBColor(r, g, b);
+                return new RGBColor(r0, g0, b0);
             }
             else
             {
-                //Apply bilinear texture interpolation
-                //u
-                return new RGBColor(1,1,1);
+                //Apply bilinear texture filtering with wraparound
+                int row1 = ((row0 + 1) == rows) ? 0 : row0 + 1;
+                int col1 = ((col0 + 1) == cols) ? 0 : col0 + 1;
+
+                //Legend:
+                //c0 = texture[col0][row0] 
+                //c1 = texture[col1][row0]
+                //c2 = texture[col0][row1]
+                //c3 = texture[col1][row1]
+                double r1 = (double)pixels[(row0 * cols * 3) + (3 * col1)] * INVTWOFITTYFI;
+                double g1 = (double)pixels[(row0 * cols * 3) + (3 * col1) + 1] * INVTWOFITTYFI;
+                double b1 = (double)pixels[(row0 * cols * 3) + (3 * col1) + 2] * INVTWOFITTYFI;
+                double r2 = (double)pixels[(row1 * cols * 3) + (3 * col0)] * INVTWOFITTYFI;
+                double g2 = (double)pixels[(row1 * cols * 3) + (3 * col0) + 1] * INVTWOFITTYFI;
+                double b2 = (double)pixels[(row1 * cols * 3) + (3 * col0) + 2] * INVTWOFITTYFI;
+                double r3 = (double)pixels[(row1 * cols * 3) + (3 * col1)] * INVTWOFITTYFI;
+                double g3 = (double)pixels[(row1 * cols * 3) + (3 * col1) + 1] * INVTWOFITTYFI;
+                double b3 = (double)pixels[(row1 * cols * 3) + (3 * col1) + 2] * INVTWOFITTYFI;
+
+                //Pixel color ratios:
+                double ratio_col_high = cu0 - col0;
+                double ratio_row_high = rv0 - row0;
+                double ratio_col_low = 1.0 - ratio_col_high;
+                double ratio_row_low = 1.0 - ratio_row_high;
+
+                //Compute ratios for each color
+                double rf = (r0 * ratio_col_low + r1 * ratio_col_high) * ratio_row_low +
+                    (r2 * ratio_col_low + r3 * ratio_col_high) * ratio_row_high;
+                double gf = (g0 * ratio_col_low + g1 * ratio_col_high) * ratio_row_low +
+                    (g2 * ratio_col_low + g3 * ratio_col_high) * ratio_row_high;
+                double bf = (b0 * ratio_col_low + b1 * ratio_col_high) * ratio_row_low +
+                    (b2 * ratio_col_low + b3 * ratio_col_high) * ratio_row_high;
+
+                return new RGBColor(rf, gf, bf);
             }
         }
     }

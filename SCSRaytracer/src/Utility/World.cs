@@ -25,7 +25,7 @@ namespace RayTracer
     /// <summary>
     /// Class containing references to all world items
     /// </summary>
-    public class World
+    class World
     {
         public ViewPlane vp;
         public RGBColor bg_color;
@@ -39,9 +39,6 @@ namespace RayTracer
         public Camera camera;
 
         public List<Material> materialList;
-
-        //public Bitmap drawPlan;
-        public List<Bitmap> threadedBitmapList; //Only initialized when multithread rendering
 
         LiveViewer live_view;
         

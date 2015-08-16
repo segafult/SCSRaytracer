@@ -47,7 +47,7 @@ namespace RayTracer
                 v = uv.y;
             }
 
-            return img.get_color_at_uv(u, v, false);
+            return img.get_color_at_uv(u, v, true);
         }
     }
 }
