@@ -25,13 +25,13 @@ namespace RayTracer
 {
     class PinholeCamera : Camera
     {
-        private double d; //Distance between pinhole and viewplane
+        private float d; //Distance between pinhole and viewplane
 
         public PinholeCamera() : base()
         {
             d = 850;
         }
-        public void setVdp(double distance)
+        public void setVdp(float distance)
         {
             d = distance;
         }
@@ -57,8 +57,8 @@ namespace RayTracer
                     for(int sample = 0; sample < vp.numSamples; sample ++)
                     {
                         sp = w.vp.vpSampler.sample_unit_square();
-                        pp.x = w.vp.s * (column - 0.5 * vp.hres + sp.x);
-                        pp.y = w.vp.s * (row - 0.5 * vp.vres + sp.y);
+                        pp.x = w.vp.s * (column - 0.5f * vp.hres + sp.x);
+                        pp.y = w.vp.s * (row - 0.5f * vp.vres + sp.y);
                         ray.direction = ray_direction(pp);
                         L = L + w.tracer.trace_ray(ray, depth);
                     }
@@ -105,8 +105,8 @@ namespace RayTracer
                     for (int sample = 0; sample < vp.numSamples; sample++)
                     {
                         sp = localSampler.sample_unit_square();
-                        pp.x = w.vp.s * (column + x1 - 0.5 * vp.hres + sp.x);
-                        pp.y = w.vp.s * (row + y1 - 0.5 * vp.vres + sp.y);
+                        pp.x = w.vp.s * (column + x1 - 0.5f * vp.hres + sp.x);
+                        pp.y = w.vp.s * (row + y1 - 0.5f * vp.vres + sp.y);
                         ray.direction = ray_direction(pp);
                         L = L + w.tracer.trace_ray(ray, depth);
                     }
@@ -139,7 +139,7 @@ namespace RayTracer
             if (node_vdp != null)
             {
                 string str_vdp = ((XmlText)node_vdp.FirstChild).Data;
-                double vdp = Convert.ToDouble(str_vdp);
+                float vdp = (float)Convert.ToSingle(str_vdp);
                 toReturn.setVdp(vdp);
             }
             return toReturn;

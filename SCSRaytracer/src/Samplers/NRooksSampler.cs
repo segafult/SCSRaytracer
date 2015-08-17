@@ -44,8 +44,8 @@ namespace RayTracer
                 for(int j = 0; j < numsamples; j++)
                 {
                     Point2D p = new Point2D();
-                    p.x = (j + randomgen.NextDouble()) / numsamples;
-                    p.y = (j + randomgen.NextDouble()) / numsamples;
+                    p.x = (j + (float)randomgen.NextDouble()) / numsamples;
+                    p.y = (j + (float)randomgen.NextDouble()) / numsamples;
                     samples.Add(p);
                 }
             }
@@ -59,8 +59,8 @@ namespace RayTracer
         }
         protected virtual void shuffle_x_coords()
         {
-            double xcoord1;
-            double xcoord2;
+            float xcoord1;
+            float xcoord2;
             int randindex;
             for(int n = 0; n < numsets; n++)
             {
@@ -78,8 +78,8 @@ namespace RayTracer
         }
         protected virtual void shuffle_y_coords()
         {
-            double ycoord1;
-            double ycoord2;
+            float ycoord1;
+            float ycoord2;
             int randindex;
             for(int n = 0; n < numsets; n++)
             {

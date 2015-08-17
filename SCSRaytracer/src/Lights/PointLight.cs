@@ -25,25 +25,25 @@ namespace RayTracer
     /// </summary>
     class PointLight : Light
     {
-        private double intensity;
+        private float intensity;
         private Point3D location;
 
         //Constructors
         public PointLight()
         {
             color = new RGBColor(1, 1, 1);
-            intensity = 0.5;
+            intensity = 0.5f;
             location = new Point3D(0, 0, 0);
             shadows = false;
         }
         public PointLight(Point3D l)
         {
             color = new RGBColor(1, 1, 1);
-            intensity = 0.5;
+            intensity = 0.5f;
             location = new Point3D(l);
             shadows = false;
         }
-        public PointLight(RGBColor c, double i, Point3D l)
+        public PointLight(RGBColor c, float i, Point3D l)
         {
             color = new RGBColor(c);
             intensity = i;
@@ -53,10 +53,10 @@ namespace RayTracer
 
         //Gets and sets
         
-        public double getIntensity() { return intensity; }
+        public float getIntensity() { return intensity; }
         public override Vect3D getDirection(ShadeRec sr) { return ((location - sr.hit_point).hat()); }
         public override bool castsShadows(){ return shadows; }
-        public void setIntensity(double i) { intensity = i; }
+        public void setIntensity(float i) { intensity = i; }
         public void setLocation(Point3D p) { location = new Point3D(p); }
 
         public override RGBColor L(ShadeRec sr)
@@ -73,12 +73,12 @@ namespace RayTracer
         public override bool inShadow(ShadeRec sr, Ray ray)
         {
             int num_objects = sr.w.renderList.Count;
-            double tmin;
+            float tmin;
 
             //Find the closest intersection point along the given ray
             for (int i = 0; i < num_objects; i++)
             {
-                tmin = (location - sr.hit_point).magnitude();
+                tmin = (location - sr.hit_point).coords.Length();
                 if (sr.w.renderList[i].hit(ray, tmin))
                 {
                     return true;
@@ -106,7 +106,7 @@ namespace RayTracer
             if (node_int != null)
             {
                 string str_int = ((XmlText)node_int.FirstChild).Data;
-                double intensity = Convert.ToDouble(str_int);
+                float intensity = Convert.ToSingle(str_int);
                 toReturn.setIntensity(intensity);
             }
 

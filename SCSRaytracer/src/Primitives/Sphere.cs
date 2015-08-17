@@ -24,15 +24,15 @@ namespace RayTracer
     sealed class Sphere : RenderableObject
     {
         private Point3D c;
-        private double r;
+        private float r;
 
         //Constructors
         public Sphere()
         {
             c = new Point3D(0, 0, 0);
-            r = 1.0;
+            r = 1.0f;
         }
-        public Sphere(Point3D center, double radius)
+        public Sphere(Point3D center, float radius)
         {
             c = new Point3D(center);
             r = radius;
@@ -48,9 +48,9 @@ namespace RayTracer
         }
         public void set_center(Point3D center)
         {
-            c = new Point3D(center.xcoord, center.ycoord, center.zcoord);
+            c = new Point3D(center.coords.X, center.coords.Y, center.coords.Z);
         }
-        public void set_radius(double radius)
+        public void set_radius(float radius)
         {
             r = radius;
         }
@@ -62,9 +62,9 @@ namespace RayTracer
         /// <param name="sr">Return by reference, shader parameters</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool hit(Ray ray, ref double tmin, ref ShadeRec sr)
+        public override bool hit(Ray ray, ref float tmin, ref ShadeRec sr)
         {
-            double t;
+            float t;
             //Store variables locally to minimize member accesses
             Point3D rorigin = ray.origin;
             Vect3D rdirection = ray.direction;
@@ -74,13 +74,13 @@ namespace RayTracer
             //a = d*d , d = ray direction
             //b = 2(o-c)*d, o = ray origin, c = sphere center, d = ray direction
             //c = (o-c)*(o-c)-r^2, o = ray origin, c = sphere center, r = sphere radius
-            double a = rdirection * rdirection;
-            double b = 2.0 * temp * rdirection;
-            double cv = (temp * temp) - (r*r);
+            float a = rdirection * rdirection;
+            float b = 2.0f * temp * rdirection;
+            float cv = (temp * temp) - (r*r);
 
             //Find discriminant, d = b^2 - 4ac
             //If d < 0, no intersection, if d = 0, one intersection, if d > 0, two intersections
-            double d = b * b - 4 * a * cv;
+            float d = b * b - 4 * a * cv;
 
             if(d < 0.0)
             {
@@ -88,8 +88,8 @@ namespace RayTracer
             }
             else
             {
-                double e = Math.Sqrt(d);
-                double invdenominator = 1/(2.0 * a);
+                float e = (float)Math.Sqrt(d);
+                float invdenominator = 1.0f/(2.0f * a);
 
                 t = (-b - e) * invdenominator; //Solve quadratic equation for smallest value
                 if (t > GlobalVars.kEpsilon)
@@ -97,11 +97,12 @@ namespace RayTracer
                     tmin = t;
                     sr.normal = new Normal((temp + t * rdirection) / r);
                     //Reverse the normal if ray originated inside the sphere
-                    if ((rorigin - c).magnitude() < r)
+                    if ((rorigin - c).coords.Length() < r)
                     {
                         sr.normal = -sr.normal;
                     }
                     sr.hit_point_local = rorigin + t * rdirection;
+                    sr.obj_material = mat;
                     return true;
                 }
 
@@ -111,11 +112,12 @@ namespace RayTracer
                     tmin = t;
                     sr.normal = new Normal((temp + t * rdirection) / r);
                     //Reverse the normal if the ray originated from inside the sphere.
-                    if((rorigin-c).magnitude() < r)
+                    if((rorigin-c).coords.Length() < r)
                     {
                         sr.normal = -sr.normal;
                     }
                     sr.hit_point_local = rorigin + t * rdirection;
+                    sr.obj_material = mat;
                     return true;
                 }
             }
@@ -123,9 +125,9 @@ namespace RayTracer
             //Codepath shouldn't get here
             return false;
         }
-        public override bool hit(Ray ray, double tmin)
+        public override bool hit(Ray ray, float tmin)
         {
-            double t;
+            float t;
 
             //Store variables locally to minimize member accesses
             Point3D rorigin = ray.origin;
@@ -137,13 +139,13 @@ namespace RayTracer
             //a = d*d , d = ray direction
             //b = 2(o-c)*d, o = ray origin, c = sphere center, d = ray direction
             //c = (o-c)*(o-c)-r^2, o = ray origin, c = sphere center, r = sphere radius
-            double a = rdirection * rdirection;
-            double b = 2.0 * temp * rdirection;
-            double cv = (temp * temp) - (r * r);
+            float a = rdirection * rdirection;
+            float b = 2.0f * temp * rdirection;
+            float cv = (temp * temp) - (r * r);
 
             //Find discriminant, d = b^2 - 4ac
             //If d < 0, no intersection, if d = 0, one intersection, if d > 0, two intersections
-            double d = b * b - 4 * a * cv;
+            float d = b * b - 4 * a * cv;
 
             if (d < 0.0)
             {
@@ -151,8 +153,8 @@ namespace RayTracer
             }
             else
             {
-                double e = Math.Sqrt(d);
-                double invdenominator = 1 / (2.0 * a);
+                float e = (float)Math.Sqrt(d);
+                float invdenominator = 1.0f / (2.0f * a);
                 t = (-b - e) * invdenominator; //Solve quadratic equation for smallest value
                 if (t > GlobalVars.kEpsilon && t < tmin)
                 {
@@ -192,7 +194,7 @@ namespace RayTracer
                 XmlNode r = def.SelectSingleNode("r");
                 if (r != null)
                 {
-                    double rDouble = Convert.ToDouble(((XmlText)r.FirstChild).Data);
+                    float rDouble = Convert.ToSingle(((XmlText)r.FirstChild).Data);
                     toReturn.set_radius(rDouble);
                 }
             }
@@ -206,7 +208,7 @@ namespace RayTracer
 
         public override BoundingBox get_bounding_box()
         {
-            return new BoundingBox(c.xcoord - r, c.xcoord + r, c.ycoord - r, c.ycoord + r, c.zcoord - r, c.zcoord + r);
+            return new BoundingBox(c.coords.X - r, c.coords.X + r, c.coords.Y - r, c.coords.Y + r, c.coords.Z - r, c.coords.Z + r);
         }
     }
 }

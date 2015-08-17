@@ -29,8 +29,8 @@ namespace RayTracer
         public List<Point3D> vertices;
         public List<Normal> normals;
         public List<List<int>> vertex_faces; //List of faces shared by each vertex. Used for calculating normals.
-        public List<double> u;
-        public List<double> v;
+        public List<float> u;
+        public List<float> v;
 
         public int num_verts;
         public int num_triangles;
@@ -42,8 +42,8 @@ namespace RayTracer
             vertices = new List<Point3D>();
             normals = new List<Normal>();
             vertex_faces = new List<List<int>>();
-            u = new List<double>();
-            v = new List<double>();
+            u = new List<float>();
+            v = new List<float>();
 
             num_verts = 0;
             num_triangles = 0;

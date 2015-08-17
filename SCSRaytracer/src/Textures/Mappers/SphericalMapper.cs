@@ -21,26 +21,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
     class SphericalMapper : Mapper
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override Point2D get_uv(Point3D hit_point)
         {
             //Map hit point to a unit sphere by normalizing vector from origin to hit point.
-            Vect3D hit_normalized = new Vect3D(hit_point);
-            hit_normalized.normalize();
-            double x = hit_normalized.xcoord;
-            double y = hit_normalized.ycoord;
-            double z = hit_normalized.zcoord;
+            Vector3 hit_normalized = Vector3.Normalize(hit_point.coords);
 
-            double phi = Math.Atan2(x, z) + Math.PI;
-            double omega = Math.Acos(y);
+            float phi = (float)Math.Atan2(hit_normalized.X, hit_normalized.Z) + FastMath.FPI;
+            float omega = (float)Math.Acos(hit_normalized.Y);
 
             //Calculate spherical UV coordinates
-            double u = phi / (2.0 * Math.PI);
-            double v = 1 - (omega / Math.PI);
+            float u = phi * FastMath.FINVTWOPI;
+            float v = 1 - (omega * FastMath.FINVPI);
 
             return new Point2D(u, v);
         }

@@ -32,7 +32,7 @@ namespace RayTracer
         Sprite live_sprite;
         Thread render_thread;
 
-        double lookat = 0;
+        float lookat = 0;
         World w;
 
         public LiveViewer(World worldref)
@@ -70,6 +70,7 @@ namespace RayTracer
                 	live_window.Draw(spr);
 				if(live_window.IsOpen)
 					live_window.Display();
+                Thread.Sleep(500);
             }
 				
 			return;

@@ -40,7 +40,7 @@ namespace RayTracer
 
             return toReturn;
         }
-        virtual public void setReflectivity(double refl) { reflective_brdf.setKr(refl); }
+        virtual public void setReflectivity(float refl) { reflective_brdf.setKr(refl); }
         virtual public void setCr(RGBColor c)
         {
             reflective_brdf.setCr(c);

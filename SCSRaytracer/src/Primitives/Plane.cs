@@ -58,16 +58,17 @@ namespace RayTracer
         /// <param name="tmin">Passed by reference, minimum t value</param>
         /// <param name="sr">ShadeRec to store shading info in</param>
         /// <returns></returns>
-        override public bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        override public bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
-            double t = (p - r.origin) * n / (r.direction * n);
+            float t = (p - r.origin) * n / (r.direction * n);
 
             //Intersection is in front of camera
             if(t > GlobalVars.kEpsilon && t < tmin)
             {
                 tmin = t;
                 sr.normal = n;
-                sr.hit_point = r.origin + t * r.direction;
+                sr.hit_point_local = r.origin + t * r.direction;
+                sr.obj_material = mat;
                 return true;
             }
             //Intersection is behind camera
@@ -77,9 +78,9 @@ namespace RayTracer
             }
         }
 
-        public override bool hit(Ray r, double tmin)
+        public override bool hit(Ray r, float tmin)
         {
-            double t = (p - r.origin) * n / (r.direction * n);
+            float t = (p - r.origin) * n / (r.direction * n);
 
             //Intersection is in front of camera
             if (t > GlobalVars.kEpsilon && t < tmin)
@@ -112,10 +113,10 @@ namespace RayTracer
             {
                 string nText = ((XmlText)n.FirstChild).Data;
                 Normal nObj = Normal.FromCsv(nText);
-                if (nObj != null)
-                {
+                //if (nObj != null)
+                //{
                     toReturn.setN(nObj);
-                }
+                //}
             }
 
             return toReturn;

@@ -46,7 +46,7 @@ namespace RayTracer
                 {
                     for(int k = 0; k < n; k++)
                     {
-                        samples.Add(new Point2D((k + randomgen.NextDouble()) / n, (j + randomgen.NextDouble()) / n));
+                        samples.Add(new Point2D((k + (float)randomgen.NextDouble()) / n, (j + (float)randomgen.NextDouble()) / n));
                     }
                 }
             }

@@ -17,52 +17,44 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Numerics;
 
 namespace RayTracer
 {
     /// <summary>
     /// Representation of a normal vector
     /// </summary>
-    sealed class Normal
+    struct Normal
     {
-        public double xcoord, ycoord, zcoord;
+        //public float xcoord, ycoord, zcoord;
+        public Vector3 coords;
 
         //Constructors
-        public Normal()
+        public Normal(float x, float y, float z)
         {
-            xcoord = 0.0;
-            ycoord = 0.0;
-            zcoord = 0.0;
+            coords = new Vector3(x, y, z);
         }
-        public Normal(double x, double y, double z)
+        public Normal(Vector3 v)
         {
-            xcoord = x;
-            ycoord = y;
-            zcoord = z;
+            coords = v;
         }
         //Copy constructor
         public Normal(Normal n)
         {
-            xcoord = n.xcoord;
-            ycoord = n.ycoord;
-            zcoord = n.zcoord;
+            coords = n.coords;
         }
         public Normal(Vect3D v)
         {
-            xcoord = v.xcoord;
-            ycoord = v.ycoord;
-            zcoord = v.zcoord;
+            coords = v.coords;
         }
         public Normal(Point3D p)
         {
-            xcoord = p.xcoord;
-            ycoord = p.ycoord;
-            zcoord = p.zcoord;
+            coords = p.coords;
         }
 
         public override string ToString()
         {
-            return "[" + xcoord + "," + ycoord + "," + zcoord + "]";
+            return "[" + coords.X + "," + coords.X + "," + coords.X + "]";
         }
 
         //Generators
@@ -78,10 +70,10 @@ namespace RayTracer
                 string[] args = input.Split(',');
                 if(args.Length == 3)
                 {
-                    double[] vals = new double[3];
+                    float[] vals = new float[3];
                     for(int i = 0;i<3;i++)
                     {
-                        vals[i] = Convert.ToDouble(args[i]);
+                        vals[i] = Convert.ToSingle(args[i]);
                     }
 
                     return new Normal(vals[0], vals[1], vals[2]);
@@ -94,15 +86,9 @@ namespace RayTracer
             catch(System.FormatException e)
             {
                 Console.WriteLine(e.ToString());
-                return null;
+                return new Normal(0,0,0);
             }
         }
-        
-
-        //Gets and sets
-        public double getXCoordinates() { return xcoord; }
-        public double getYCoordinates() { return ycoord; }
-        public double getZCoordinates() { return zcoord; }
 
         /// <summary>
         /// Function returning a unit vector of a normal
@@ -110,13 +96,7 @@ namespace RayTracer
         /// <returns>Normal vector as a unit vector</returns>
         public Normal hat()
         {
-            double invm = 1/this.magnitude();
-            return new Normal(xcoord * invm, ycoord * invm, zcoord * invm);
-        }
-
-        private double magnitude()
-        {
-            return Math.Sqrt(xcoord * xcoord + ycoord * ycoord + zcoord * zcoord);
+            return new Normal(Vector3.Normalize(coords));
         }
 
         /// <summary>
@@ -124,10 +104,7 @@ namespace RayTracer
         /// </summary>
         public void normalize()
         {
-            double invn = 1 / this.magnitude();
-            xcoord = xcoord * invn;
-            ycoord = ycoord * invn;
-            zcoord = zcoord * invn;
+            coords = Vector3.Normalize(coords);
         }
 
         ///
@@ -137,50 +114,56 @@ namespace RayTracer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Normal operator -(Normal n)
         {
-            return new Normal(-n.xcoord, -n.ycoord, -n.zcoord);
+            return new Normal(-n.coords);
         }
 
         //Addition of two normal vectors
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Normal operator +(Normal n, Normal m)
         {
-            return new Normal(n.xcoord + m.xcoord, n.ycoord + m.ycoord, n.zcoord + m.zcoord);
+            return new Normal(n.coords + m.coords);
         }
 
         //Dot product of a normal and a vector
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double operator *(Normal n, Vect3D u)
+        public static float operator *(Normal n, Vect3D u)
         {
-            return n.xcoord * u.xcoord + n.ycoord * u.ycoord + n.zcoord * u.zcoord;
+            return Vector3.Dot(n.coords, u.coords);
         } 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double operator *(Vect3D u, Normal n)
+        public static float operator *(Vect3D u, Normal n)
         {
-            return n.xcoord * u.xcoord + n.ycoord * u.ycoord + n.zcoord * u.zcoord;
+            return Vector3.Dot(u.coords, n.coords);
         }
 
         //Multiplying a normal by a scalar
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Normal operator *(double a, Normal n)
+        public static Normal operator *(float a, Normal n)
         {
-            return new Normal(n.xcoord * a, n.ycoord * a, n.zcoord * a);
+            return new Normal(n.coords * a);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Normal operator *(Normal n, double a)
+        public static Normal operator *(Normal n, float a)
         {
-            return new Normal(n.xcoord * a, n.ycoord * a, n.zcoord * a);
+            return new Normal(n.coords * a);
         }
 
         //Adding a normal and a vector together
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vect3D operator +(Normal n, Vect3D u)
         {
-            return new Vect3D(n.xcoord + u.xcoord, n.ycoord + u.ycoord, n.zcoord + u.zcoord);
+            return new Vect3D(n.coords + u.coords);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vect3D operator +(Vect3D u, Normal n)
         {
-            return new Vect3D(n.xcoord + u.xcoord, n.ycoord + u.ycoord, n.zcoord + u.zcoord);
+            return new Vect3D(u.coords + n. coords);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Normal operator *(Matrix4x4 m, Normal n)
+        {
+            return new Normal(Vector3.TransformNormal(n.coords, m));
         }
     }
 }

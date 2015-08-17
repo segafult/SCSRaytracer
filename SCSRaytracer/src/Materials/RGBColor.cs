@@ -17,79 +17,48 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Numerics;
 
 namespace RayTracer
 {
     public struct RGBColor
     {
-        public double r;
-        public double g;
-        public double b;
+        public static Vector3 BLACK = new Vector3(0.0f, 0.0f, 0.0f);
+        public static Vector3 WHITE = new Vector3(255.0f, 255.0f, 255.0f);
+        public Vector3 vals;
 
         public override string ToString()
         {
-            return "#" + Convert.ToByte(r * 255.0).ToString("x") +
-                Convert.ToByte(g * 255.0).ToString("x") + 
-                Convert.ToByte(b * 255.0).ToString("x");
+            return "#" + Convert.ToByte(vals.X * 255.0).ToString("x") +
+                Convert.ToByte(vals.Y * 255.0).ToString("x") + 
+                Convert.ToByte(vals.Z * 255.0).ToString("x");
         }
 
-        public RGBColor (double red, double green, double blue)
+        public RGBColor (float red, float green, float blue)
         {
-            r = red;
-            g = green;
-            b = blue;
+            vals = new Vector3(red, green, blue);
+        }
+        public RGBColor (Vector3 v)
+        {
+            vals = v;
         }
         public RGBColor (System.Drawing.Color col)
         {
-            r = (double)col.R / 255.0;
-            g = (double)col.G / 255.0;
-            b = (double)col.B / 255.0;
+            vals = new Vector3(col.R * FastMath.INVTWOFITTYFI, col.G * FastMath.INVTWOFITTYFI, col.B * FastMath.INVTWOFITTYFI);
         }
         public RGBColor (SFML.Graphics.Color col)
         {
-            r = (double)col.R / 255.0;
-            g = (double)col.G / 255.0;
-            b = (double)col.B / 255.0;
+            vals = new Vector3(col.R * FastMath.INVTWOFITTYFI, col.G * FastMath.INVTWOFITTYFI, col.B * FastMath.INVTWOFITTYFI);
         }
         //Copy constructor
         public RGBColor (RGBColor color)
         {
-            //No need to clamp when cloning, can assume values are safe.
-            r = color.r;
-            g = color.g;
-            b = color.b;
-        }
-
-        //Setters. No getter functions, members public for performance reasons. :)
-        public void setRed(double r)
-        {
-            this.r = r;
-        }
-        public void setGreen(double g)
-        {
-            this.g = g;
-        }
-        public void setBlue(double b)
-        {
-            this.b = b;
-        }
-  
+            vals = color.vals;
+        }  
         
         public RGBColor clamp()
         {
-            double r_c, g_c, b_c;
-            r_c = clamp_to_range(r, 0.0, 1.0);
-            g_c = clamp_to_range(g, 0.0, 1.0);
-            b_c = clamp_to_range(b, 0.0, 1.0);
-            return new RGBColor(r_c, g_c, b_c);
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private double clamp_to_range(double value, double lowerbound, double upperbound)
-        {
-            if(value < lowerbound) { return lowerbound; }
-            else if(value > upperbound) { return upperbound; }
-            else { return value; }
+            return new RGBColor(Vector3.Clamp(vals, BLACK, WHITE));
         }
 
         ///
@@ -99,41 +68,40 @@ namespace RayTracer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RGBColor operator +(RGBColor c1, RGBColor c2)
         {
-            return new RGBColor(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b);
+            return new RGBColor(c1.vals + c2.vals);
         }
 
         //Scalar multiplication of a color
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static RGBColor operator *(double a, RGBColor c)
+        public static RGBColor operator *(float a, RGBColor c)
         {
-            return new RGBColor(c.r * a, c.g * a, c.b * a);
+            return new RGBColor(c.vals * a);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static RGBColor operator *(RGBColor c, double a)
+        public static RGBColor operator *(RGBColor c, float a)
         {
-            return new RGBColor(c.r * a, c.g * a, c.b * a);
+            return new RGBColor(c.vals * a);
         }
 
         //Scalar division of a color
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static RGBColor operator /(RGBColor c, double a)
+        public static RGBColor operator /(RGBColor c, float a)
         {
-            double inva = 1 / a;
-            return new RGBColor(c.r * inva, c.g * inva, c.b * inva);
+            return new RGBColor(c.vals / a);
         }
 
         //Multiplication of color with a color
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RGBColor operator *(RGBColor c1, RGBColor c2)
         {
-            return new RGBColor(c1.r * c2.r, c1.g * c2.g, c1.b * c2.b);
+            return new RGBColor(c1.vals * c2.vals);
         }
 
         //Raising color to a power
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static RGBColor operator ^(RGBColor c, double p)
+        public static RGBColor operator ^(RGBColor c, float p)
         {
-            return new RGBColor(Math.Pow(c.r, p), Math.Pow(c.g, p), Math.Pow(c.b, p));
+            return new RGBColor((float)Math.Pow(c.vals.X, p), (float)Math.Pow(c.vals.Y, p), (float)Math.Pow(c.vals.Z, p));
         }
     }
 }

@@ -19,16 +19,16 @@ namespace RayTracer
 {
     class Lambertian : BRDF
     {
-        private double kd;
+        private float kd;
         private RGBColor cd;
         private Texture cd_tex = null;
 
         public Lambertian()
         {
             kd = 0.5F;
-            cd = new RGBColor(0.5, 0.5, 0.5);
+            cd = new RGBColor(0.5f, 0.5f, 0.5f);
         }
-        public Lambertian(double kdarg, RGBColor cdarg)
+        public Lambertian(float kdarg, RGBColor cdarg)
         {
             kd = kdarg;
             cd = cdarg;
@@ -40,9 +40,9 @@ namespace RayTracer
             cd = clone.getCd();
         }
 
-        public double getKd() { return kd; }
+        public float getKd() { return kd; }
         public RGBColor getCd() { return cd; }
-        public void setKd(double kdarg) { kd = kdarg; }
+        public void setKd(float kdarg) { kd = kdarg; }
         public void setCd(RGBColor cdarg) { cd = cdarg; }
         public void setCd(Texture texarg) { cd_tex = texarg; }
         

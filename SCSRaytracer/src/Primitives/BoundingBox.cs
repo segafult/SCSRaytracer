@@ -23,9 +23,9 @@ namespace RayTracer
     /// </summary>
     class BoundingBox : RenderableObject
     {
-        public double x0, x1;
-        public double y0, y1;
-        public double z0, z1;
+        public float x0, x1;
+        public float y0, y1;
+        public float z0, z1;
 
         public BoundingBox()
         {
@@ -36,7 +36,7 @@ namespace RayTracer
             z0 = -GlobalVars.kHugeValue;
             z1 = GlobalVars.kHugeValue;
         }
-        public BoundingBox(double x0_arg, double x1_arg, double y0_arg, double y1_arg, double z0_arg, double z1_arg)
+        public BoundingBox(float x0_arg, float x1_arg, float y0_arg, float y1_arg, float z0_arg, float z1_arg)
         {
             x0 = x0_arg;
             x1 = x1_arg;
@@ -46,20 +46,20 @@ namespace RayTracer
             z1 = z1_arg;
         }
 
-        public override bool hit(Ray r, double tmin)
+        public override bool hit(Ray r, float tmin)
         {
-            double ox = r.origin.xcoord; double oy = r.origin.ycoord; double oz = r.origin.zcoord;
-            double dx = r.direction.xcoord; double dy = r.direction.ycoord; double dz = r.direction.zcoord;
+            float ox = r.origin.coords.X; float oy = r.origin.coords.Y; float oz = r.origin.coords.Z;
+            float dx = r.direction.coords.X; float dy = r.direction.coords.Y; float dz = r.direction.coords.Z;
 
-            double tx_min, ty_min, tz_min;
-            double tx_max, ty_max, tz_max;
+            float tx_min, ty_min, tz_min;
+            float tx_max, ty_max, tz_max;
 
             //How this algorithm works:
             //Generate *x_min and *x_max values which indicate the minimum and maximum length a line segment
             //from origin in the ray direction can have and be within the volume of the bounding box. If all 3
             //distance ranges overlap, then the bounding box was hit.
 
-            double a = 1.0 / dx;
+            float a = 1.0f / dx;
             if(a >= 0.0)
             {
                 tx_min = (x0 - ox) * a;
@@ -71,7 +71,7 @@ namespace RayTracer
                 tx_max = (x0 - ox) * a;
             }
 
-            double b = 1.0 / dy;
+            float b = 1.0f / dy;
             if( b >= 0.0)
             {
                 ty_min = (y0 - oy) * b;
@@ -83,7 +83,7 @@ namespace RayTracer
                 ty_max = (y0 - oy) * b;
             }
 
-            double c = 1.0 / dz;
+            float c = 1.0f / dz;
             if( c >= 0.0)
             {
                 tz_min = (z0 - oz) * c;
@@ -95,7 +95,7 @@ namespace RayTracer
                 tz_max = (z0 - oz) * c;
             }
 
-            double t0, t1;
+            float t0, t1;
 
             //largest entering t value
             if(tx_min > ty_min)
@@ -134,9 +134,9 @@ namespace RayTracer
 
         public bool inside(Point3D parg)
         {
-            return (parg.xcoord > x0 && parg.xcoord < x1) &&
-                (parg.ycoord > y0 && parg.ycoord < y1) &&
-                (parg.zcoord > z0 && parg.zcoord < z1);
+            return (parg.coords.X > x0 && parg.coords.X < x1) &&
+                (parg.coords.Y > y0 && parg.coords.Y < y1) &&
+                (parg.coords.Z > z0 && parg.coords.Z < z1);
         }
     }
 }

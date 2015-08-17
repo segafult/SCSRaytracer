@@ -22,19 +22,19 @@ namespace RayTracer
 {
     class Torus : RenderableObject
     {
-        private double a, b;
+        private float a, b;
        
         private BoundingBox bb;
 
         public Torus()
         {
-            a = 2.0;
-            b = 1.0;
+            a = 2.0f;
+            b = 1.0f;
 
             bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
         }
 
-        public Torus(double a_arg, double b_arg)
+        public Torus(float a_arg, float b_arg)
         {
             a = a_arg;
             b = b_arg;
@@ -43,12 +43,12 @@ namespace RayTracer
         }
 
         //Gets and sets
-        public void setA(double a_arg)
+        public void setA(float a_arg)
         {
             a = a_arg;
             bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
         }
-        public void setB(double b_arg)
+        public void setB(float b_arg)
         {
             b = b_arg;
             bb = new BoundingBox(-a - b, a + b, -b, b, -a - b, a + b);
@@ -63,11 +63,11 @@ namespace RayTracer
                 "  B: " + b;
 
         }
-        public double getA() { return a; }
-        public double getB() { return b; }
+        public float getA() { return a; }
+        public float getB() { return b; }
         public BoundingBox getBB() { return bb; }
 
-        public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             if(!bb.hit(r, tmin))
             {
@@ -84,29 +84,29 @@ namespace RayTracer
             /// 
             ///Using quartic solving algorithm
             /// 
-            double x1 = r.origin.xcoord; double y1 = r.origin.ycoord; double z1 = r.origin.zcoord;
-            double d1 = r.direction.xcoord; double d2 = r.direction.ycoord; double d3 = r.direction.zcoord;
+            float x1 = r.origin.coords.X; float y1 = r.origin.coords.Y; float z1 = r.origin.coords.Z;
+            float d1 = r.direction.coords.X; float d2 = r.direction.coords.Y; float d3 = r.direction.coords.Z;
 
-            double[] coefficients = new double[5];
-            double[] roots = new double[4];
+            float[] coefficients = new float[5];
+            float[] roots = new float[4];
 
-            double sum_d_sqrd = d1 * d1 + d2 * d2 + d3 * d3;
-            double e = x1 * x1 + y1 * y1 + z1 * z1 - a * a - b * b;
-            double f = x1 * d1 + y1 * d2 + z1 * d3;
-            double four_a_sqrd = 4.0 * a * a;
+            float sum_d_sqrd = d1 * d1 + d2 * d2 + d3 * d3;
+            float e = x1 * x1 + y1 * y1 + z1 * z1 - a * a - b * b;
+            float f = x1 * d1 + y1 * d2 + z1 * d3;
+            float four_a_sqrd = 4.0f * a * a;
 
 
             coefficients[0] = e * e - four_a_sqrd * (b * b - y1 * y1);
-            coefficients[1] = 4.0 * f * e + 2.0 * four_a_sqrd * y1 * d2;
-            coefficients[2] = 2.0 * sum_d_sqrd * e + 4.0 * f * f + four_a_sqrd * d2 * d2;
-            coefficients[3] = 4.0 * sum_d_sqrd * f;
+            coefficients[1] = 4.0f * f * e + 2.0f * four_a_sqrd * y1 * d2;
+            coefficients[2] = 2.0f * sum_d_sqrd * e + 4.0f * f * f + four_a_sqrd * d2 * d2;
+            coefficients[3] = 4.0f * sum_d_sqrd * f;
             coefficients[4] = sum_d_sqrd * sum_d_sqrd;
 
             //Find roots
             int numroots = FastMath.solveQuartic(coefficients, roots);
            
             bool hit = false;
-            double t = GlobalVars.kHugeValue;
+            float t = GlobalVars.kHugeValue;
             
             if (numroots == 0)
             {
@@ -131,6 +131,7 @@ namespace RayTracer
 
             tmin = t;
             sr.hit_point_local = r.origin + (t * r.direction);
+            sr.obj_material = mat;
 
             //Compute the normal at the hit point (see Thomas and Finney, 1996)
             sr.normal = calcNormal(sr.hit_point_local);
@@ -138,7 +139,7 @@ namespace RayTracer
             return hit;
         }
 
-        public override bool hit(Ray r, double tmin)
+        public override bool hit(Ray r, float tmin)
         {
             /// Hit point on a torus as distance from point r.origin along vector r.direction
             /// can be solved for as a quartic equation of the form c4t^4 + c3t^3 + c2t^2 + c1t + c0 = 0
@@ -151,22 +152,22 @@ namespace RayTracer
             /// 
             ///Using quartic solving algorithm
             /// 
-            double x1 = r.origin.xcoord; double y1 = r.origin.ycoord; double z1 = r.origin.zcoord;
-            double d1 = r.direction.xcoord; double d2 = r.direction.ycoord; double d3 = r.direction.zcoord;
+            float x1 = r.origin.coords.X; float y1 = r.origin.coords.Y; float z1 = r.origin.coords.Z;
+            float d1 = r.direction.coords.X; float d2 = r.direction.coords.Y; float d3 = r.direction.coords.Z;
 
-            double[] coefficients = new double[5];
-            double[] roots = new double[4];
+            float[] coefficients = new float[5];
+            float[] roots = new float[4];
 
-            double sum_d_sqrd = d1 * d1 + d2 * d2 + d3 * d3;
-            double e = x1 * x1 + y1 * y1 + z1 * z1 - a * a - b * b;
-            double f = x1 * d1 + y1 * d2 + z1 * d3;
-            double four_a_sqrd = 4.0 * a * a;
+            float sum_d_sqrd = d1 * d1 + d2 * d2 + d3 * d3;
+            float e = x1 * x1 + y1 * y1 + z1 * z1 - a * a - b * b;
+            float f = x1 * d1 + y1 * d2 + z1 * d3;
+            float four_a_sqrd = 4.0f * a * a;
 
 
             coefficients[0] = e * e - four_a_sqrd * (b * b - y1 * y1);
-            coefficients[1] = 4.0 * f * e + 2.0 * four_a_sqrd * y1 * d2;
-            coefficients[2] = 2.0 * sum_d_sqrd * e + 4.0 * f * f + four_a_sqrd * d2 * d2;
-            coefficients[3] = 4.0 * sum_d_sqrd * f;
+            coefficients[1] = 4.0f * f * e + 2.0f * four_a_sqrd * y1 * d2;
+            coefficients[2] = 2.0f * sum_d_sqrd * e + 4.0f * f * f + four_a_sqrd * d2 * d2;
+            coefficients[3] = 4.0f * sum_d_sqrd * f;
             coefficients[4] = sum_d_sqrd * sum_d_sqrd;
 
             //Find roots
@@ -195,16 +196,16 @@ namespace RayTracer
         {
             Normal result = new Normal();
 
-            double param_squared = a * a + b * b;
+            float param_squared = a * a + b * b;
 
-            double x = point.xcoord;
-            double y = point.ycoord;
-            double z = point.zcoord;
-            double sum_squared = x * x + y * y + z * z;
+            float x = point.coords.X;
+            float y = point.coords.Y;
+            float z = point.coords.Z;
+            float sum_squared = x * x + y * y + z * z;
 
-            result.xcoord = 4.0 * x * (sum_squared - param_squared);
-            result.ycoord = 4.0 * y * (sum_squared - param_squared + 2.0 * a * a);
-            result.zcoord = 4.0 * z * (sum_squared - param_squared);
+            result.coords.X = 4.0f * x * (sum_squared - param_squared);
+            result.coords.Y = 4.0f * y * (sum_squared - param_squared + 2.0f * a * a);
+            result.coords.Z = 4.0f * z * (sum_squared - param_squared);
             result.normalize();
 
             return result;
@@ -220,7 +221,7 @@ namespace RayTracer
                 XmlNode a = def.SelectSingleNode("a");
                 if (a != null)
                 {
-                    double aDouble = Convert.ToDouble(((XmlText)a.FirstChild).Data);
+                    float aDouble = Convert.ToSingle(((XmlText)a.FirstChild).Data);
                     toReturn.setA(aDouble);
                 }
             }
@@ -232,7 +233,7 @@ namespace RayTracer
                 XmlNode b = def.SelectSingleNode("b");
                 if (b != null)
                 {
-                    double bDouble = Convert.ToDouble(((XmlText)b.FirstChild).Data);
+                    float bDouble = Convert.ToSingle(((XmlText)b.FirstChild).Data);
                     toReturn.setB(bDouble);
 
                 }

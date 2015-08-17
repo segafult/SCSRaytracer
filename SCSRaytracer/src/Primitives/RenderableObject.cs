@@ -25,11 +25,11 @@ namespace RayTracer
         //public RGBColor color;
         protected Material mat;
 
-        public virtual bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        public virtual bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             return false;
         }
-        public virtual bool hit(Ray r, double tmin)
+        public virtual bool hit(Ray r, float tmin)
         {
             return false;
         }

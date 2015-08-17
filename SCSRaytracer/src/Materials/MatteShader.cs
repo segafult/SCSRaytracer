@@ -41,8 +41,8 @@ namespace RayTracer
         }
 
         //Setters for lambertian paramaters
-        public void setKa(double ka) { ambient_brdf.setKd(ka); }
-        public void setKd(double kd) { diffuse_brdf.setKd(kd); }
+        public void setKa(float ka) { ambient_brdf.setKd(ka); }
+        public void setKd(float kd) { diffuse_brdf.setKd(kd); }
         public void setCd(RGBColor c) { ambient_brdf.setCd(c); diffuse_brdf.setCd(c); }
         public void setCd(Texture tex) { ambient_brdf.setCd(tex); diffuse_brdf.setCd(tex); }
 
@@ -52,10 +52,10 @@ namespace RayTracer
             RGBColor L = ambient_brdf.rho(sr, wo) * sr.w.ambientLight.L(sr);
             int numLights = sr.w.lightList.Count;
             Vect3D wi;
-            double ndotwi;
+            float ndotwi;
             bool inShadow;
             Ray shadowRay;
-            //double t = GlobalVars.kHugeValue;
+            //float t = GlobalVars.kHugeValue;
             
             //Loop through list of lights and add radiance for each diffuse light source.
             for(int i = 0; i < numLights; i++)

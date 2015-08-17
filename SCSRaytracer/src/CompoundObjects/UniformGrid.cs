@@ -52,20 +52,20 @@ namespace RayTracer
             //Construct bounding box
             Point3D pmin = min_coordinates();
             Point3D pmax = max_coordinates();
-            bbox.x0 = pmin.xcoord; bbox.y0 = pmin.ycoord; bbox.z0 = pmin.zcoord;
-            bbox.x1 = pmax.xcoord; bbox.y1 = pmax.ycoord; bbox.z1 = pmax.zcoord;
+            bbox.x0 = pmin.coords.X; bbox.y0 = pmin.coords.Y; bbox.z0 = pmin.coords.Z;
+            bbox.x1 = pmax.coords.X; bbox.y1 = pmax.coords.Y; bbox.z1 = pmax.coords.Z;
 
             int numobjs = objs.Count;
             //Find width of grid structure
-            double wx = pmax.xcoord - pmin.xcoord;
-            double wy = pmax.ycoord - pmin.ycoord;
-            double wz = pmax.zcoord - pmin.zcoord;
-            double multiplier = 2.0; //For approximately 8x the number of cells as objects.
+            float wx = pmax.coords.X - pmin.coords.X;
+            float wy = pmax.coords.Y - pmin.coords.Y;
+            float wz = pmax.coords.Z - pmin.coords.Z;
+            float multiplier = 2.0f; //For approximately 8x the number of cells as objects.
 
             //Calculate number of cells according to formulae given by Shirley (2000)
             //s = (wxwywz/n)^(1/3)
             //n = trunc(mw/s) + 1;
-            double s = Math.Pow((wx * wy * wz) / numobjs, (1.0 / 3.0));
+            float s = (float)Math.Pow((double)((wx * wy * wz) / numobjs), (1.0 / 3.0));
             nx = (int)(multiplier * wx / s + 1);
             ny = (int)(multiplier * wy / s + 1);
             nz = (int)(multiplier * wz / s + 1);
@@ -97,12 +97,12 @@ namespace RayTracer
                 //Find the corners of the bounding box in terms of cell indices of the grid
                 //According to the mathematical relationship f(p) = (px - p0x)/(p1x-p0x) [0.0,1.0]
                 //index = nf(p)
-                int ixmin = (int)clamp((object_bbox.x0 - pmin.xcoord) * nx / (pmax.xcoord - pmin.xcoord), 0, nx - 1);
-                int iymin = (int)clamp((object_bbox.y0 - pmin.ycoord) * ny / (pmax.ycoord - pmin.ycoord), 0, ny - 1);
-                int izmin = (int)clamp((object_bbox.z0 - pmin.zcoord) * nz / (pmax.zcoord - pmin.zcoord), 0, nz - 1);
-                int ixmax = (int)clamp((object_bbox.x1 - pmin.xcoord) * nx / (pmax.xcoord - pmin.xcoord), 0, nx - 1);
-                int iymax = (int)clamp((object_bbox.y1 - pmin.ycoord) * ny / (pmax.ycoord - pmin.ycoord), 0, ny - 1);
-                int izmax = (int)clamp((object_bbox.z1 - pmin.zcoord) * nz / (pmax.zcoord - pmin.zcoord), 0, nz - 1);
+                int ixmin = (int)clamp((object_bbox.x0 - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
+                int iymin = (int)clamp((object_bbox.y0 - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
+                int izmin = (int)clamp((object_bbox.z0 - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
+                int ixmax = (int)clamp((object_bbox.x1 - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
+                int iymax = (int)clamp((object_bbox.y1 - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
+                int izmax = (int)clamp((object_bbox.z1 - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
 
                 //With the index information traverse all cells and add objects to cells that they are contained in.
                 for(int iz = izmin; iz <= izmax; iz++)
@@ -144,26 +144,26 @@ namespace RayTracer
             }
         }
         
-        public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
-            double ox = r.origin.xcoord;
-            double oy = r.origin.ycoord;
-            double oz = r.origin.zcoord;
-            double dx = r.direction.xcoord;
-            double dy = r.direction.ycoord;
-            double dz = r.direction.zcoord;
+            float ox = r.origin.coords.X;
+            float oy = r.origin.coords.Y;
+            float oz = r.origin.coords.Z;
+            float dx = r.direction.coords.X;
+            float dy = r.direction.coords.Y;
+            float dz = r.direction.coords.Z;
 
-            double x0 = bbox.x0;
-            double y0 = bbox.y0;
-            double z0 = bbox.z0;
-            double x1 = bbox.x1;
-            double y1 = bbox.y1;
-            double z1 = bbox.z1;
+            float x0 = bbox.x0;
+            float y0 = bbox.y0;
+            float z0 = bbox.z0;
+            float x1 = bbox.x1;
+            float y1 = bbox.y1;
+            float z1 = bbox.z1;
 
-            double tx_min, ty_min, tz_min;
-            double tx_max, ty_max, tz_max;
+            float tx_min, ty_min, tz_min;
+            float tx_max, ty_max, tz_max;
 
-            double a = 1.0 / dx;
+            float a = 1.0f / dx;
             if(a >= 0)
             {
                 tx_min = (x0 - ox) * a;
@@ -175,7 +175,7 @@ namespace RayTracer
                 tx_max = (x0 - ox) * a;
             }
 
-            double b = 1.0 / dy;
+            float b = 1.0f / dy;
             if(b >= 0)
             {
                 ty_min = (y0 - oy) * b;
@@ -187,7 +187,7 @@ namespace RayTracer
                 ty_max = (y0 - oy) * b;
             }
 
-            double c = 1.0 / dz;
+            float c = 1.0f / dz;
             if(c >= 0)
             {
                 tz_min = (z0 - oz) * c;
@@ -200,7 +200,7 @@ namespace RayTracer
             }
 
             //Determine if volume was hit
-            double t0, t1;
+            float t0, t1;
             t0 = (tx_min > ty_min) ? tx_min : ty_min;
             if (tz_min > t0) t0 = tz_min;
             t1 = (tx_max < ty_max) ? tx_max : ty_max;
@@ -222,17 +222,17 @@ namespace RayTracer
             else
             {
                 Point3D p = r.origin + t0 * r.direction;
-                ix = (int)clamp((p.xcoord - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
-                iy = (int)clamp((p.ycoord - y0) * ny / (y1 - y0), 0, ny - 1);
-                iz = (int)clamp((p.zcoord - z0) * nz / (z1 - z0), 0, nz - 1);
+                ix = (int)clamp((p.coords.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
+                iy = (int)clamp((p.coords.Y - y0) * ny / (y1 - y0), 0, ny - 1);
+                iz = (int)clamp((p.coords.Z - z0) * nz / (z1 - z0), 0, nz - 1);
             }
 
             //Get increments for ray marching
-            double dtx = (tx_max - tx_min) / nx;
-            double dty = (ty_max - ty_min) / ny;
-            double dtz = (tz_max - tz_min) / nz;
+            float dtx = (tx_max - tx_min) / nx;
+            float dty = (ty_max - ty_min) / ny;
+            float dtz = (tz_max - tz_min) / nz;
 
-            double tx_next, ty_next, tz_next;
+            float tx_next, ty_next, tz_next;
             int ix_step, iy_step, iz_step;
             int ix_stop, iy_stop, iz_stop;
 
@@ -307,7 +307,7 @@ namespace RayTracer
                     //Hit an object in this cell, cull cells behind this object
                     if ((object_ptr != null) && object_ptr.hit(r, ref tmin, ref sr) && tmin < tx_next)
                     {
-                        mat = object_ptr.getMaterial();
+                        //mat = object_ptr.getMaterial();
                         return true;
                     }
 
@@ -330,7 +330,7 @@ namespace RayTracer
                         //Hit an object in this cell? Cull cells behind object
                         if (object_ptr != null && object_ptr.hit(r, ref tmin, ref sr) && tmin < ty_next) 
                         {
-                            mat = object_ptr.getMaterial();
+                            //mat = object_ptr.getMaterial();
                             return true;
                         }
 
@@ -350,7 +350,7 @@ namespace RayTracer
                         //Hit an object in this cell? Cull cells behind object
                         if (object_ptr != null && object_ptr.hit(r, ref tmin, ref sr) && tmin < tz_next)
                         {
-                            mat = object_ptr.getMaterial();
+                            //mat = object_ptr.getMaterial();
                             return true;
                         }
 
@@ -368,26 +368,26 @@ namespace RayTracer
             }      
         }
 
-        public override bool hit(Ray r, double tmin)
+        public override bool hit(Ray r, float tmin)
         {
-            double ox = r.origin.xcoord;
-            double oy = r.origin.ycoord;
-            double oz = r.origin.zcoord;
-            double dx = r.direction.xcoord;
-            double dy = r.direction.ycoord;
-            double dz = r.direction.zcoord;
+            float ox = r.origin.coords.X;
+            float oy = r.origin.coords.Y;
+            float oz = r.origin.coords.Z;
+            float dx = r.direction.coords.X;
+            float dy = r.direction.coords.Y;
+            float dz = r.direction.coords.Z;
 
-            double x0 = bbox.x0;
-            double y0 = bbox.y0;
-            double z0 = bbox.z0;
-            double x1 = bbox.x1;
-            double y1 = bbox.y1;
-            double z1 = bbox.z1;
+            float x0 = bbox.x0;
+            float y0 = bbox.y0;
+            float z0 = bbox.z0;
+            float x1 = bbox.x1;
+            float y1 = bbox.y1;
+            float z1 = bbox.z1;
 
-            double tx_min, ty_min, tz_min;
-            double tx_max, ty_max, tz_max;
+            float tx_min, ty_min, tz_min;
+            float tx_max, ty_max, tz_max;
 
-            double a = 1.0 / dx;
+            float a = 1.0f / dx;
             if (a >= 0)
             {
                 tx_min = (x0 - ox) * a;
@@ -399,7 +399,7 @@ namespace RayTracer
                 tx_max = (x0 - ox) * a;
             }
 
-            double b = 1.0 / dy;
+            float b = 1.0f / dy;
             if (b >= 0)
             {
                 ty_min = (y0 - oy) * b;
@@ -411,7 +411,7 @@ namespace RayTracer
                 ty_max = (y0 - oy) * b;
             }
 
-            double c = 1.0 / dz;
+            float c = 1.0f / dz;
             if (c >= 0)
             {
                 tz_min = (z0 - oz) * c;
@@ -424,7 +424,7 @@ namespace RayTracer
             }
 
             //Determine if volume was hit
-            double t0, t1;
+            float t0, t1;
             t0 = (tx_min > ty_min) ? tx_min : ty_min;
             if (tz_min > t0) t0 = tz_min;
             t1 = (tx_max < ty_max) ? tx_max : ty_max;
@@ -446,17 +446,17 @@ namespace RayTracer
             else
             {
                 Point3D p = r.origin + t0 * r.direction;
-                ix = (int)clamp((p.xcoord - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
-                iy = (int)clamp((p.ycoord - y0) * ny / (y1 - y0), 0, ny - 1);
-                iz = (int)clamp((p.zcoord - z0) * nz / (z1 - z0), 0, nz - 1);
+                ix = (int)clamp((p.coords.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
+                iy = (int)clamp((p.coords.Y - y0) * ny / (y1 - y0), 0, ny - 1);
+                iz = (int)clamp((p.coords.Z - z0) * nz / (z1 - z0), 0, nz - 1);
             }
 
             //Get increments for ray marching
-            double dtx = (tx_max - tx_min) / nx;
-            double dty = (ty_max - ty_min) / ny;
-            double dtz = (tz_max - tz_min) / nz;
+            float dtx = (tx_max - tx_min) / nx;
+            float dty = (ty_max - ty_min) / ny;
+            float dtz = (tz_max - tz_min) / nz;
 
-            double tx_next, ty_next, tz_next;
+            float tx_next, ty_next, tz_next;
             int ix_step, iy_step, iz_step;
             int ix_stop, iy_stop, iz_stop;
 
@@ -602,14 +602,14 @@ namespace RayTracer
             for(int i = 0; i < numobjects; i++)
             {
                 bbox = objs[i].get_bounding_box();
-                if (bbox.x0 < pmin.xcoord) pmin.xcoord = bbox.x0;
-                if (bbox.y0 < pmin.ycoord) pmin.ycoord = bbox.y0;
-                if (bbox.z0 < pmin.zcoord) pmin.zcoord = bbox.z0;
+                if (bbox.x0 < pmin.coords.X) pmin.coords.X = bbox.x0;
+                if (bbox.y0 < pmin.coords.Y) pmin.coords.Y = bbox.y0;
+                if (bbox.z0 < pmin.coords.Z) pmin.coords.Z = bbox.z0;
             }
 
-            pmin.xcoord -= GlobalVars.kEpsilon;
-            pmin.ycoord -= GlobalVars.kEpsilon;
-            pmin.zcoord -= GlobalVars.kEpsilon;
+            pmin.coords.X -= GlobalVars.kEpsilon;
+            pmin.coords.Y -= GlobalVars.kEpsilon;
+            pmin.coords.Z -= GlobalVars.kEpsilon;
 
             return pmin;
         }
@@ -626,20 +626,20 @@ namespace RayTracer
             for(int i = 0; i < numobjects; i++)
             {
                 bbox = objs[i].get_bounding_box();
-                if (bbox.x1 > pmax.xcoord) pmax.xcoord = bbox.x1;
-                if (bbox.y1 > pmax.ycoord) pmax.ycoord = bbox.y1;
-                if (bbox.z1 > pmax.zcoord) pmax.zcoord = bbox.z1;
+                if (bbox.x1 > pmax.coords.X) pmax.coords.X = bbox.x1;
+                if (bbox.y1 > pmax.coords.Y) pmax.coords.Y = bbox.y1;
+                if (bbox.z1 > pmax.coords.Z) pmax.coords.Z = bbox.z1;
             }
 
-            pmax.xcoord += GlobalVars.kEpsilon;
-            pmax.ycoord += GlobalVars.kEpsilon;
-            pmax.zcoord += GlobalVars.kEpsilon;
+            pmax.coords.X += GlobalVars.kEpsilon;
+            pmax.coords.Y += GlobalVars.kEpsilon;
+            pmax.coords.Z += GlobalVars.kEpsilon;
 
             return pmax;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private double clamp(double x, double xmin, double xmax)
+        private float clamp(float x, float xmin, float xmax)
         {
             if(x < xmin)
             {

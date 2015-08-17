@@ -25,8 +25,8 @@ namespace RayTracer
 {
     abstract class Mapper
     {
-        protected readonly double INVPI = 1 / Math.PI;
-        protected readonly double INVTWOPI = 1 / (2 * Math.PI);
+        protected readonly float INVPI = 1.0f / (float)Math.PI;
+        protected readonly float INVTWOPI = 1.0f / (2.0f * (float)Math.PI);
 
 
         abstract public Point2D get_uv(Point3D hit_point);

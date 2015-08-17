@@ -20,7 +20,7 @@ namespace RayTracer
     /// <summary>
     /// Convenient bundle for passing information between shader subroutines.
     /// </summary>
-    class ShadeRec
+    struct ShadeRec
     {
         public bool hit_an_object; //Whether ray hit an object
         public Material obj_material; //Material reference for shading
@@ -28,15 +28,15 @@ namespace RayTracer
         public Point3D hit_point_local; //Hit point in local coordinates for UV mapping
         public Normal normal; //Normal at hit point
         public RGBColor color; //Color at hit point
-        public double t; //Tmin (minimum distance) for a given ray intersection.
+        public float t; //Tmin (minimum distance) for a given ray intersection.
         public World w;
 
         public Ray ray; //Ray for specular highlights
         public int depth; //Recursion depth (reflection)
         public Vect3D dir; //Area lighting
 
-        public double u; //UV coordinates
-        public double v;
+        public float u; //UV coordinates
+        public float v;
 
         //Constructor
         public ShadeRec(World worldRef)
@@ -45,6 +45,15 @@ namespace RayTracer
             obj_material = null;
             depth = 0;
             w = worldRef;
+            hit_point = new Point3D(0, 0, 0);
+            hit_point_local = new Point3D(0, 0, 0);
+            normal = new Normal(0, 0, 0);
+            color = new RGBColor(0, 0, 0);
+            t = GlobalVars.kHugeValue;
+            ray = new Ray(new Point3D(0, 0, 0), new Vect3D(0, 0, 0));
+            dir = new Vect3D(0, 0, 0);
+            u = 0;
+            v = 0;
         }
         //Copy constructor
         public ShadeRec(ShadeRec sr)
@@ -59,6 +68,9 @@ namespace RayTracer
             ray = sr.ray;
             depth = sr.depth;
             dir = sr.dir;
+            t = sr.t;
+            u = sr.u;
+            v = sr.v;
         }
     }
 }

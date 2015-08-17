@@ -47,7 +47,7 @@ namespace RayTracer
                 {
                     for (int k = 0; k < n; k++)
                     {
-                        samples.Add(new Point2D((k + randomgen.NextDouble()) / n, (j + randomgen.NextDouble()) / n));
+                        samples.Add(new Point2D((k + (float)randomgen.NextDouble()) / n, (j + (float)randomgen.NextDouble()) / n));
                     }
                 }
             }
@@ -58,7 +58,7 @@ namespace RayTracer
         protected virtual void shuffle_x_coords()
         {
             int n = (int)Math.Sqrt(numsamples);
-            double xcoord1;
+            float xcoord1;
             //Perform the same swap for each column
             for (int ns = 0; ns < numsets; ns++)
             {
@@ -77,7 +77,7 @@ namespace RayTracer
         protected virtual void shuffle_y_coords()
         {
             int n = (int)Math.Sqrt(numsamples);
-            double ycoord1;
+            float ycoord1;
            
             //Perform the same swap for each row
             for (int ns = 0; ns < numsets; ns++)

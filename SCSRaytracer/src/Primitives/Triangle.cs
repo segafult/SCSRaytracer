@@ -78,12 +78,12 @@ namespace RayTracer
             }
             return new Point3D(0,0,0);
         }
-        public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             //Calculate ray intersection with the Moller-Trumbore algorithm
             Vect3D e1, e2; //Edges
             Vect3D P, Q, T;
-            double det, inv_det, u, v, t;
+            float det, inv_det, u, v, t;
 
             e1 = v2 - v1;
             e2 = v3 - v1; //Vectors for the edges shared by vertex 1
@@ -97,7 +97,7 @@ namespace RayTracer
                 return false;
             }
 
-            inv_det = 1.0 / det;
+            inv_det = 1.0f / det;
 
             //Distance from v1 to ray origin
             T = r.origin - v1;
@@ -127,7 +127,7 @@ namespace RayTracer
                 tmin = t;
                 //Calculate normal, and ensure it's facing the direction that the ray came from
                 Vect3D triNorm = (v2 - v1) ^ (v3 - v1);
-                double triDotProd = triNorm * r.direction;
+                float triDotProd = triNorm * r.direction;
                 if(triDotProd < 0.0)
                 {
                     sr.normal = new Normal(triNorm);
@@ -138,7 +138,7 @@ namespace RayTracer
                 }
                 sr.normal.normalize();
                 sr.hit_point_local = r.origin + t * r.direction;
-                sr.hit_an_object = true;
+                sr.obj_material = mat;
                 return true;
             }
             else
@@ -147,13 +147,13 @@ namespace RayTracer
             }
         }
 
-        public override bool hit(Ray r, double tmin)
+        public override bool hit(Ray r, float tmin)
         {
             //Calculate ray intersection with the Moller-Trumbore algorithm
 
             Vect3D e1, e2; //Edges
             Vect3D P, Q, T;
-            double det, inv_det, u, v, t;
+            float det, inv_det, u, v, t;
 
             e1 = v2 - v1;
             e2 = v3 - v1; //Vectors for the edges shared by vertex 1
@@ -167,7 +167,7 @@ namespace RayTracer
                 return false;
             }
 
-            inv_det = 1.0 / det;
+            inv_det = 1.0f / det;
 
             //Distance from v1 to ray origin
             T = r.origin - v1;
@@ -230,8 +230,8 @@ namespace RayTracer
         public override BoundingBox get_bounding_box()
         {
             //Find the smallest x coordinate
-            double xmin = GlobalVars.kHugeValue;
-            //xmin = (v1.xcoord < )
+            float xmin = GlobalVars.kHugeValue;
+            //xmin = (v1.coords.X < )
         }
         */
     }

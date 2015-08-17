@@ -25,14 +25,14 @@ namespace RayTracer
         public override RGBColor shade(ShadeRec sr)
         {
             RGBColor multiplar = base.shade(sr);
-            double scalefactor;
-            if(Math.Abs(sr.hit_point.xcoord) % 50 < 25 && Math.Abs(sr.hit_point.zcoord) % 50 > 25)
+            float scalefactor;
+            if(Math.Abs(sr.hit_point.coords.X) % 50 < 25 && Math.Abs(sr.hit_point.coords.Z) % 50 > 25)
             {
-                scalefactor = 0.1;
+                scalefactor = 0.1f;
             }
             else
             {
-                scalefactor = 1.0;
+                scalefactor = 1.0f;
             }
             return scalefactor * multiplar;
         }

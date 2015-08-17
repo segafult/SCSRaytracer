@@ -24,9 +24,9 @@ namespace RayTracer
 {
     class Box : RenderableObject
     {
-        private double x0, x1;
-        private double y0, y1;
-        private double z0, z1;
+        private float x0, x1;
+        private float y0, y1;
+        private float z0, z1;
 
         public Box()
         {
@@ -39,19 +39,19 @@ namespace RayTracer
         }
 
         ///Constructor for perfect cube
-        public Box(double x, double y, double z, double size)
+        public Box(float x, float y, float z, float size)
         {
             x0 = x;
             y0 = y;
             z0 = z;
-            double s = Math.Abs(size); //Error protection, dont want a negative size
+            float s = Math.Abs(size); //Error protection, dont want a negative size
             x1 = x + s;
             y1 = y + s;
             z1 = z + s;
 
         }
 
-        public Box(double x0_arg, double x1_arg, double y0_arg, double y1_arg, double z0_arg, double z1_arg)
+        public Box(float x0_arg, float x1_arg, float y0_arg, float y1_arg, float z0_arg, float z1_arg)
         {
             x0 = x0_arg;
             x1 = x1_arg;
@@ -63,24 +63,24 @@ namespace RayTracer
 
         public void setPoints(Point3D p1, Point3D p2)
         {
-            x0 = p1.xcoord < p2.xcoord ? p1.xcoord : p2.xcoord;
-            x1 = p1.xcoord > p2.xcoord ? p1.xcoord : p2.xcoord;
-            y0 = p1.ycoord < p2.ycoord ? p1.ycoord : p2.ycoord;
-            y1 = p1.ycoord > p2.ycoord ? p1.ycoord : p2.ycoord;
-            z0 = p1.zcoord < p2.zcoord ? p1.zcoord : p2.zcoord;
-            z1 = p1.zcoord > p2.zcoord ? p1.zcoord : p2.zcoord;
+            x0 = p1.coords.X < p2.coords.X ? p1.coords.X : p2.coords.X;
+            x1 = p1.coords.X > p2.coords.X ? p1.coords.X : p2.coords.X;
+            y0 = p1.coords.Y < p2.coords.Y ? p1.coords.Y : p2.coords.Y;
+            y1 = p1.coords.Y > p2.coords.Y ? p1.coords.Y : p2.coords.Y;
+            z0 = p1.coords.Z < p2.coords.Z ? p1.coords.Z : p2.coords.Z;
+            z1 = p1.coords.Z > p2.coords.Z ? p1.coords.Z : p2.coords.Z;
         }
-        public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             ///-------------------------------------------------------------------------------------
             /// same as colision code for axis aligned bounding box
-            double ox = r.origin.xcoord; double oy = r.origin.ycoord; double oz = r.origin.zcoord;
-            double dx = r.direction.xcoord; double dy = r.direction.ycoord; double dz = r.direction.zcoord;
+            float ox = r.origin.coords.X; float oy = r.origin.coords.Y; float oz = r.origin.coords.Z;
+            float dx = r.direction.coords.X; float dy = r.direction.coords.Y; float dz = r.direction.coords.Z;
 
-            double tx_min, ty_min, tz_min;
-            double tx_max, ty_max, tz_max;
+            float tx_min, ty_min, tz_min;
+            float tx_max, ty_max, tz_max;
             
-            double a = 1.0 / dx;
+            float a = 1.0f / dx;
             if (a >= 0.0)
             {
                 tx_min = (x0 - ox) * a;
@@ -92,7 +92,7 @@ namespace RayTracer
                 tx_max = (x0 - ox) * a;
             }
 
-            double b = 1.0 / dy;
+            float b = 1.0f / dy;
             if (b >= 0.0)
             {
                 ty_min = (y0 - oy) * b;
@@ -104,7 +104,7 @@ namespace RayTracer
                 ty_max = (y0 - oy) * b;
             }
 
-            double c = 1.0 / dz;
+            float c = 1.0f / dz;
             if (c >= 0.0)
             {
                 tz_min = (z0 - oz) * c;
@@ -118,7 +118,7 @@ namespace RayTracer
             ///code differs after this point
             ///--------------------------------------------------------------------------
             /// 
-            double t0, t1;
+            float t0, t1;
             int face_in, face_out; //for handling both inside and outside collisions with box
 
             //Find the largest entering t value
@@ -171,26 +171,27 @@ namespace RayTracer
                 }
 
                 sr.hit_point_local = r.origin + tmin * r.direction;
+                sr.obj_material = mat;
                 return true;
             }
             else
                 return false;
         }
 
-        public override bool hit(Ray r, double tmin)
+        public override bool hit(Ray r, float tmin)
         {
-            double ox = r.origin.xcoord; double oy = r.origin.ycoord; double oz = r.origin.zcoord;
-            double dx = r.direction.xcoord; double dy = r.direction.ycoord; double dz = r.direction.zcoord;
+            float ox = r.origin.coords.X; float oy = r.origin.coords.Y; float oz = r.origin.coords.Z;
+            float dx = r.direction.coords.X; float dy = r.direction.coords.Y; float dz = r.direction.coords.Z;
 
-            double tx_min, ty_min, tz_min;
-            double tx_max, ty_max, tz_max;
+            float tx_min, ty_min, tz_min;
+            float tx_max, ty_max, tz_max;
 
             //How this algorithm works:
             //Generate *x_min and *x_max values which indicate the minimum and maximum length a line segment
             //from origin in the ray direction can have and be within the volume of the bounding box. If all 3
             //distance ranges overlap, then the bounding box was hit.
 
-            double a = 1.0 / dx;
+            float a = 1.0f / dx;
             if (a >= 0.0)
             {
                 tx_min = (x0 - ox) * a;
@@ -202,7 +203,7 @@ namespace RayTracer
                 tx_max = (x0 - ox) * a;
             }
 
-            double b = 1.0 / dy;
+            float b = 1.0f / dy;
             if (b >= 0.0)
             {
                 ty_min = (y0 - oy) * b;
@@ -214,7 +215,7 @@ namespace RayTracer
                 ty_max = (y0 - oy) * b;
             }
 
-            double c = 1.0 / dz;
+            float c = 1.0f / dz;
             if (c >= 0.0)
             {
                 tz_min = (z0 - oz) * c;
@@ -226,7 +227,7 @@ namespace RayTracer
                 tz_max = (z0 - oz) * c;
             }
 
-            double t0, t1;
+            float t0, t1;
 
             //largest entering t value
             if (tx_min > ty_min)
@@ -282,7 +283,7 @@ namespace RayTracer
                     return (new Normal(0, 0, 1)); //z
             }
 
-            return null;
+            return new Normal(0,0,0);
         }
 
         public static Box LoadBox(XmlElement def)

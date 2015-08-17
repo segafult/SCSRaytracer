@@ -25,24 +25,24 @@ namespace RayTracer
     /// </summary>
     class AmbientLight : Light
     {
-        private double intensity;
+        private float intensity;
         
 
         //Default constructor
         public AmbientLight()
         {
-            intensity = 0.5;
+            intensity = 0.5f;
             color = new RGBColor(1, 1, 1);
         }
-        public AmbientLight(RGBColor c, double i)
+        public AmbientLight(RGBColor c, float i)
         {
             color = new RGBColor(c);
             intensity = i;
         }
 
         //Gets and sets
-        public void setIntensity(double i) { intensity = i; }
-        public double getIntensity() { return intensity; }
+        public void setIntensity(float i) { intensity = i; }
+        public float getIntensity() { return intensity; }
         public override bool castsShadows()
         {
             return false;
@@ -67,7 +67,7 @@ namespace RayTracer
             if (node_intensity != null)
             {
                 string str_intensity = ((XmlText)node_intensity.FirstChild).Data;
-                double intensity = Convert.ToDouble(str_intensity);
+                float intensity = Convert.ToSingle(str_intensity);
                 toReturn.setIntensity(intensity);
             }
 

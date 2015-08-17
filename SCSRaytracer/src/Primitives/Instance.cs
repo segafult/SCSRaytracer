@@ -17,6 +17,7 @@
 
 using System;
 using System.Xml;
+using System.Numerics;
 
 namespace RayTracer
 {
@@ -25,8 +26,8 @@ namespace RayTracer
     /// </summary>
     class Instance : RenderableObject
     {
-        private Matrix inv_net_mat; //Inverse transformation matrix (for ray transformation)
-        private Matrix net_mat; //Transformation matrix (for bounding box generation for instancing inside grid or octree)
+        private Matrix4x4 inv_net_mat; //Inverse transformation matrix (for ray transformation)
+        private Matrix4x4 net_mat; //Transformation matrix (for bounding box generation for instancing inside grid or octree)
 
         private RenderableObject payload; //Serves as wrapper for another renderable object
         private BoundingBox bbox;
@@ -34,15 +35,15 @@ namespace RayTracer
         //Default constructor
         public Instance()
         {
-            inv_net_mat = new Matrix(1);
-            net_mat = new Matrix(1);
+            inv_net_mat = Matrix4x4.Identity;
+            net_mat = Matrix4x4.Identity;
             this.setMaterial(null);
         }
         //Constructor with handle
         public Instance(RenderableObject handle)
         {
-            inv_net_mat = new Matrix(1);
-            net_mat = new Matrix(1);
+            inv_net_mat = Matrix4x4.Identity;
+            net_mat = Matrix4x4.Identity;
             payload = handle;
             this.setMaterial(null);
         }
@@ -65,33 +66,43 @@ namespace RayTracer
 
         public void translate(Vect3D trans)
         {
-            Matrix inv_temp = Matrix.inv_translate(trans);
-            Matrix temp = Matrix.translate(trans);
+            Matrix4x4 temp = Matrix4x4.CreateTranslation(trans.coords);
+            Matrix4x4 inv_temp = temp;
+            inv_temp.M14 = -inv_temp.M14;
+            inv_temp.M24 = -inv_temp.M24;
+            inv_temp.M34 = -inv_temp.M34;
 
             inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
             net_mat = temp * net_mat; //Pre multiply for transformation matrix.
         }
-        public void translate(double x, double y, double z)
+        public void translate(float x, float y, float z)
         {
-            Matrix inv_temp = Matrix.inv_translate(x, y, z);
-            Matrix temp = Matrix.translate(x, y, z);
+            Matrix4x4 temp = Matrix4x4.CreateTranslation(x, y, z);
+            Matrix4x4 inv_temp = temp;
+            inv_temp.M14 = -inv_temp.M14;
+            inv_temp.M24 = -inv_temp.M24;
+            inv_temp.M34 = -inv_temp.M34;
 
             inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
             net_mat = temp * net_mat; //Pre multiply for transformation matrix.
         }
         public void rotate(Vect3D rot)
         {
-            Matrix inv_temp = Matrix.inv_rotateDeg(rot);
-            Matrix temp = Matrix.rotateDeg(rot);
-
-            inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
-            net_mat = temp * net_mat; //Pre multiply for transformation matrix.
+            rotate(rot.coords.X, rot.coords.Y, rot.coords.Z);
         }
-        public void rotate(double x, double y, double z)
+        public void rotate(float x, float y, float z)
         {
             Vect3D rot = new Vect3D(x, y, z);
-            Matrix inv_temp = Matrix.inv_rotateDeg(rot);
-            Matrix temp = Matrix.rotateDeg(rot);
+            Matrix4x4 xmat = Matrix4x4.CreateRotationX(x * FastMath.THREESIXTYINVTWOPI);
+            Matrix4x4 ymat = Matrix4x4.CreateRotationY(y * FastMath.THREESIXTYINVTWOPI);
+            Matrix4x4 zmat = Matrix4x4.CreateRotationZ(z * FastMath.THREESIXTYINVTWOPI);
+            Matrix4x4 xmatinv, ymatinv, zmatinv;
+            Matrix4x4.Invert(xmat, out xmatinv);
+            Matrix4x4.Invert(ymat, out ymatinv);
+            Matrix4x4.Invert(zmat, out zmatinv);
+            Matrix4x4 temp = xmat * ymat * zmat;
+            Matrix4x4 inv_temp = zmatinv * ymatinv * xmatinv;
+            
 
             inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
             net_mat = temp * net_mat; //Pre multiply for transformation matrix.
@@ -99,27 +110,31 @@ namespace RayTracer
         }
         public void scale(Vect3D scale)
         {
-            Matrix inv_temp = Matrix.inv_scale(scale);
-            Matrix temp = Matrix.scale(scale);
+            Matrix4x4 temp = Matrix4x4.CreateScale(scale.coords);
+            Matrix4x4 inv_temp;
+
+            Matrix4x4.Invert(temp, out inv_temp);
+            
 
             inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
             net_mat = temp * net_mat; //Pre multiply for transformation matrix.
         }
-        public void scale(double x, double y, double z)
+        public void scale(float x, float y, float z)
         {
-            Vect3D scale = new Vect3D(x, y, z);
-            Matrix inv_temp = Matrix.inv_scale(scale);
-            Matrix temp = Matrix.scale(scale);
+            Matrix4x4 temp = Matrix4x4.CreateScale(x, y, z);
+            Matrix4x4 inv_temp;
+            Matrix4x4.Invert(temp, out inv_temp);
 
             inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
             net_mat = temp * net_mat; //Pre multiply for transformation matrix.
         }
-        public void applyTransformation(Matrix trans, Matrix inv_trans)
+        public void applyTransformation(Matrix4x4 trans, Matrix4x4 inv_trans)
         {
             inv_net_mat = inv_trans;
+            net_mat = trans;
         }
 
-        public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             //Apply inverse transformation to incident ray and test for intersection
             Ray tfRay = new Ray(r);
@@ -131,7 +146,10 @@ namespace RayTracer
                 //Transform the computed normal into worldspace
                 sr.normal = inv_net_mat * sr.normal;
                 sr.normal.normalize();
-                //sr.hit_point_local = r.origin + tmin * r.direction;
+                if(mat != null)
+                {
+                    sr.obj_material = mat;
+                }
                 return true;
             }
             else
@@ -140,7 +158,7 @@ namespace RayTracer
             }
         }
 
-        public override bool hit(Ray r, double tmin)
+        public override bool hit(Ray r, float tmin)
         {
             //Apply inverse transformation to incident ray and test for intersection
             Ray tfRay = new Ray(r);
@@ -177,12 +195,12 @@ namespace RayTracer
         {
             //Get the bounding box of the payload prior to transformation.
             BoundingBox preTransform = payload.get_bounding_box();
-            double x0 = preTransform.x0;
-            double x1 = preTransform.x1;
-            double y0 = preTransform.y0;
-            double y1 = preTransform.y1;
-            double z0 = preTransform.z0;
-            double z1 = preTransform.z1;
+            float x0 = preTransform.x0;
+            float x1 = preTransform.x1;
+            float y0 = preTransform.y0;
+            float y1 = preTransform.y1;
+            float z0 = preTransform.z0;
+            float z1 = preTransform.z1;
 
             //Get points representing all 8 corners of the bounding box
             Point3D[] points = new Point3D[8];
@@ -201,22 +219,22 @@ namespace RayTracer
                 points[i] = net_mat * points[i];
             }
 
-            double xmin = GlobalVars.kHugeValue;
-            double xmax = -GlobalVars.kHugeValue;
-            double ymin = GlobalVars.kHugeValue;
-            double ymax = -GlobalVars.kHugeValue;
-            double zmin = GlobalVars.kHugeValue;
-            double zmax = -GlobalVars.kHugeValue;
+            float xmin = GlobalVars.kHugeValue;
+            float xmax = -GlobalVars.kHugeValue;
+            float ymin = GlobalVars.kHugeValue;
+            float ymax = -GlobalVars.kHugeValue;
+            float zmin = GlobalVars.kHugeValue;
+            float zmax = -GlobalVars.kHugeValue;
 
             //Find xmin, xmax, ymin, ymax, and zmin, zmax
             for(int i = 0; i < 8; i++)
             {
-                if (points[i].xcoord < xmin) xmin = points[i].xcoord;
-                if (points[i].xcoord > xmax) xmax = points[i].xcoord;
-                if (points[i].ycoord < ymin) ymin = points[i].ycoord;
-                if (points[i].ycoord > ymax) ymax = points[i].ycoord;
-                if (points[i].zcoord < zmin) zmin = points[i].zcoord;
-                if (points[i].zcoord > zmax) zmax = points[i].zcoord;
+                if (points[i].coords.X < xmin) xmin = points[i].coords.X;
+                if (points[i].coords.X > xmax) xmax = points[i].coords.X;
+                if (points[i].coords.Y < ymin) ymin = points[i].coords.Y;
+                if (points[i].coords.Y > ymax) ymax = points[i].coords.Y;
+                if (points[i].coords.Z < zmin) zmin = points[i].coords.Z;
+                if (points[i].coords.Z > zmax) zmax = points[i].coords.Z;
             }
 
             //Create bounding box based on transformed payload bounding box

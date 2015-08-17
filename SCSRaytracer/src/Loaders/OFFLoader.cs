@@ -75,13 +75,13 @@ namespace RayTracer
                 //Tokenize each line...
                 string[] vert_data = fileLines[i].Split(' ');
 
-                double x = Convert.ToDouble(vert_data[0]);
-                double y = Convert.ToDouble(vert_data[1]);
-                double z = Convert.ToDouble(vert_data[2]);
+                float x = Convert.ToSingle(vert_data[0]);
+                float y = Convert.ToSingle(vert_data[1]);
+                float z = Convert.ToSingle(vert_data[2]);
 
                 parent.vertices.Add(new Point3D(x, y, z));
                 parent.vertex_faces.Add(new List<int>());
-                parent.normals.Add(null);
+                parent.normals.Add(new Normal(0,0,0));
                 parent.num_verts++;
             }
         }

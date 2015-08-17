@@ -30,7 +30,7 @@ namespace RayTracer
     {
         int rows, cols;
         byte[] pixels;
-        private readonly double INVTWOFITTYFI = 1.0 / 255.0;
+        private readonly float INVTWOFITTYFI = 1.0f / 255.0f;
 
 
         public Image()
@@ -59,17 +59,17 @@ namespace RayTracer
             }    
         }
 
-        public RGBColor get_color_at_uv(double u, double v, bool interpolate)
+        public RGBColor get_color_at_uv(float u, float v, bool interpolate)
         {
             //Convert provided UV coordinates to texel coordinates
-            double rv0 = v * (rows - 1) - 0.5;
-            double cu0 = u * (cols - 1) - 0.5;
+            float rv0 = v * (rows - 1) - 0.5f;
+            float cu0 = u * (cols - 1) - 0.5f;
             int row0 = (int)(rv0);
             int col0 = (int)(cu0);
 
-            double r0 = (double)pixels[(row0 * cols * 3) + (3 * col0)] * INVTWOFITTYFI;
-            double g0 = (double)pixels[(row0 * cols * 3) + (3 * col0) + 1] * INVTWOFITTYFI;
-            double b0 = (double)pixels[(row0 * cols * 3) + (3 * col0) + 2] * INVTWOFITTYFI;
+            float r0 = (float)pixels[(row0 * cols * 3) + (3 * col0)] * INVTWOFITTYFI;
+            float g0 = (float)pixels[(row0 * cols * 3) + (3 * col0) + 1] * INVTWOFITTYFI;
+            float b0 = (float)pixels[(row0 * cols * 3) + (3 * col0) + 2] * INVTWOFITTYFI;
 
             if(!interpolate)
             {
@@ -87,28 +87,28 @@ namespace RayTracer
                 //c1 = texture[col1][row0]
                 //c2 = texture[col0][row1]
                 //c3 = texture[col1][row1]
-                double r1 = (double)pixels[(row0 * cols * 3) + (3 * col1)] * INVTWOFITTYFI;
-                double g1 = (double)pixels[(row0 * cols * 3) + (3 * col1) + 1] * INVTWOFITTYFI;
-                double b1 = (double)pixels[(row0 * cols * 3) + (3 * col1) + 2] * INVTWOFITTYFI;
-                double r2 = (double)pixels[(row1 * cols * 3) + (3 * col0)] * INVTWOFITTYFI;
-                double g2 = (double)pixels[(row1 * cols * 3) + (3 * col0) + 1] * INVTWOFITTYFI;
-                double b2 = (double)pixels[(row1 * cols * 3) + (3 * col0) + 2] * INVTWOFITTYFI;
-                double r3 = (double)pixels[(row1 * cols * 3) + (3 * col1)] * INVTWOFITTYFI;
-                double g3 = (double)pixels[(row1 * cols * 3) + (3 * col1) + 1] * INVTWOFITTYFI;
-                double b3 = (double)pixels[(row1 * cols * 3) + (3 * col1) + 2] * INVTWOFITTYFI;
+                float r1 = (float)pixels[(row0 * cols * 3) + (3 * col1)] * INVTWOFITTYFI;
+                float g1 = (float)pixels[(row0 * cols * 3) + (3 * col1) + 1] * INVTWOFITTYFI;
+                float b1 = (float)pixels[(row0 * cols * 3) + (3 * col1) + 2] * INVTWOFITTYFI;
+                float r2 = (float)pixels[(row1 * cols * 3) + (3 * col0)] * INVTWOFITTYFI;
+                float g2 = (float)pixels[(row1 * cols * 3) + (3 * col0) + 1] * INVTWOFITTYFI;
+                float b2 = (float)pixels[(row1 * cols * 3) + (3 * col0) + 2] * INVTWOFITTYFI;
+                float r3 = (float)pixels[(row1 * cols * 3) + (3 * col1)] * INVTWOFITTYFI;
+                float g3 = (float)pixels[(row1 * cols * 3) + (3 * col1) + 1] * INVTWOFITTYFI;
+                float b3 = (float)pixels[(row1 * cols * 3) + (3 * col1) + 2] * INVTWOFITTYFI;
 
                 //Pixel color ratios:
-                double ratio_col_high = cu0 - col0;
-                double ratio_row_high = rv0 - row0;
-                double ratio_col_low = 1.0 - ratio_col_high;
-                double ratio_row_low = 1.0 - ratio_row_high;
+                float ratio_col_high = cu0 - col0;
+                float ratio_row_high = rv0 - row0;
+                float ratio_col_low = 1.0f - ratio_col_high;
+                float ratio_row_low = 1.0f - ratio_row_high;
 
                 //Compute ratios for each color
-                double rf = (r0 * ratio_col_low + r1 * ratio_col_high) * ratio_row_low +
+                float rf = (r0 * ratio_col_low + r1 * ratio_col_high) * ratio_row_low +
                     (r2 * ratio_col_low + r3 * ratio_col_high) * ratio_row_high;
-                double gf = (g0 * ratio_col_low + g1 * ratio_col_high) * ratio_row_low +
+                float gf = (g0 * ratio_col_low + g1 * ratio_col_high) * ratio_row_low +
                     (g2 * ratio_col_low + g3 * ratio_col_high) * ratio_row_high;
-                double bf = (b0 * ratio_col_low + b1 * ratio_col_high) * ratio_row_low +
+                float bf = (b0 * ratio_col_low + b1 * ratio_col_high) * ratio_row_low +
                     (b2 * ratio_col_low + b3 * ratio_col_high) * ratio_row_high;
 
                 return new RGBColor(rf, gf, bf);

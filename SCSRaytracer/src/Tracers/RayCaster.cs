@@ -48,7 +48,7 @@ namespace RayTracer
             else { return world_pointer.bg_color; } //No need to call shader function if no intersection occurred.
         }
 
-        public override RGBColor trace_ray(Ray ray, double tmin, int depth)
+        public override RGBColor trace_ray(Ray ray, float tmin, int depth)
         {
             throw new NotImplementedException();
         }

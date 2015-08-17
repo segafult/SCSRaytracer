@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using System.Threading;
 
 
@@ -86,11 +87,12 @@ namespace RayTracer
         public ShadeRec hit_objects(Ray ray)
         {
             ShadeRec sr = new ShadeRec(this);
-            double t = GlobalVars.kHugeValue-1.0;
+            float t = GlobalVars.kHugeValue-1.0f;
             Normal normal = new Normal();
             Point3D local_hit_point = new Point3D();
-            double tmin = GlobalVars.kHugeValue;
+            float tmin = GlobalVars.kHugeValue;
             int num_objects = renderList.Count;
+            Material closestmat = null;
 
             //Find the closest intersection point along the given ray
             for(int i = 0; i<num_objects; i++)
@@ -99,7 +101,7 @@ namespace RayTracer
                 {
                     sr.hit_an_object = true;
                     tmin = t;
-                    sr.obj_material = renderList[i].getMaterial();
+                    closestmat = sr.obj_material;
                     sr.hit_point = ray.origin + t * ray.direction;
                     normal = sr.normal;
                     local_hit_point = sr.hit_point_local;
@@ -112,6 +114,7 @@ namespace RayTracer
                 sr.t = tmin;
                 sr.normal = normal;
                 sr.hit_point_local = local_hit_point;
+                sr.obj_material = closestmat;
             }
 
             return (sr);
@@ -163,6 +166,9 @@ namespace RayTracer
                 //mysphere.setMaterial(getMaterialById("myreflective"));
                 //add_Object(mysphere);
                 //((ThinLensCamera)camera).set_sampler(vp.vpSampler);
+
+                UniformGrid mygrid = new UniformGrid();
+
                 Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
                 groundplane.setMaterial(new DebugCheckerboard());
                 add_Object(groundplane);
@@ -177,15 +183,16 @@ namespace RayTracer
 
                 MatteShader mymatte = new MatteShader();
                 mymatte.setCd(my_tex);
-                mymatte.setKa(0.9);
+                mymatte.setKa(0.9f);
 
                 Sphere mysphere = new Sphere(new Point3D(0, 0, 0), 20);
                 mysphere.setMaterial(mymatte);
 
                 Instance myinstance = new Instance(mysphere);
                 myinstance.scale(new Vect3D(5, 5, 5));
-                myinstance.rotate(new Vect3D(23.5, 90, 0));
-                add_Object(myinstance);
+                myinstance.rotate(new Vect3D(23.5f, 90, 0));
+                mygrid.add_object(myinstance);
+                //add_Object(myinstance);
 
                 Image my_skybox = new Image();
                 my_skybox.loadFromFile("E:\\skybox.jpg");
@@ -196,12 +203,17 @@ namespace RayTracer
 
                 MatteShader skymatte = new MatteShader();
                 skymatte.setCd(my_tex);
-                skymatte.setKa(1.0);
+                skymatte.setKa(1.0f);
 
                 Sphere skybox = new Sphere(new Point3D(0, 0, 0),1000);
                 skybox.setMaterial(skymatte);
-                add_Object(skybox);
+                mygrid.add_object(skybox);
+                //add_Object(skybox);
 
+                mygrid.setup_cells();
+                add_Object(mygrid);
+
+                
             }
             //Custom build function if no input file specified
 
@@ -288,11 +300,13 @@ namespace RayTracer
         /// <param name="pixel_color"></param>
         public void display_pixel(int row, int column, RGBColor pixel_color)
         {
-            RGBColor disp_color = pixel_color.clamp();
-            byte r = (byte)(disp_color.r * 255);
-            byte g = (byte)(disp_color.g * 255);
-            byte b = (byte)(disp_color.b * 255);
-
+            RGBColor disp_color = new RGBColor(pixel_color.vals * 255.0f);
+            Vector3 cols = disp_color.clamp().vals;
+            byte r = (byte)cols.X;
+            byte g = (byte)cols.Y;
+            byte b = (byte)cols.Z;
+            int x = column;
+            int y = vp.vres-1-row;
             live_view.live_image.SetPixel((uint)column, (uint)(vp.vres-1-row), new SFML.Graphics.Color(r, g, b));
         }
 

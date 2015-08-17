@@ -21,10 +21,10 @@ namespace RayTracer
 {
     sealed class GlobalVars
     {
-        public const double kEpsilon = 0.0e-6;
-        public const double shadKEpsilon = 0.00001;
-        public const double kHugeValue = 1.0e6;
-        public const double invPI = 1 / Math.PI;
+        public const float kEpsilon = 0.0e-6f;
+        public const float shadKEpsilon = 0.00001f;
+        public const float kHugeValue = 1.0e6f;
+        public const float invPI = 1.0f / (float)Math.PI;
 
         static public bool verbose = true;
         static public string inFile = null;
@@ -32,7 +32,7 @@ namespace RayTracer
         
 
         static public readonly RGBColor color_black = new RGBColor(0, 0, 0);
-        static public readonly RGBColor color_red = new RGBColor(1.0, 0, 0);
+        static public readonly RGBColor color_red = new RGBColor(1.0f, 0, 0);
         static public readonly int hres = 800;
         static public readonly int vres = 600;
         static public int num_samples;
@@ -41,8 +41,8 @@ namespace RayTracer
 
 		static public bool should_close = false;
 
-        //static public double cam_zcoord = 500;
-        //static public double lookat_zcoord= 0;
+        //static public float cam_zcoord = 500;
+        //static public float lookat_zcoord= 0;
 
         //static public string path = "E:\\renderimages\\";
         //static public int frameno = 0;

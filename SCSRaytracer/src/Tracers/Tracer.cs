@@ -35,6 +35,6 @@ namespace RayTracer
 
         public abstract RGBColor trace_ray(Ray ray);
         public abstract RGBColor trace_ray(Ray ray, int depth);
-        public abstract RGBColor trace_ray(Ray ray, double tmin, int depth);
+        public abstract RGBColor trace_ray(Ray ray, float tmin, int depth);
     }
 }

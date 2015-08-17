@@ -26,25 +26,25 @@ namespace RayTracer
     /// </summary>
     class DirectionalLight : Light
     {
-        private double intensity;
+        private float intensity;
         private Vect3D direction;
 
         //Constructors
         public DirectionalLight()
         {
             direction = (new Vect3D(-1, -1, -1)).hat();
-            intensity = 0.5;
+            intensity = 0.5f;
             color = new RGBColor(1, 1, 1);
             shadows = false;
         }
         public DirectionalLight(Vect3D d)
         {
             direction = d.hat();
-            intensity = 0.5;
+            intensity = 0.5f;
             color = new RGBColor(1, 1, 1);
             shadows = false;
         }
-        public DirectionalLight(RGBColor c, double i, Vect3D d)
+        public DirectionalLight(RGBColor c, float i, Vect3D d)
         {
             color = new RGBColor(c);
             intensity = i;
@@ -54,10 +54,10 @@ namespace RayTracer
 
         //Gets and sets
         public void setDirection(Vect3D d) { direction = d.hat(); }
-        public void setIntensity(double i) { intensity = i; }
+        public void setIntensity(float i) { intensity = i; }
         public void setShadows(bool shad) { shadows = shad; }
         public Vect3D getDirection() { return direction; }
-        public double getIntensity() { return intensity; }
+        public float getIntensity() { return intensity; }
          
 
         public override RGBColor L(ShadeRec sr)
@@ -93,7 +93,7 @@ namespace RayTracer
             if (node_int != null)
             {
                 string str_int = ((XmlText)node_int.FirstChild).Data;
-                double intensity = Convert.ToDouble(str_int);
+                float intensity = Convert.ToSingle(str_int);
                 toReturn.setIntensity(intensity);
             }
 

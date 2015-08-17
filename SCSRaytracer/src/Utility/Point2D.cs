@@ -19,15 +19,15 @@ namespace RayTracer
 {
     class Point2D
     {
-        public double x;
-        public double y;
+        public float x;
+        public float y;
 
         public Point2D()
         {
-            x = 0.0;
-            y = 0.0;
+            x = 0.0f;
+            y = 0.0f;
         }
-        public Point2D(double xcoord, double ycoord)
+        public Point2D(float xcoord, float ycoord)
         {
             x = xcoord;
             y = ycoord;

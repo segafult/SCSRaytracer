@@ -37,14 +37,15 @@ namespace RayTracer
             objs.Add(toAdd);
         }
 
-        public override bool hit(Ray r, ref double tmin, ref ShadeRec sr)
+        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
-            double t = GlobalVars.kHugeValue;
+            float t = GlobalVars.kHugeValue;
             Normal normal = new Normal();
             Point3D local_hit_point = new Point3D();
             bool hit = false;
             tmin = GlobalVars.kHugeValue;
             int numobjs = objs.Count;
+            Material closestmat = null;
 
             //Traverse the list of renderable objects, and test for collisions in the same manner as in the world
             //hit function
@@ -54,7 +55,7 @@ namespace RayTracer
                 {
                     hit = true;
                     tmin = t;
-                    mat = objs[i].getMaterial();
+                    closestmat = sr.obj_material;
                     normal = sr.normal;
                     local_hit_point = sr.hit_point_local;
                 }
@@ -65,6 +66,7 @@ namespace RayTracer
                 sr.t = tmin;
                 sr.normal = normal;
                 sr.hit_point_local = local_hit_point;
+                sr.obj_material = closestmat;
             }
 
             return hit;

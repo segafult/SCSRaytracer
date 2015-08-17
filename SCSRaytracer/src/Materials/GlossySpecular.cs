@@ -21,15 +21,15 @@ namespace RayTracer
 {
     class GlossySpecular : BRDF
     {
-        private double exp;
-        private double ks;
+        private float exp;
+        private float ks;
         private RGBColor  cs;
 
         public GlossySpecular()
         {
             exp = 1.0f;
             ks = 1.0f;
-            cs = new RGBColor(1.0, 1.0, 1.0);
+            cs = new RGBColor(1.0f, 1.0f, 1.0f);
         }
         //Copy constructor
         public GlossySpecular(GlossySpecular clone)
@@ -40,25 +40,25 @@ namespace RayTracer
             sampler_ptr = clone.getSampler();
         }
 
-        public void setExp(double e) { exp = e; }
-        public void setKs(double ks_a) { ks = ks_a; }
+        public void setExp(float e) { exp = e; }
+        public void setKs(float ks_a) { ks = ks_a; }
         public void setSampler(Sampler sampler_arg) { sampler_ptr = sampler_arg; }
         public void setCs(RGBColor color_arg) { cs = color_arg; }
-        public double getExp() { return exp; }
-        public double getKs() { return ks; }
+        public float getExp() { return exp; }
+        public float getKs() { return ks; }
         public RGBColor getCs() { return cs; }
         public Sampler getSampler() { return sampler_ptr; }
 
         public override RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo)
         {
-            RGBColor L = new RGBColor(0.0, 0.0, 0.0);
-            double ndotwi = (sr.normal * wi); //Dot product of normal and angle of incidence gives the angle of mirror reflection
-            Vect3D r = new Vect3D(-wi + 2.0 * sr.normal * ndotwi); //Vector describing direction of mirror reflection
-            double rdotwo = (r * wo);
+            RGBColor L = new RGBColor(0.0f, 0.0f, 0.0f);
+            float ndotwi = (sr.normal * wi); //Dot product of normal and angle of incidence gives the angle of mirror reflection
+            Vect3D r = new Vect3D(-wi + 2.0f * sr.normal * ndotwi); //Vector describing direction of mirror reflection
+            float rdotwo = (r * wo);
 
             if(rdotwo > 0.0)
             {
-                L = ks * Math.Pow(rdotwo, exp) * cs;
+                L = ks * (float)Math.Pow(rdotwo, exp) * cs;
             }
 
             return L;

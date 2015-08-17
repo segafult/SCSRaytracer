@@ -154,7 +154,7 @@ namespace RayTracer
                         XmlNode ka = definition.SelectSingleNode("ka");
                         if (ka != null)
                         {
-                            double kaDouble = Convert.ToDouble(((XmlText)ka.FirstChild).Data);
+                            float kaDouble = Convert.ToSingle(((XmlText)ka.FirstChild).Data);
                             matte.setKa(kaDouble);
                         }
                     }
@@ -165,7 +165,7 @@ namespace RayTracer
                         XmlNode kd = definition.SelectSingleNode("kd");
                         if (kd != null)
                         {
-                            double kdDouble = Convert.ToDouble(((XmlText)kd.FirstChild).Data);
+                            float kdDouble = Convert.ToSingle(((XmlText)kd.FirstChild).Data);
                             matte.setKd(kdDouble);
                         }
                     }
@@ -208,7 +208,7 @@ namespace RayTracer
                         XmlNode ka = definition.SelectSingleNode("ka");
                         if (ka != null)
                         {
-                            double kaDouble = Convert.ToDouble(((XmlText)ka.FirstChild).Data);
+                            float kaDouble = Convert.ToSingle(((XmlText)ka.FirstChild).Data);
                             phong.setKa(kaDouble);
                         }
                     }
@@ -219,7 +219,7 @@ namespace RayTracer
                         XmlNode kd = definition.SelectSingleNode("kd");
                         if (kd != null)
                         {
-                            double kdDouble = Convert.ToDouble(((XmlText)kd.FirstChild).Data);
+                            float kdDouble = Convert.ToSingle(((XmlText)kd.FirstChild).Data);
                             phong.setKd(kdDouble);
                         }
                     }
@@ -241,7 +241,7 @@ namespace RayTracer
                         XmlNode ks = definition.SelectSingleNode("ks");
                         if (ks != null)
                         {
-                            double ksDouble = Convert.ToDouble(((XmlText)ks.FirstChild).Data);
+                            float ksDouble = Convert.ToSingle(((XmlText)ks.FirstChild).Data);
                             phong.setKs(ksDouble);
                         }
                     }
@@ -252,7 +252,7 @@ namespace RayTracer
                         XmlNode exp = definition.SelectSingleNode("exp");
                         if (exp != null)
                         {
-                            double expDouble = Convert.ToDouble(((XmlText)exp.FirstChild).Data);
+                            float expDouble = Convert.ToSingle(((XmlText)exp.FirstChild).Data);
                             phong.setExp(expDouble);
                         }
                     }
@@ -282,7 +282,7 @@ namespace RayTracer
                         XmlNode ka = definition.SelectSingleNode("ka");
                         if (ka != null)
                         {
-                            double kaDouble = Convert.ToDouble(((XmlText)ka.FirstChild).Data);
+                            float kaDouble = Convert.ToSingle(((XmlText)ka.FirstChild).Data);
                             reflective.setKa(kaDouble);
                         }
                     }
@@ -293,7 +293,7 @@ namespace RayTracer
                         XmlNode kd = definition.SelectSingleNode("kd");
                         if (kd != null)
                         {
-                            double kdDouble = Convert.ToDouble(((XmlText)kd.FirstChild).Data);
+                            float kdDouble = Convert.ToSingle(((XmlText)kd.FirstChild).Data);
                             reflective.setKd(kdDouble);
                         }
                     }
@@ -315,7 +315,7 @@ namespace RayTracer
                         XmlNode ks = definition.SelectSingleNode("ks");
                         if (ks != null)
                         {
-                            double ksDouble = Convert.ToDouble(((XmlText)ks.FirstChild).Data);
+                            float ksDouble = Convert.ToSingle(((XmlText)ks.FirstChild).Data);
                             reflective.setKs(ksDouble);
                         }
                     }
@@ -326,7 +326,7 @@ namespace RayTracer
                         XmlNode exp = definition.SelectSingleNode("exp");
                         if (exp != null)
                         {
-                            double expDouble = Convert.ToDouble(((XmlText)exp.FirstChild).Data);
+                            float expDouble = Convert.ToSingle(((XmlText)exp.FirstChild).Data);
                             reflective.setExp(expDouble);
                         }
                     }
@@ -337,7 +337,7 @@ namespace RayTracer
                         XmlNode kr = definition.SelectSingleNode("kr");
                         if (kr != null)
                         {
-                            double krDouble = Convert.ToDouble(((XmlText)kr.FirstChild).Data);
+                            float krDouble = Convert.ToSingle(((XmlText)kr.FirstChild).Data);
                             reflective.setReflectivity(krDouble);
                         }
                     }
@@ -361,8 +361,8 @@ namespace RayTracer
             //Setup world according to default parameters before doing anything.
             w.vp.set_hres(GlobalVars.hres);
             w.vp.set_vres(GlobalVars.vres);
-            w.vp.set_gamma(1.0);
-            w.vp.set_pixel_size(1.0);
+            w.vp.set_gamma(1.0f);
+            w.vp.set_pixel_size(1.0f);
             w.vp.set_max_depth(5);
             w.vp.set_samples(1);
             w.vp.set_sampler(new RegularSampler(w.vp.numSamples));
@@ -384,12 +384,12 @@ namespace RayTracer
             string str_gamma = scene.GetAttribute("gamma");
             if (!str_gamma.Equals(""))
             {
-                w.vp.set_gamma(Convert.ToDouble(str_gamma));
+                w.vp.set_gamma(Convert.ToSingle(str_gamma));
             }
             string str_pixelsize = scene.GetAttribute("px");
             if (!str_pixelsize.Equals(""))
             {
-                w.vp.set_pixel_size(Convert.ToDouble(str_pixelsize));
+                w.vp.set_pixel_size(Convert.ToSingle(str_pixelsize));
             }
             string str_renderdepth = scene.GetAttribute("renderdepth");
             if (!str_pixelsize.Equals(""))

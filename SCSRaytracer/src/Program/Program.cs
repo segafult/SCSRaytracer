@@ -111,6 +111,7 @@ namespace RayTracer
                 Console.WriteLine("Additional options:\n-V: Verbose output, default off\n-T #: Number of threads (2, 4 or 8), default 2");
                 return;
             }
+
             World w = new World();
             GlobalVars.worldref = w;
 

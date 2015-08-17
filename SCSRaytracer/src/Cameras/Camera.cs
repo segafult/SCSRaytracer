@@ -28,25 +28,25 @@ namespace RayTracer
         protected Point3D lookat;  
         protected Vect3D up;
         protected Vect3D u, v, w;
-        protected double exposure_time;
-        protected double zoom;
+        protected float exposure_time;
+        protected float zoom;
 
         public Camera()
         {
             this.setUp(new Vect3D(0, 1, 0));
             this.setEye(new Point3D(0, 0, 0));
-            this.setExposure(1.0);
+            this.setExposure(1.0f);
             this.setLookat(new Point3D(0, 0, 500));
-            this.setExposure(1.0);
-            this.setZoom(1.0);
+            this.setExposure(1.0f);
+            this.setZoom(1.0f);
             this.compute_uvw();
         }
         //Getters and setters
         public void setEye(Point3D e) { eye = new Point3D(e); }
         public void setLookat(Point3D l) { lookat = new Point3D(l); }
         public void setUp(Vect3D u) { up = new Vect3D(u); }
-        public void setExposure(double e) { exposure_time = e; }
-        public void setZoom(double z) { zoom = z; }
+        public void setExposure(float e) { exposure_time = e; }
+        public void setZoom(float z) { zoom = z; }
 
         public void compute_uvw() 
         {
@@ -145,7 +145,7 @@ namespace RayTracer
                 if (node_zoom != null)
                 {
                     string str_zoom = ((XmlText)node_zoom.FirstChild).Data;
-                    double zoom = Convert.ToDouble(str_zoom);
+                    float zoom = (float)Convert.ToSingle(str_zoom);
                     toReturn.setZoom(zoom);
                 }
 
@@ -174,7 +174,7 @@ namespace RayTracer
                 if (node_exp != null)
                 {
                     string str_exp = ((XmlText)node_exp.FirstChild).Data;
-                    double exposure = Convert.ToDouble(str_exp);
+                    float exposure = (float)Convert.ToSingle(str_exp);
                     toReturn.setExposure(exposure);
                 }
 

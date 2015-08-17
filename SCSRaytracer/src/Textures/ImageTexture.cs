@@ -31,8 +31,8 @@ namespace RayTracer
 
         public override RGBColor getColor(ShadeRec sr)
         {
-            double u;
-            double v;
+            float u;
+            float v;
 
             //Use provided UV coordinates if no map type defined
             if (maptype == null)

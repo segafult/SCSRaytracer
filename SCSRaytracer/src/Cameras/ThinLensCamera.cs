@@ -27,9 +27,9 @@ namespace RayTracer
     class ThinLensCamera : Camera
     {
         Sampler depth_sampler;
-        double d;
-        double f; //Distance to focal plane
-        double radius; //Radius of the lens
+        float d;
+        float f; //Distance to focal plane
+        float radius; //Radius of the lens
 
         public ThinLensCamera () : base()
         {
@@ -43,15 +43,15 @@ namespace RayTracer
             depth_sampler = sp;
             depth_sampler.map_samples_to_disk();
         }
-        public void setVdp(double distance)
+        public void setVdp(float distance)
         {
             d = distance;
         }
-        public void setRadius(double r)
+        public void setRadius(float r)
         {
             radius = r;
         }
-        public void setFocalLength(double f_arg)
+        public void setFocalLength(float f_arg)
         {
             f = f_arg;
         }
@@ -81,8 +81,8 @@ namespace RayTracer
                         //Sample on unit square
                         sp = vp.vpSampler.sample_unit_square();
                         //Sample in screenspace
-                        pp.x = vp.s * (c - vp.hres * 0.5 + sp.x);
-                        pp.y = vp.s * (r - vp.vres * 0.5 + sp.y);
+                        pp.x = vp.s * (c - vp.hres * 0.5f + sp.x);
+                        pp.y = vp.s * (r - vp.vres * 0.5f + sp.y);
 
                         dp = depth_sampler.sample_disk();
                         lp.x = dp.x * radius;
@@ -127,8 +127,8 @@ namespace RayTracer
                         //Sample on unit square
                         sp = screen_sampler_clone.sample_unit_square();
                         //Sample in screenspace
-                        pp.x = vp.s * (c - vp.hres * 0.5 + sp.x);
-                        pp.y = vp.s * (r - vp.vres * 0.5 + sp.y);
+                        pp.x = vp.s * (c - vp.hres * 0.5f + sp.x);
+                        pp.y = vp.s * (r - vp.vres * 0.5f + sp.y);
 
                         dp = lens_sampler_clone.sample_disk();
                         lp.x = dp.x * radius;
@@ -168,21 +168,21 @@ namespace RayTracer
             if (node_vdp != null)
             {
                 string str_vdp = ((XmlText)node_vdp.FirstChild).Data;
-                double vdp = Convert.ToDouble(str_vdp);
+                float vdp = (float)Convert.ToSingle(str_vdp);
                 toReturn.setVdp(vdp);
             }
             XmlNode node_f = camRoot.SelectSingleNode("f");
             if(node_f != null)
             {
                 string str_f = ((XmlText)node_f.FirstChild).Data;
-                double f = Convert.ToDouble(str_f);
+                float f = (float)Convert.ToSingle(str_f);
                 toReturn.setFocalLength(f);
             }
             XmlNode node_r = camRoot.SelectSingleNode("r");
             if(node_r != null)
             {
                 string str_r = ((XmlText)node_r.FirstChild).Data;
-                double r = Convert.ToDouble(str_r);
+                float r = (float)Convert.ToSingle(str_r);
                 toReturn.setRadius(r);
             }
             return toReturn;
