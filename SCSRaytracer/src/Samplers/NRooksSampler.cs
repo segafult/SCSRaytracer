@@ -1,29 +1,14 @@
 ﻿//    
 //    Copyright(C) 2015  Elanna Stephenson
 //
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with this program.If not, see<http://www.gnu.org/licenses/>.
-//
+//    This software is released under the MIT license, see LICENSE for details.
+//    
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RayTracer
 {
-    class NRooksSampler : Sampler
+    sealed class NRooksSampler : Sampler
     {
 
         public NRooksSampler(int s) : base(s)
@@ -57,7 +42,7 @@ namespace RayTracer
         {
             return new NRooksSampler(this);
         }
-        protected virtual void shuffle_x_coords()
+        private void shuffle_x_coords()
         {
             float xcoord1;
             float xcoord2;
@@ -76,7 +61,7 @@ namespace RayTracer
                 }
             }
         }
-        protected virtual void shuffle_y_coords()
+        private void shuffle_y_coords()
         {
             float ycoord1;
             float ycoord2;
