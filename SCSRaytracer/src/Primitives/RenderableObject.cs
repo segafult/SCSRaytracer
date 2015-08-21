@@ -6,7 +6,7 @@
 
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     abstract class RenderableObject
     {

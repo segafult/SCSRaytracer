@@ -4,7 +4,7 @@
 //    This software is released under the MIT license, see LICENSE for details.
 //    
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     class PerfectSpecular : BRDF
     {

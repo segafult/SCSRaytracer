@@ -8,7 +8,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Numerics;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Struct: Vect3D, a simple representation of a 3 dimensional Vector

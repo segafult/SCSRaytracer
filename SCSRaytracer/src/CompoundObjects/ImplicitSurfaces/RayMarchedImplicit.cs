@@ -10,8 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Base class for ray marched implicit surface
@@ -49,64 +50,73 @@ namespace RayTracer
         public void setup_bounds()
         {
             //Construct bounding box
-            bbox.x0 = lowbound.X; bbox.y0 = lowbound.Y; bbox.z0 = lowbound.Z;
-            bbox.x1 = highbound.X; bbox.y1 = highbound.Y; bbox.z1 = highbound.Z;
+            bbox.c0 = lowbound;
+            bbox.c1 = highbound;
+            //bbox.x0 = lowbound.X; bbox.y0 = lowbound.Y; bbox.z0 = lowbound.Z;
+            //bbox.x1 = highbound.X; bbox.y1 = highbound.Y; bbox.z1 = highbound.Z;
         }
 
         public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             //First verify intersection point of ray with bounding box.
-            float ox = r.origin.coords.X;
-            float oy = r.origin.coords.Y;
-            float oz = r.origin.coords.Z;
-            float dx = r.direction.coords.X;
-            float dy = r.direction.coords.Y;
-            float dz = r.direction.coords.Z;
+            Vector3 o = r.origin.coords;
+            //float ox = r.origin.coords.X;
+            //float oy = r.origin.coords.Y;
+            //float oz = r.origin.coords.Z;
+            Vector3 d = r.direction.coords;
+            //float dx = r.direction.coords.X;
+            //float dy = r.direction.coords.Y;
+            //float dz = r.direction.coords.Z;
 
-            float x0 = bbox.x0;
-            float y0 = bbox.y0;
-            float z0 = bbox.z0;
-            float x1 = bbox.x1;
-            float y1 = bbox.y1;
-            float z1 = bbox.z1;
+            Vector3 c0 = bbox.c0;
+            Vector3 c1 = bbox.c1;
+            //float x0 = bbox.c0.X;
+            //float y0 = bbox.c0.Y;
+            //float z0 = bbox.c0.Z;
+            //float x1 = bbox.c1.X;
+            //float y1 = bbox.c1.Y;
+            //float z1 = bbox.c1.Z;
 
             float tx_min, ty_min, tz_min;
             float tx_max, ty_max, tz_max;
 
-            float a = 1.0f / dx;
+            Vector3 invd = new Vector3(1.0f)/d;
+            //Vector3 min;
+            //Vector3 max;
+            float a = invd.X;
             if (a >= 0)
             {
-                tx_min = (x0 - ox) * a;
-                tx_max = (x1 - ox) * a;
+                tx_min = (c0.X - o.X) * a;
+                tx_max = (c1.X - o.X) * a;
             }
             else
             {
-                tx_min = (x1 - ox) * a;
-                tx_max = (x0 - ox) * a;
+                tx_min = (c1.X - o.X) * a;
+                tx_max = (c0.X - o.X) * a;
             }
 
-            float b = 1.0f / dy;
+            float b = invd.Y;
             if (b >= 0)
             {
-                ty_min = (y0 - oy) * b;
-                ty_max = (y1 - oy) * b;
+                ty_min = (c0.Y - o.Y) * b;
+                ty_max = (c1.Y - o.Y) * b;
             }
             else
             {
-                ty_min = (y1 - oy) * b;
-                ty_max = (y0 - oy) * b;
+                ty_min = (c1.Y - o.Y) * b;
+                ty_max = (c0.Y - o.Y) * b;
             }
 
-            float c = 1.0f / dz;
+            float c = invd.Z;
             if (c >= 0)
             {
-                tz_min = (z0 - oz) * c;
-                tz_max = (z1 - oz) * c;
+                tz_min = (c0.Z - o.Z) * c;
+                tz_max = (c1.Z - o.Z) * c;
             }
             else
             {
-                tz_min = (z1 - oz) * c;
-                tz_max = (z0 - oz) * c;
+                tz_min = (c1.Z - o.Z) * c;
+                tz_max = (c0.Z - o.Z) * c;
             }
 
             //Determine if volume was hit
@@ -184,6 +194,7 @@ namespace RayTracer
         }
         //Approximates the gradient of F using the small run method. Can be overridden if the
         //gradient is known.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual float evalFPrime(Point3D p, Vect3D d)
         {
             //Find the points just in front of the provided point, and just behind it along the ray

@@ -8,7 +8,7 @@ using System;
 using System.Xml;
 using System.Numerics;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Wrapper providing support for transformed objects
@@ -180,12 +180,12 @@ namespace RayTracer
         {
             //Get the bounding box of the payload prior to transformation.
             BoundingBox preTransform = payload.get_bounding_box();
-            float x0 = preTransform.x0;
-            float x1 = preTransform.x1;
-            float y0 = preTransform.y0;
-            float y1 = preTransform.y1;
-            float z0 = preTransform.z0;
-            float z1 = preTransform.z1;
+            float x0 = preTransform.c0.X;
+            float x1 = preTransform.c1.X;
+            float y0 = preTransform.c0.Y;
+            float y1 = preTransform.c1.Y;
+            float z0 = preTransform.c0.Z;
+            float z1 = preTransform.c1.Z;
 
             //Get points representing all 8 corners of the bounding box
             Point3D[] points = new Point3D[8];

@@ -7,7 +7,7 @@
 using System;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     sealed class XMLProcessor
     {
@@ -166,7 +166,7 @@ namespace RayTracer
                         {
                             string cdStr = ((XmlText)cd.FirstChild).Data;
 
-							//matte.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+							matte.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
 
                         }
                     }
@@ -219,7 +219,7 @@ namespace RayTracer
                         if (cd != null)
                         {
                             string cdStr = ((XmlText)cd.FirstChild).Data;
-                            //phong.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+                            phong.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
                         }
                     }
                     catch (System.Exception e) { Console.WriteLine(e.ToString()); }
@@ -293,7 +293,7 @@ namespace RayTracer
                         if (cd != null)
                         {
                             string cdStr = ((XmlText)cd.FirstChild).Data;
-                            //reflective.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+                            reflective.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
                         }
                     }
                     catch (System.Exception e) { Console.WriteLine(e.ToString()); }

@@ -6,7 +6,7 @@
 
 using System;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// A Whitted style recursive raycaster

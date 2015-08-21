@@ -9,7 +9,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     sealed class Box : RenderableObject
     {

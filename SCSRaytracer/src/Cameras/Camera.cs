@@ -6,10 +6,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     abstract class Camera
     {
@@ -19,6 +20,7 @@ namespace RayTracer
         protected Vect3D u, v, w;
         protected float exposure_time;
         protected float zoom;
+        protected ConcurrentQueue<RenderFragmentParameters> taskQueue;
 
         public Camera()
         {
@@ -55,48 +57,101 @@ namespace RayTracer
 
             vp.s /= zoom;
 
-            List<Thread> threads = new List<Thread>();
+            List<RenderFragmentParameters> threads = new List<RenderFragmentParameters>();
+            taskQueue = new ConcurrentQueue<RenderFragmentParameters>();
 
-            if (numThreads == 2)
+            //Find out how many chunks the screen can be divided into;
+            int hchunks = (int)Math.Floor((decimal)vp.hres / (decimal)GlobalVars.fragment_size);
+            int vchunks = (int)Math.Floor((decimal)vp.vres / (decimal)GlobalVars.fragment_size);
+            //Find out the size of the boundaries which do not fit into chunks
+            int hrem = vp.hres % GlobalVars.fragment_size;
+            int vrem = vp.vres % GlobalVars.fragment_size;
+
+            int threadNo = 0; //Label for each thread created
+
+            //Queue up render chunks
+            int h0, h1, v0, v1;
+            RenderFragmentParameters parameters;
+            for(int v = 0; v < vchunks; v++)
             {
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, (int)vp.hres / 2, 0, vp.vres, 0)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (int)vp.hres / 2, vp.hres, 0, vp.vres, 1)));
+                for(int h = 0; h < hchunks; h++)
+                {
+                    //Queue up threads
+                    h0 = GlobalVars.fragment_size * h;
+                    h1 = GlobalVars.fragment_size * (h + 1);
+                    v0 = GlobalVars.fragment_size * v;
+                    v1 = GlobalVars.fragment_size * (v + 1);
+                    parameters = new RenderFragmentParameters(w, h0, h1, v0, v1, threadNo);
+                    threads.Add(parameters);
+                    taskQueue.Enqueue(parameters);
+                    threadNo++;
+                }
+                //Add in additional fragments for the right screen edge if resolution isn't nicely
+                //divisible
+                if(hrem != 0)
+                {
+                    h0 = GlobalVars.fragment_size * hchunks;
+                    h1 = vp.hres;
+                    v0 = GlobalVars.fragment_size * v;
+                    v1 = GlobalVars.fragment_size * (v + 1);
+                    parameters = new RenderFragmentParameters(w, h0, h1, v0, v1, threadNo);
+                    threads.Add(parameters);
+                    taskQueue.Enqueue(parameters);
+                }
             }
-            else if (numThreads == 4)
+            //Add in additional fragments for the top edge if resolution isn't nicely divisible
+            if(vrem != 0)
             {
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, vp.hres / 2, 0, vp.vres / 2, 0)));
-                threads.Add(new Thread(() => render_scene_fragment(w, vp.hres / 2, vp.hres, 0, vp.vres / 2, 1)));
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, vp.hres / 2, vp.vres / 2, vp.vres, 2)));
-                threads.Add(new Thread(() => render_scene_fragment(w, vp.hres / 2, vp.hres, vp.vres / 2, vp.vres, 3)));
-            }
-            else if (numThreads == 8)
-            {
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, (vp.hres / 4), 0, vp.vres / 2, 0)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 4), (vp.hres / 2), 0, vp.vres / 2, 1)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 2), (3 * vp.hres / 4), 0, vp.vres / 2, 2)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (3 * vp.hres / 4), vp.hres, 0, vp.vres / 2, 3)));
-                threads.Add(new Thread(() => render_scene_fragment(w, 0, (vp.hres / 4), vp.vres / 2, vp.vres, 4)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 4), (vp.hres / 2), vp.vres / 2, vp.vres, 5)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (vp.hres / 2), (3 * vp.hres / 4), vp.vres / 2, vp.vres, 6)));
-                threads.Add(new Thread(() => render_scene_fragment(w, (3 * vp.hres / 4), vp.hres, vp.vres / 2, vp.vres, 7)));
-            }
-            else
-            {
-                Console.WriteLine("Multithreading only supported for 2, 4, or 8 threads");
+                for(int h = 0; h < hchunks; h++)
+                {
+                    h0 = GlobalVars.fragment_size * h;
+                    h1 = GlobalVars.fragment_size * (h + 1);
+                    v0 = GlobalVars.fragment_size * vchunks;
+                    v1 = vp.vres;
+                    parameters = new RenderFragmentParameters(w, h0, h1, v0, v1, threadNo);
+                    threads.Add(parameters);
+                    taskQueue.Enqueue(parameters);
+                }
+                //Add in corner edge fragment if the right edge of the screen wasn't nicely divisible
+                if (hrem != 0)
+                {
+                    h0 = GlobalVars.fragment_size * hchunks;
+                    h1 = vp.hres;
+                    v0 = GlobalVars.fragment_size * vchunks;
+                    v1 = vp.vres;
+                    parameters = new RenderFragmentParameters(w, h0, h1, v0, v1, threadNo);
+                    threads.Add(parameters);
+                    taskQueue.Enqueue(parameters);
+                }
             }
 
-            foreach (Thread t in threads)
+            int num_to_dequeue = (numThreads < threadNo) ? numThreads : threadNo;
+
+            //Temporary list to prevent race conditions
+            RenderFragmentParameters[] initialThreads = new RenderFragmentParameters[num_to_dequeue];
+
+            for(int i = 0; i < num_to_dequeue; i++)
             {
-                t.Start();
+                while(!taskQueue.TryDequeue(out initialThreads[i])) { // ensure every dequeue succeeds
+                }
             }
+
+            foreach(RenderFragmentParameters r in initialThreads) //Away we go
+            {
+                r.Begin();
+            }
+
+            //Set the thread priority for main thread to low
+            Thread.CurrentThread.Priority = ThreadPriority.Lowest;
+
             //Spinwait for all threads
             bool allDone = false;
             do
             {
                 allDone = true;
-                foreach (Thread t in threads)
+                foreach (RenderFragmentParameters t in threads)
                 {
-                    if (t.IsAlive)
+                    if (t.t.IsAlive)
                     {
                         allDone = false;
                     }
@@ -104,11 +159,21 @@ namespace RayTracer
                 w.poll_events();
 
             } while (!allDone);
-            //}
-            w.live_view.live_image = new SFML.Graphics.Image((uint)vp.hres, (uint)vp.vres, w.image);
 
+            w.live_view.live_image = new SFML.Graphics.Image((uint)vp.hres, (uint)vp.vres, w.image);
+            
         }
-        protected abstract void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo);
+        public abstract void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo);
+        public void dequeue_next_render_fragment()
+        {
+            RenderFragmentParameters r;
+            while(!taskQueue.TryDequeue(out r)) //Keep trying to dequeue if concurrent queue is locked
+            {
+                //Check that the queue has something in it. If it's empty then no need to dequeue next render task
+                if (taskQueue.IsEmpty) break;
+            }
+            if (r != null) r.Begin();
+        }
 
         public static Camera LoadCamera(XmlElement camRoot)
         {
@@ -178,5 +243,32 @@ namespace RayTracer
                 return toReturn;
             }
         }
+
+        protected class RenderFragmentParameters
+        {
+            public int h0, h1, v0, v1;
+            public World w;
+            public int threadNo;
+            public Thread t;
+
+            public RenderFragmentParameters(World w_arg, int h0_arg, int h1_arg, int v0_arg, int v1_arg, int tno_arg)
+            {
+                w = w_arg;
+                h0 = h0_arg;
+                h1 = h1_arg;
+                v0 = v0_arg;
+                v1 = v1_arg;
+                threadNo = tno_arg;
+                t = new Thread(() => w.camera.render_scene_fragment(w, h0, h1, v0, v1, threadNo));
+                t.Priority = ThreadPriority.Highest;
+            }
+
+            public void Begin()
+            {
+                t.Start();
+            }
+        }
     }
 }
+
+

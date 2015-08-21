@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     class Mesh : UniformGrid
     {

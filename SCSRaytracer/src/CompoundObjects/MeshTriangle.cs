@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     abstract class MeshTriangle : RenderableObject
     {

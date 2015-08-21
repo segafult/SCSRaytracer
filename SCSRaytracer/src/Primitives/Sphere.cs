@@ -8,7 +8,7 @@ using System;
 using System.Xml;
 using System.Runtime.CompilerServices;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     sealed class Sphere : RenderableObject
     {

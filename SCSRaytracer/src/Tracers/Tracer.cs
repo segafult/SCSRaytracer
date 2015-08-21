@@ -4,7 +4,7 @@
 //    This software is released under the MIT license, see LICENSE for details.
 //    
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Template class for all other tracers

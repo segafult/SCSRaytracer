@@ -6,7 +6,7 @@
 
 using System;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     sealed class GlobalVars
     {
@@ -24,6 +24,7 @@ namespace RayTracer
         static public readonly RGBColor color_red = new RGBColor(1.0f, 0, 0);
         static public readonly int hres = 800;
         static public readonly int vres = 600;
+        static public readonly int fragment_size = 64;
         static public int num_samples;
         static public Sampler vp_sampler;
         static public World worldref;

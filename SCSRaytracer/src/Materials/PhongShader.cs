@@ -4,7 +4,7 @@
 //    This software is released under the MIT license, see LICENSE for details.
 //    
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Shader for simple phong model of specular reflection (sum of ambient, diffuse and specular components)

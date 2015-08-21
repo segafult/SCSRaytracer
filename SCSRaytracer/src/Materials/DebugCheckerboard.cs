@@ -6,7 +6,7 @@
 
 using System;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     class DebugCheckerboard : PhongShader
     {

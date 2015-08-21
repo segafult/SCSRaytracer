@@ -6,7 +6,7 @@
 
 using System.Numerics;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     class ImplicitBarthSextic : RayMarchedImplicit
     {
@@ -15,8 +15,8 @@ namespace RayTracer
         public ImplicitBarthSextic()
         {
             bbox = new BoundingBox();
-            lowbound = new Vector3(-9.5f);
-            highbound = new Vector3(9.5f);
+            lowbound = new Vector3(-3.5f);
+            highbound = new Vector3(3.5f);
             min_step = 1.0e-5f;
             max_step = 10.0f;
             dist_mult = 0.4f;

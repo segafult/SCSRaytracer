@@ -5,7 +5,7 @@
 //    
 using System;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     class GlossySpecular : BRDF
     {

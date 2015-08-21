@@ -7,9 +7,10 @@
 using System;
 using System.IO;
 using System.Numerics;
+using System.Diagnostics;
 
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     sealed class Program
     {
@@ -24,7 +25,7 @@ namespace RayTracer
             if(numArgs == 0)
             {
                 Console.WriteLine("Usage: scsraytracer -I \"Input XML path\" -O \"Output bmp path\"");
-                Console.WriteLine("Additional options:\n-V: Verbose output, default off\n-T #: Number of threads (2, 4 or 8), default 2");
+                Console.WriteLine("Additional options:\n-V: Verbose output, default off\n-T #: Number of threads");
                 return;
             }
             try {
@@ -98,10 +99,13 @@ namespace RayTracer
             {
                 Console.WriteLine(e.ToString());
                 Console.WriteLine("Usage: scsraytracer -I \"Input XML path\" -O \"Output bmp path\"");
-                Console.WriteLine("Additional options:\n-V: Verbose output, default off\n-T #: Number of threads (2, 4 or 8), default 2");
+                Console.WriteLine("Additional options:\n-V: Verbose output, default off\n-T #: Number of threads");
                 return;
             }
+            //Elevate process priority to high
 
+            using (Process p = Process.GetCurrentProcess())
+                p.PriorityClass = ProcessPriorityClass.RealTime;
             World w = new World();
             GlobalVars.worldref = w;
 
@@ -116,7 +120,7 @@ namespace RayTracer
                 switch (multithread)
                 {
                     case false:
-                        w.camera.render_scene(w);
+                        w.camera.render_scene_multithreaded(w, 1);
                         break;
                     case true:
                         w.camera.render_scene_multithreaded(w, threads);

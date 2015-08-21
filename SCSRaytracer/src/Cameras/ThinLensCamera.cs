@@ -8,7 +8,7 @@ using System;
 using System.Xml;
 using System.Numerics;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     class ThinLensCamera : Camera
     {
@@ -90,7 +90,7 @@ namespace RayTracer
                 }
             }
         }
-        protected override void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo)
+        public override void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo)
         {
             RGBColor L = new RGBColor();
             Ray ray = new Ray();
@@ -137,6 +137,8 @@ namespace RayTracer
                     w.display_pixel(r, c, L);
                 }
             }
+
+            dequeue_next_render_fragment();
         }
 
         private Vect3D ray_direction(Point2D pixel, Point2D lens)

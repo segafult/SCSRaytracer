@@ -6,7 +6,7 @@
 
 using System;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// A tracer that traces a ray using the ray casting algorithm.

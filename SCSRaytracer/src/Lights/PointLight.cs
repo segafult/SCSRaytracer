@@ -7,7 +7,7 @@
 using System;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Infinitely small light with a point of origin, color and intensity. Subject to no distance attenuation.

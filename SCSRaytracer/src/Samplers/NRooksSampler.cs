@@ -6,7 +6,7 @@
 
 using System;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     sealed class NRooksSampler : Sampler
     {

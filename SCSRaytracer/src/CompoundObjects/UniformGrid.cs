@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     class UniformGrid : CompoundRenderable
     {
@@ -38,8 +38,11 @@ namespace RayTracer
             //Construct bounding box
             Point3D pmin = min_coordinates();
             Point3D pmax = max_coordinates();
-            bbox.x0 = pmin.coords.X; bbox.y0 = pmin.coords.Y; bbox.z0 = pmin.coords.Z;
-            bbox.x1 = pmax.coords.X; bbox.y1 = pmax.coords.Y; bbox.z1 = pmax.coords.Z;
+
+            bbox.c0 = pmin.coords;
+            bbox.c1 = pmax.coords;
+            //bbox.x0 = pmin.coords.X; bbox.y0 = pmin.coords.Y; bbox.z0 = pmin.coords.Z;
+            //bbox.x1 = pmax.coords.X; bbox.y1 = pmax.coords.Y; bbox.z1 = pmax.coords.Z;
 
             int numobjs = objs.Count;
             //Find width of grid structure
@@ -83,12 +86,19 @@ namespace RayTracer
                 //Find the corners of the bounding box in terms of cell indices of the grid
                 //According to the mathematical relationship f(p) = (px - p0x)/(p1x-p0x) [0.0,1.0]
                 //index = nf(p)
-                int ixmin = (int)clamp((object_bbox.x0 - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
-                int iymin = (int)clamp((object_bbox.y0 - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
-                int izmin = (int)clamp((object_bbox.z0 - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
-                int ixmax = (int)clamp((object_bbox.x1 - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
-                int iymax = (int)clamp((object_bbox.y1 - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
-                int izmax = (int)clamp((object_bbox.z1 - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
+                int ixmin = (int)clamp((object_bbox.c0.X - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
+                int iymin = (int)clamp((object_bbox.c0.Y - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
+                int izmin = (int)clamp((object_bbox.c0.Z - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
+                int ixmax = (int)clamp((object_bbox.c1.X - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
+                int iymax = (int)clamp((object_bbox.c1.Y - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
+                int izmax = (int)clamp((object_bbox.c1.Z - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
+
+                //int ixmin = (int)clamp((object_bbox.x0 - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
+                //int iymin = (int)clamp((object_bbox.y0 - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
+                //int izmin = (int)clamp((object_bbox.z0 - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
+                //int ixmax = (int)clamp((object_bbox.x1 - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
+                //int iymax = (int)clamp((object_bbox.y1 - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
+                //int izmax = (int)clamp((object_bbox.z1 - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
 
                 //With the index information traverse all cells and add objects to cells that they are contained in.
                 for(int iz = izmin; iz <= izmax; iz++)
@@ -139,12 +149,12 @@ namespace RayTracer
             float dy = r.direction.coords.Y;
             float dz = r.direction.coords.Z;
 
-            float x0 = bbox.x0;
-            float y0 = bbox.y0;
-            float z0 = bbox.z0;
-            float x1 = bbox.x1;
-            float y1 = bbox.y1;
-            float z1 = bbox.z1;
+            float x0 = bbox.c0.X;
+            float y0 = bbox.c0.Y;
+            float z0 = bbox.c0.Z;
+            float x1 = bbox.c1.X;
+            float y1 = bbox.c1.Y;
+            float z1 = bbox.c1.Z;
 
             float tx_min, ty_min, tz_min;
             float tx_max, ty_max, tz_max;
@@ -363,12 +373,12 @@ namespace RayTracer
             float dy = r.direction.coords.Y;
             float dz = r.direction.coords.Z;
 
-            float x0 = bbox.x0;
-            float y0 = bbox.y0;
-            float z0 = bbox.z0;
-            float x1 = bbox.x1;
-            float y1 = bbox.y1;
-            float z1 = bbox.z1;
+            float x0 = bbox.c0.X;
+            float y0 = bbox.c0.Y;
+            float z0 = bbox.c0.Z;
+            float x1 = bbox.c1.X;
+            float y1 = bbox.c1.Y;
+            float z1 = bbox.c1.Z;
 
             float tx_min, ty_min, tz_min;
             float tx_max, ty_max, tz_max;
@@ -588,9 +598,9 @@ namespace RayTracer
             for(int i = 0; i < numobjects; i++)
             {
                 bbox = objs[i].get_bounding_box();
-                if (bbox.x0 < pmin.coords.X) pmin.coords.X = bbox.x0;
-                if (bbox.y0 < pmin.coords.Y) pmin.coords.Y = bbox.y0;
-                if (bbox.z0 < pmin.coords.Z) pmin.coords.Z = bbox.z0;
+                if (bbox.c0.X < pmin.coords.X) pmin.coords.X = bbox.c0.X;
+                if (bbox.c0.Y < pmin.coords.Y) pmin.coords.Y = bbox.c0.Y;
+                if (bbox.c0.Z < pmin.coords.Z) pmin.coords.Z = bbox.c0.Z;
             }
 
             pmin.coords.X -= GlobalVars.kEpsilon;
@@ -612,9 +622,9 @@ namespace RayTracer
             for(int i = 0; i < numobjects; i++)
             {
                 bbox = objs[i].get_bounding_box();
-                if (bbox.x1 > pmax.coords.X) pmax.coords.X = bbox.x1;
-                if (bbox.y1 > pmax.coords.Y) pmax.coords.Y = bbox.y1;
-                if (bbox.z1 > pmax.coords.Z) pmax.coords.Z = bbox.z1;
+                if (bbox.c1.X > pmax.coords.X) pmax.coords.X = bbox.c1.X;
+                if (bbox.c1.Y > pmax.coords.Y) pmax.coords.Y = bbox.c1.Y;
+                if (bbox.c1.Z > pmax.coords.Z) pmax.coords.Z = bbox.c1.Z;
             }
 
             pmax.coords.X += GlobalVars.kEpsilon;

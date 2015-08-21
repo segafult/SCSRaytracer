@@ -4,7 +4,7 @@
 //    This software is released under the MIT license, see LICENSE for details.
 //    
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Ray in 3D space defined by a point (origin) and unit vector (direction)

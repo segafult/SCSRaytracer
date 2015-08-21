@@ -6,7 +6,7 @@
 
 using System;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Regularly spaced subpixel sampler for simple antialiasing.

@@ -6,7 +6,7 @@
 
 using System.Collections.Generic;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     abstract class MeshLoader
     {

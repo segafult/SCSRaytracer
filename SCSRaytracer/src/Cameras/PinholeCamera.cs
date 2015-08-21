@@ -8,7 +8,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     class PinholeCamera : Camera
     {
@@ -63,14 +63,8 @@ namespace RayTracer
         /// <summary>
         /// Subroutine for rendering a given rectangular fragment of a scene, called when multithreading.
         /// </summary>
-        protected override void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo)
+        public override void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo)
         {
-            //For thread safety, use a local bitmap, and lock image for direct byte writing.
-            //Bitmap renderBmp = new Bitmap(x2 - x1, y2 - y1);
-            //BitmapData renderData = renderBmp.LockBits(new Rectangle(0,0,renderBmp.Width,renderBmp.Height), 
-            //    System.Drawing.Imaging.ImageLockMode.ReadWrite,
-            //    System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
             //To avoid clashes with other threads accessing sampler, clone the main world sampler
             Sampler localSampler = w.vp.vpSampler.clone();
 
@@ -101,13 +95,11 @@ namespace RayTracer
                     L /= vp.numSamples;
                     L *= exposure_time;
 
-                    //w.display_pixel_threadsafe(row, column, L, ref renderData);
-                    //w.update_liveimage_threadsafe(row+y1, column+x1, L);
                     w.display_pixel(row + y1, column + x1, L);
                 }
             }
-            //renderBmp.UnlockBits(renderData);
-            //w.threadedBitmapList[threadNo] = renderBmp;
+
+            dequeue_next_render_fragment();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

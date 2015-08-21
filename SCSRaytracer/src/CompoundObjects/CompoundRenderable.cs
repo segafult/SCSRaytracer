@@ -7,7 +7,7 @@
 using System.Collections.Generic;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Compound renderable object that can serve as container class for any sort of renderable object.

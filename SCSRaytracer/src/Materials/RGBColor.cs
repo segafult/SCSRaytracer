@@ -8,7 +8,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Numerics;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     public struct RGBColor
     {

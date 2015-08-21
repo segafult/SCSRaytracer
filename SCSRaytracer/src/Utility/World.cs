@@ -11,7 +11,7 @@ using System.Threading;
 using System.Runtime.CompilerServices;
 
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Class containing references to all world items
@@ -160,9 +160,9 @@ namespace RayTracer
                 /*
                 UniformGrid mygrid = new UniformGrid();
 
-                //Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
-                //groundplane.setMaterial(new DebugCheckerboard());
-                //add_Object(groundplane);
+                Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
+                groundplane.setMaterial(new DebugCheckerboard());
+                add_Object(groundplane);
 
                 SphericalMapper sphere_map = new SphericalMapper();
                 Image my_image = new Image();
@@ -213,11 +213,12 @@ namespace RayTracer
                 Instance implicitInstance = new Instance(test);
                 
                 implicitInstance.scale(50, 50, 50);
-                implicitInstance.rotate(-90, 0, 0);
+                implicitInstance.rotate(-45, 45, 45);
                 implicitInstance.translate(10, 0, 0);
 
                 add_Object(implicitInstance);
                 */
+                
             }
             //Custom build function if no input file specified
 

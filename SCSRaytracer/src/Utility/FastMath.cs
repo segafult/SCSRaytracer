@@ -7,7 +7,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     public static class FastMath
     {

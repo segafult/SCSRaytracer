@@ -7,8 +7,8 @@
     <ProjectGuid>{196A4503-A55F-4948-A5A2-C175C706599E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RayTracer</RootNamespace>
-    <AssemblyName>RayTracer</AssemblyName>
+    <RootNamespace>SCSRaytracer</RootNamespace>
+    <AssemblyName>scsraytracer</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

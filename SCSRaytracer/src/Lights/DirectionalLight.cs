@@ -7,7 +7,7 @@
 using System;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Directional light, has no point source nor distance attenuation.

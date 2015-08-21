@@ -7,7 +7,7 @@
 using System;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Ambient light for basic world illumination

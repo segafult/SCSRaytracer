@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Simple representation of a triangle which stores its own vertices as points.

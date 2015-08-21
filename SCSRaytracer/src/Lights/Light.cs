@@ -7,7 +7,7 @@
 using System;
 using System.Xml;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Template class, Light.

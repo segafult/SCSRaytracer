@@ -6,7 +6,7 @@
 
 using System.Numerics;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     class ImplicitTangle : RayMarchedImplicit
     {

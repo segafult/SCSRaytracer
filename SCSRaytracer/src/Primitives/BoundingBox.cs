@@ -4,7 +4,9 @@
 //    This software is released under the MIT license, see LICENSE for details.
 //    
 
-namespace RayTracer
+using System.Numerics;
+
+namespace SCSRaytracer
 {
     /// <summary>
     /// Axis aligned bounding box for expensive ray-object intersections.
@@ -12,27 +14,33 @@ namespace RayTracer
     /// </summary>
     sealed class BoundingBox : RenderableObject
     {
-        public float x0, x1;
-        public float y0, y1;
-        public float z0, z1;
+        //public float x0, x1;
+        //public float y0, y1;
+        //public float z0, z1;
+        public Vector3 c0;
+        public Vector3 c1;
 
         public BoundingBox()
         {
-            x0 = -GlobalVars.kHugeValue;
-            x1 = GlobalVars.kHugeValue;
-            y0 = -GlobalVars.kHugeValue;
-            y1 = GlobalVars.kHugeValue;
-            z0 = -GlobalVars.kHugeValue;
-            z1 = GlobalVars.kHugeValue;
+            c0 = new Vector3(-GlobalVars.kHugeValue);
+            c1 = new Vector3(GlobalVars.kHugeValue);
+            //x0 = -GlobalVars.kHugeValue;
+            //x1 = GlobalVars.kHugeValue;
+            //y0 = -GlobalVars.kHugeValue;
+            //y1 = GlobalVars.kHugeValue;
+            //z0 = -GlobalVars.kHugeValue;
+            //z1 = GlobalVars.kHugeValue;
         }
         public BoundingBox(float x0_arg, float x1_arg, float y0_arg, float y1_arg, float z0_arg, float z1_arg)
         {
-            x0 = x0_arg;
-            x1 = x1_arg;
-            y0 = y0_arg;
-            y1 = y1_arg;
-            z0 = z0_arg;
-            z1 = z1_arg;
+            c0 = new Vector3(x0_arg, y0_arg, z0_arg);
+            c1 = new Vector3(x1_arg, y1_arg, z1_arg);
+            //x0 = x0_arg;
+            //x1 = x1_arg;
+            //y0 = y0_arg;
+            //y1 = y1_arg;
+            //z0 = z0_arg;
+            //z1 = z1_arg;
         }
 
         public override bool hit(Ray r, float tmin)
@@ -51,37 +59,37 @@ namespace RayTracer
             float a = 1.0f / dx;
             if(a >= 0.0)
             {
-                tx_min = (x0 - ox) * a;
-                tx_max = (x1 - ox) * a;
+                tx_min = (c0.X - ox) * a;
+                tx_max = (c1.X - ox) * a;
             }
             else
             {
-                tx_min = (x1 - ox) * a;
-                tx_max = (x0 - ox) * a;
+                tx_min = (c1.X - ox) * a;
+                tx_max = (c0.X - ox) * a;
             }
 
             float b = 1.0f / dy;
             if( b >= 0.0)
             {
-                ty_min = (y0 - oy) * b;
-                ty_max = (y1 - oy) * b;
+                ty_min = (c0.Y - oy) * b;
+                ty_max = (c1.Y - oy) * b;
             }
             else
             {
-                ty_min = (y1 - oy) * b;
-                ty_max = (y0 - oy) * b;
+                ty_min = (c1.Y - oy) * b;
+                ty_max = (c0.Y - oy) * b;
             }
 
             float c = 1.0f / dz;
             if( c >= 0.0)
             {
-                tz_min = (z0 - oz) * c;
-                tz_max = (z1 - oz) * c;
+                tz_min = (c0.Z - oz) * c;
+                tz_max = (c1.Z - oz) * c;
             }
             else
             {
-                tz_min = (z1 - oz) * c;
-                tz_max = (z0 - oz) * c;
+                tz_min = (c1.Z - oz) * c;
+                tz_max = (c0.Z - oz) * c;
             }
 
             float t0, t1;
@@ -123,9 +131,9 @@ namespace RayTracer
 
         public bool inside(Point3D parg)
         {
-            return (parg.coords.X > x0 && parg.coords.X < x1) &&
-                (parg.coords.Y > y0 && parg.coords.Y < y1) &&
-                (parg.coords.Z > z0 && parg.coords.Z < z1);
+            return (parg.coords.X > c0.X && parg.coords.X < c1.X) &&
+                (parg.coords.Y > c0.Y && parg.coords.Y < c1.Y) &&
+                (parg.coords.Z > c0.Z && parg.coords.Z < c1.Z);
         }
     }
 }

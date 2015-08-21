@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace RayTracer
+namespace SCSRaytracer
 {
     /// <summary>
     /// Abstract base class of all samplers for subpixel multisampling.
