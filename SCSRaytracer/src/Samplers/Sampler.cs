@@ -77,40 +77,39 @@ namespace RayTracer
 
                 //Determine the quadrant for which to map according to the Shirley concentric map
                 //Quadrant 1 and 2:
-                if(samples[i].x > -samples[i].y)
+                if(samples[i].coords.X > -samples[i].coords.Y)
                 {
                     //Conditions for quadrant 1
-                    if(samples[i].x > samples[i].y)
+                    if(samples[i].coords.X > samples[i].coords.Y)
                     {
-                        r = samples[i].x;
-                        phi = (samples[i].y / samples[i].x) * ((float)Math.PI / 4.0f);
+                        r = samples[i].coords.X;
+                        phi = (samples[i].coords.Y / samples[i].coords.X) * ((float)Math.PI / 4.0f);
                     }
                     //Otherwise in quadrant 2
                     else
                     {
-                        r = samples[i].y;
-                        phi = (samples[i].y != 0.0f) ? (2 - samples[i].x / samples[i].y) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
+                        r = samples[i].coords.Y;
+                        phi = (samples[i].coords.Y != 0.0f) ? (2 - samples[i].coords.X / samples[i].coords.Y) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
                     }
                 }
                 //Quadrant 3 and 4
                 else
                 {
                     //Conditions for quadrant 3
-                    if(samples[i].x < samples[i].y)
+                    if(samples[i].coords.X < samples[i].coords.Y)
                     {
-                        r = -samples[i].x;
-                        phi = (samples[i].x != 0.0f) ? (4 + samples[i].y / samples[i].x) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
+                        r = -samples[i].coords.X;
+                        phi = (samples[i].coords.X != 0.0f) ? (4 + samples[i].coords.Y / samples[i].coords.X) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
                     }
                     //Otherwise in quadrant 4
                     else
                     {
-                        r = -samples[i].y;
-                        phi = (samples[i].y != 0.0f) ? (6 - samples[i].x / samples[i].y) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
+                        r = -samples[i].coords.Y;
+                        phi = (samples[i].coords.Y != 0.0f) ? (6 - samples[i].coords.X / samples[i].coords.Y) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
                     }
                 }
 
-                disk_samples[i].x = r * (float)Math.Cos(phi);
-                disk_samples[i].y = r * (float)Math.Sin(phi);
+                disk_samples[i] = new Point2D(r * (float)Math.Cos(phi), r * (float)Math.Sin(phi));
             }
         }
         public virtual void setup_shuffled_indices()

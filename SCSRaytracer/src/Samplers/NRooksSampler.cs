@@ -28,20 +28,19 @@ namespace RayTracer
             {
                 for(int j = 0; j < numsamples; j++)
                 {
-                    Point2D p = new Point2D();
-                    p.x = (j + (float)randomgen.NextDouble()) / numsamples;
-                    p.y = (j + (float)randomgen.NextDouble()) / numsamples;
+                    Point2D p = new Point2D((j + (float)randomgen.NextDouble()) / numsamples, (j + (float)randomgen.NextDouble()) / numsamples);
                     samples.Add(p);
                 }
             }
-            shuffle_x_coords();
-            shuffle_y_coords();
+            //shuffle_x_coords();
+            //shuffle_y_coords();
         }
 
         public override Sampler clone()
         {
             return new NRooksSampler(this);
         }
+        /*
         private void shuffle_x_coords()
         {
             float xcoord1;
@@ -80,5 +79,6 @@ namespace RayTracer
                 }
             }
         }
+        */
     }
 }

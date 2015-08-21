@@ -151,7 +151,11 @@ namespace RayTracer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Normal operator *(Matrix4x4 m, Normal n)
         {
-            return new Normal(Vector3.TransformNormal(n.coords, m));
+            Matrix4x4 t = m;
+            t.Translation = new Vector3(0, 0, 0);
+            //Normals are transformed by the transpose
+            Matrix4x4 result = Matrix4x4.Transpose(t);
+            return new Normal(Vector3.Transform(n.coords, result));
         }
     }
 }

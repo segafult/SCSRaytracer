@@ -1,0 +1,252 @@
+﻿//    
+//    Copyright(C) 2015  Elanna Stephenson
+//
+//    This software is released under the MIT license, see LICENSE for details.
+//    
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Numerics;
+
+namespace RayTracer
+{
+    /// <summary>
+    /// Base class for ray marched implicit surface
+    /// </summary>
+    abstract class RayMarchedImplicit : RenderableObject
+    {
+        protected BoundingBox bbox;
+        protected Vector3 lowbound, highbound;
+        protected static float EPSILON = 1.0e-3f;
+        protected static float INVTWOEPSILON = 1 / (EPSILON * 2.0f);
+        protected float min_step; //Minimum value to increment ray by when asymptotically approaching a surface
+        protected float max_step; //Maximum value to increment ray by, helpful for avoiding excessive steps due to saddle points
+        protected float dist_mult; //Value to multiply distance by to guarantee not penetrating the surface of the implicit
+        protected float trigger_dist; //Distance at which a hit is registered
+        protected int RECURSIONDEPTH = 4;
+
+        public RayMarchedImplicit()
+        {
+            bbox = new BoundingBox();
+            lowbound = new Vector3(-4);
+            highbound = new Vector3(4);
+            min_step = 1.0e-5f;
+            max_step = 4.0f;
+            dist_mult = 0.1f;
+            trigger_dist = 0.1f;
+        }
+
+        public void setBoundaries(Point3D min, Point3D max)
+        {
+            lowbound = Vector3.Min(min.coords, max.coords);
+            highbound = Vector3.Max(min.coords, max.coords);
+            setup_bounds();
+        }
+        
+        public void setup_bounds()
+        {
+            //Construct bounding box
+            bbox.x0 = lowbound.X; bbox.y0 = lowbound.Y; bbox.z0 = lowbound.Z;
+            bbox.x1 = highbound.X; bbox.y1 = highbound.Y; bbox.z1 = highbound.Z;
+        }
+
+        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
+        {
+            //First verify intersection point of ray with bounding box.
+            float ox = r.origin.coords.X;
+            float oy = r.origin.coords.Y;
+            float oz = r.origin.coords.Z;
+            float dx = r.direction.coords.X;
+            float dy = r.direction.coords.Y;
+            float dz = r.direction.coords.Z;
+
+            float x0 = bbox.x0;
+            float y0 = bbox.y0;
+            float z0 = bbox.z0;
+            float x1 = bbox.x1;
+            float y1 = bbox.y1;
+            float z1 = bbox.z1;
+
+            float tx_min, ty_min, tz_min;
+            float tx_max, ty_max, tz_max;
+
+            float a = 1.0f / dx;
+            if (a >= 0)
+            {
+                tx_min = (x0 - ox) * a;
+                tx_max = (x1 - ox) * a;
+            }
+            else
+            {
+                tx_min = (x1 - ox) * a;
+                tx_max = (x0 - ox) * a;
+            }
+
+            float b = 1.0f / dy;
+            if (b >= 0)
+            {
+                ty_min = (y0 - oy) * b;
+                ty_max = (y1 - oy) * b;
+            }
+            else
+            {
+                ty_min = (y1 - oy) * b;
+                ty_max = (y0 - oy) * b;
+            }
+
+            float c = 1.0f / dz;
+            if (c >= 0)
+            {
+                tz_min = (z0 - oz) * c;
+                tz_max = (z1 - oz) * c;
+            }
+            else
+            {
+                tz_min = (z1 - oz) * c;
+                tz_max = (z0 - oz) * c;
+            }
+
+            //Determine if volume was hit
+            float t0, t1;
+            t0 = (tx_min > ty_min) ? tx_min : ty_min;
+            if (tz_min > t0) t0 = tz_min;
+            t1 = (tx_max < ty_max) ? tx_max : ty_max;
+            if (tz_max < t1) t1 = tz_max;
+
+            if (t0 > t1)
+            {
+                return false;
+            }
+
+            float tpos; //Entry value of t for ray, lowest possible t value
+            if (!bbox.inside(r.origin))
+                tpos = t0; //Start casting from t0 if starting from outside bounding box
+            else
+                tpos = GlobalVars.kEpsilon; //Start casting from origin if starting from inside bounding box
+            float tdist = 0; //Value returned by the distance function approximation
+            float tposprev = 0;
+            float adjdist = 0; //Adjusted distance scaled by distance adjustment parameter
+            float curval = 0;
+            float prevval = 0;
+            Point3D loc;
+            //Traverse space using raymarching algorithm
+            do
+            {
+                loc = r.origin + r.direction * tpos;
+                tdist = evalD(loc,r.direction, ref curval);
+                adjdist = tdist * dist_mult;
+
+                //Clamp the adjusted distance between the minimum and maximum steps
+                adjdist = FastMath.clamp(adjdist, min_step, max_step);
+                //Increment tpos by the adjusted distance
+                tpos += adjdist;
+
+                //Accidentally stepped over bounds, solve using bisection algorithm
+                if(prevval*curval < 0.0f)
+                {
+                    solveRootByBisection(r, ref tmin, ref sr, tposprev, tpos, RECURSIONDEPTH);
+                    return true;
+                }
+                tposprev = tpos;
+                prevval = curval;
+            } while (tpos < t1 && tdist > trigger_dist);
+
+            //Hit
+            if(tdist < trigger_dist)
+            {
+                tmin = tpos;
+                sr.hit_point_local = r.origin + tpos * r.direction;
+                sr.normal = approximateNormal(sr.hit_point_local, r.direction);
+                sr.obj_material = mat;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        //Evaluates distance function at a given point in space. Can be overridden for special cases where exact distance function known (ie. sphere)
+        protected virtual float evalD(Point3D p, Vect3D d, ref float cur)
+        {
+            //Distance (or at least the approximation of it) is a function d(x) = |f(x)/f'(x)|
+            cur = evalF(p);
+            return Math.Abs(cur / evalFPrime(p, d));
+        }
+
+        //Evaluates given implicit function at a point, should be overridden in subclasses.
+        protected virtual float evalF(Point3D p)
+        {
+            return 1.0f;
+        }
+        //Approximates the gradient of F using the small run method. Can be overridden if the
+        //gradient is known.
+        protected virtual float evalFPrime(Point3D p, Vect3D d)
+        {
+            //Find the points just in front of the provided point, and just behind it along the ray
+            Point3D behind = p + (d * EPSILON);
+            Point3D infront = p - (d * EPSILON);
+
+            //Slope = rise over run
+            return (evalF(infront) - evalF(behind)) * INVTWOEPSILON;
+        }
+
+        private bool zeroExistsInInterval(Ray r, float low, float high)
+        {
+            float f_low = evalF(r.origin + r.direction * (float)low);
+            float f_high = evalF(r.origin + r.direction * (float)high);
+            return (f_low * f_high) < 0.0f;
+        }
+
+        private bool solveRootByBisection(Ray r, ref float tmin, ref ShadeRec sr, float lowbound, float highbound, int depth)
+        {
+            if(depth > 0)
+            {
+                //Find the mid point between the low and high bound
+                float midbound;
+                midbound = lowbound + ((highbound - lowbound) / 2.0f);
+                if (zeroExistsInInterval(r, lowbound, midbound))
+                    return solveRootByBisection(r, ref tmin, ref sr, lowbound, midbound, depth - 1);
+                else if (zeroExistsInInterval(r, midbound, highbound))
+                    return solveRootByBisection(r, ref tmin, ref sr, midbound, highbound, depth - 1);
+                else
+                {
+                    //Converged to correct location!
+                    tmin = lowbound;
+                    sr.hit_point_local = r.origin + lowbound * r.direction;
+                    sr.normal = approximateNormal(sr.hit_point_local, r.direction);
+                    sr.obj_material = mat;
+                    return true;
+                }
+            }
+            else
+            {
+                //Bottom of recursion stack, calculate relevant values
+                tmin = lowbound;
+                sr.hit_point_local = r.origin + (float)lowbound * r.direction;
+                sr.normal = approximateNormal(sr.hit_point_local, r.direction);
+                sr.obj_material = sr.w.materialList[0];
+                return true;
+            }
+        }
+
+        //Approximates the gradient of F(p) at a given point p
+        protected virtual Normal approximateNormal(Point3D p, Vect3D rd)
+        {
+            float f = evalF(p);
+            float f_x = evalF(new Point3D(p.coords.X + EPSILON, p.coords.Y, p.coords.Z));
+            float f_y = evalF(new Point3D(p.coords.X, p.coords.Y + EPSILON, p.coords.Z));
+            float f_z = evalF(new Point3D(p.coords.X, p.coords.Y, p.coords.Z + EPSILON));
+
+            //Compute vector for normal
+            Vect3D raw_normal = (new Vect3D((float)(f_x - f), (float)(f_y - f), (float)(f_z - f))).hat();
+
+            //Check if dot product is positive, if so, flip the vector so it's facing the ray origin
+            if(raw_normal * rd.hat() > 0.0f) { raw_normal = -raw_normal; }
+            return (new Normal(raw_normal));
+        }
+    }
+}

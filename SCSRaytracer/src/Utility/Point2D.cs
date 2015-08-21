@@ -4,27 +4,21 @@
 //    This software is released under the MIT license, see LICENSE for details.
 //    
 
+using System.Numerics;
+
 namespace RayTracer
 {
-    class Point2D
+    struct Point2D
     {
-        public float x;
-        public float y;
+        public Vector2 coords; 
 
-        public Point2D()
-        {
-            x = 0.0f;
-            y = 0.0f;
-        }
         public Point2D(float xcoord, float ycoord)
         {
-            x = xcoord;
-            y = ycoord;
+            coords = new Vector2(xcoord, ycoord);
         }
         public Point2D(Point2D p)
         {
-            x = p.x;
-            y = p.y;
+            coords = p.coords;
         }
     }
 }

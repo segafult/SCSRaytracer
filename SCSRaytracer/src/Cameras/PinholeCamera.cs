@@ -44,8 +44,8 @@ namespace RayTracer
                     for(int sample = 0; sample < vp.numSamples; sample ++)
                     {
                         sp = w.vp.vpSampler.sample_unit_square();
-                        pp.x = w.vp.s * (column - 0.5f * vp.hres + sp.x);
-                        pp.y = w.vp.s * (row - 0.5f * vp.vres + sp.y);
+                        pp.coords.X = w.vp.s * (column - 0.5f * vp.hres + sp.coords.X);
+                        pp.coords.Y = w.vp.s * (row - 0.5f * vp.vres + sp.coords.Y);
                         ray.direction = ray_direction(pp);
                         L = L + w.tracer.trace_ray(ray, depth);
                     }
@@ -92,8 +92,8 @@ namespace RayTracer
                     for (int sample = 0; sample < vp.numSamples; sample++)
                     {
                         sp = localSampler.sample_unit_square();
-                        pp.x = w.vp.s * (column + x1 - 0.5f * vp.hres + sp.x);
-                        pp.y = w.vp.s * (row + y1 - 0.5f * vp.vres + sp.y);
+                        pp.coords.X = w.vp.s * (column + x1 - 0.5f * vp.hres + sp.coords.X);
+                        pp.coords.Y = w.vp.s * (row + y1 - 0.5f * vp.vres + sp.coords.Y);
                         ray.direction = ray_direction(pp);
                         L = L + w.tracer.trace_ray(ray, depth);
                     }
@@ -113,7 +113,7 @@ namespace RayTracer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Vect3D ray_direction(Point2D p)
         {
-            Vect3D dir = p.x * u + p.y * v - d * w;
+            Vect3D dir = p.coords.X * u + p.coords.Y * v - d * w;
             dir.normalize();
             return dir;
         }

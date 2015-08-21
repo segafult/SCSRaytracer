@@ -53,8 +53,7 @@ namespace RayTracer
 
 			while (live_window!=null && !GlobalVars.should_close)
             {
-				
-                tex.Update(img);
+                tex.Update(w.image);
 				if(live_window.IsOpen)
                 	live_window.Draw(spr);
 				if(live_window.IsOpen)

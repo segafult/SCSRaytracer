@@ -11,7 +11,7 @@ namespace RayTracer
     sealed class GlobalVars
     {
         public const float kEpsilon = 0.0e-6f;
-        public const float shadKEpsilon = 0.00001f;
+        public const float shadKEpsilon = 1.0f;
         public const float kHugeValue = 1.0e6f;
         public const float invPI = 1.0f / (float)Math.PI;
 

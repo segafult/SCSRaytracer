@@ -26,8 +26,8 @@ namespace RayTracer
             else
             {
                 Point2D uv = maptype.get_uv(sr.hit_point_local);
-                u = uv.x;
-                v = uv.y;
+                u = uv.coords.X;
+                v = uv.coords.Y;
             }
 
             return img.get_color_at_uv(u, v, true);

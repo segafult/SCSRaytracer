@@ -56,24 +56,20 @@ namespace RayTracer
         public void translate(Vect3D trans)
         {
             Matrix4x4 temp = Matrix4x4.CreateTranslation(trans.coords);
-            Matrix4x4 inv_temp = temp;
-            inv_temp.M14 = -inv_temp.M14;
-            inv_temp.M24 = -inv_temp.M24;
-            inv_temp.M34 = -inv_temp.M34;
+            Matrix4x4 inv_temp;
+            Matrix4x4.Invert(temp, out inv_temp);
 
-            inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
-            net_mat = temp * net_mat; //Pre multiply for transformation matrix.
+            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
+            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
         }
         public void translate(float x, float y, float z)
         {
             Matrix4x4 temp = Matrix4x4.CreateTranslation(x, y, z);
-            Matrix4x4 inv_temp = temp;
-            inv_temp.M14 = -inv_temp.M14;
-            inv_temp.M24 = -inv_temp.M24;
-            inv_temp.M34 = -inv_temp.M34;
+            Matrix4x4 inv_temp;
+            Matrix4x4.Invert(temp, out inv_temp);
 
-            inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
-            net_mat = temp * net_mat; //Pre multiply for transformation matrix.
+            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
+            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
         }
         public void rotate(Vect3D rot)
         {
@@ -91,10 +87,10 @@ namespace RayTracer
             Matrix4x4.Invert(zmat, out zmatinv);
             Matrix4x4 temp = xmat * ymat * zmat;
             Matrix4x4 inv_temp = zmatinv * ymatinv * xmatinv;
-            
 
-            inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
-            net_mat = temp * net_mat; //Pre multiply for transformation matrix.
+
+            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
+            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
 
         }
         public void scale(Vect3D scale)
@@ -103,10 +99,10 @@ namespace RayTracer
             Matrix4x4 inv_temp;
 
             Matrix4x4.Invert(temp, out inv_temp);
-            
 
-            inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
-            net_mat = temp * net_mat; //Pre multiply for transformation matrix.
+
+            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
+            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
         }
         public void scale(float x, float y, float z)
         {
@@ -114,8 +110,8 @@ namespace RayTracer
             Matrix4x4 inv_temp;
             Matrix4x4.Invert(temp, out inv_temp);
 
-            inv_net_mat = inv_net_mat * inv_temp; //Post multiply for inverse transformation matrix
-            net_mat = temp * net_mat; //Pre multiply for transformation matrix.
+            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
+            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
         }
         public void applyTransformation(Matrix4x4 trans, Matrix4x4 inv_trans)
         {

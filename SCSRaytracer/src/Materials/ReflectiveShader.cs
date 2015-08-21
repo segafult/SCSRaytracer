@@ -39,7 +39,7 @@ namespace RayTracer
             RGBColor L = base.shade(sr); //Factor in all direct illumination
 
             Vect3D wo = -sr.ray.direction; //Vector pointing towards camera
-            Vect3D wi = new Vect3D(); //Vector equivalent to perfect reflection
+            Vect3D wi = new Vect3D(1.0f,1.0f,1.0f); //Vector equivalent to perfect reflection
             RGBColor fr = reflective_brdf.sample_f(sr, ref wi, ref wo); //Set vectors for reflection to correct values
             Point3D hit_point = sr.hit_point + (wi * GlobalVars.shadKEpsilon); //Avoid salt+pepper noise
             Ray reflected_ray = new Ray(hit_point, wi); //Cast ray from point of incidence

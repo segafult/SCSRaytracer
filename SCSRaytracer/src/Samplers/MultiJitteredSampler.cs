@@ -35,10 +35,11 @@ namespace RayTracer
                     }
                 }
             }
-            shuffle_x_coords();
-            shuffle_y_coords();
+            //shuffle_x_coords();
+            //shuffle_y_coords();
         }
 
+        /*
         private void shuffle_x_coords()
         {
             int n = (int)Math.Sqrt(numsamples);
@@ -78,6 +79,7 @@ namespace RayTracer
                 }
             }
         }
+        */
         public override Sampler clone()
         {
             return new MultiJitteredSampler(this);

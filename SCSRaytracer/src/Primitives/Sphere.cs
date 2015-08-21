@@ -50,7 +50,6 @@ namespace RayTracer
         /// <param name="tmin">Return by reference, minimum distance to intersection</param>
         /// <param name="sr">Return by reference, shader parameters</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool hit(Ray ray, ref float tmin, ref ShadeRec sr)
         {
             float t;

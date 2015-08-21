@@ -48,6 +48,7 @@ namespace RayTracer
         virtual public void setCd(RGBColor c) { ambient_brdf.setCd(c); diffuse_brdf.setCd(c); specular_brdf.setCs(c); }
         virtual public void setExp(float exp) { specular_brdf.setExp(exp); }
         virtual public void setKs(float ks) { specular_brdf.setKs(ks); }
+        virtual public void setCd(Texture tex) { ambient_brdf.setCd(tex); diffuse_brdf.setCd(tex); }
 
         public override RGBColor shade(ShadeRec sr)
         {

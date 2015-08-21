@@ -86,6 +86,11 @@
   <ItemGroup>
     <Compile Include="src\Cameras\ThinLensCamera.cs" />
     <Compile Include="src\CompoundObjects\FlatMeshTriangle.cs" />
+    <Compile Include="src\CompoundObjects\ImplicitSurfaces\ImplicitHeart.cs" />
+    <Compile Include="src\CompoundObjects\ImplicitSurfaces\RayMarchedImplicit.cs" />
+    <Compile Include="src\CompoundObjects\ImplicitSurfaces\ImplicitBarthSextic.cs" />
+    <Compile Include="src\CompoundObjects\ImplicitSurfaces\ImplicitSphere.cs" />
+    <Compile Include="src\CompoundObjects\ImplicitSurfaces\ImplicitTangle.cs" />
     <Compile Include="src\CompoundObjects\Mesh.cs" />
     <Compile Include="src\CompoundObjects\MeshTriangle.cs" />
     <Compile Include="src\CompoundObjects\SmoothMeshTriangle.cs" />

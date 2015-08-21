@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
+using System.Runtime.CompilerServices;
 
 
 namespace RayTracer
@@ -30,7 +31,8 @@ namespace RayTracer
 
         public List<Material> materialList;
 
-        LiveViewer live_view;
+        public LiveViewer live_view;
+        public byte[] image;
         
         public World ()
         {
@@ -155,12 +157,12 @@ namespace RayTracer
                 //mysphere.setMaterial(getMaterialById("myreflective"));
                 //add_Object(mysphere);
                 //((ThinLensCamera)camera).set_sampler(vp.vpSampler);
-
+                /*
                 UniformGrid mygrid = new UniformGrid();
 
-                Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
-                groundplane.setMaterial(new DebugCheckerboard());
-                add_Object(groundplane);
+                //Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
+                //groundplane.setMaterial(new DebugCheckerboard());
+                //add_Object(groundplane);
 
                 SphericalMapper sphere_map = new SphericalMapper();
                 Image my_image = new Image();
@@ -173,14 +175,15 @@ namespace RayTracer
                 MatteShader mymatte = new MatteShader();
                 mymatte.setCd(my_tex);
                 mymatte.setKa(0.9f);
+                //PhongShader myshader = (PhongShader)getMaterialById("myphong");
+                //myshader.setCd(my_tex);
+                //Sphere mysphere = new Sphere(new Point3D(0, 0, 0), 20);
+                //mysphere.setMaterial(mymatte);
 
-                Sphere mysphere = new Sphere(new Point3D(0, 0, 0), 20);
-                mysphere.setMaterial(mymatte);
-
-                Instance myinstance = new Instance(mysphere);
-                myinstance.scale(new Vect3D(5, 5, 5));
-                myinstance.rotate(new Vect3D(23.5f, 90, 0));
-                mygrid.add_object(myinstance);
+                //Instance myinstance = new Instance(mysphere);
+                //myinstance.scale(new Vect3D(5, 5, 5));
+                //myinstance.rotate(new Vect3D(23.5f, 90, 0));
+                //mygrid.add_object(myinstance);
                 //add_Object(myinstance);
 
                 Image my_skybox = new Image();
@@ -190,19 +193,31 @@ namespace RayTracer
                 my_tex.setMapper(sphere_map);
                 my_tex.set_image(my_skybox);
 
+                
                 MatteShader skymatte = new MatteShader();
                 skymatte.setCd(my_tex);
                 skymatte.setKa(1.0f);
 
                 Sphere skybox = new Sphere(new Point3D(0, 0, 0),1000);
                 skybox.setMaterial(skymatte);
-                mygrid.add_object(skybox);
-                //add_Object(skybox);
+                //mygrid.add_object(skybox);
+                add_Object(skybox);
 
-                mygrid.setup_cells();
-                add_Object(mygrid);
-
+                //mygrid.setup_cells();
+                //add_Object(mygrid);
                 
+                ImplicitBarthSextic test = new ImplicitBarthSextic();
+                test.setup_bounds();
+                test.setMaterial(getMaterialById("myreflective"));
+
+                Instance implicitInstance = new Instance(test);
+                
+                implicitInstance.scale(50, 50, 50);
+                implicitInstance.rotate(-90, 0, 0);
+                implicitInstance.translate(10, 0, 0);
+
+                add_Object(implicitInstance);
+                */
             }
             //Custom build function if no input file specified
 
@@ -230,56 +245,9 @@ namespace RayTracer
         {
             //drawPlan = new Bitmap(hres, vres);
             live_view = new LiveViewer(this);
+            image = new byte[hres * vres * 4];
             live_view.set_up_liveview();
         }
-
-        /*
-        /// <summary>
-        /// Sets up a rendering field for a multithreaded render
-        /// </summary>
-        /// <param name="hres">Horizontal resolution</param>
-        /// <param name="vres">Vertical resolution</param>
-        /// <param name="numThreads">Number of threads (2, 4, or 16)</param>
-        public void open_window_threaded(int hres, int vres, int numThreads)
-        {
-            //drawPlan = new Bitmap(hres, vres);
-            threadedBitmapList = new List<Bitmap>();
-            int xsize = 0;
-            int ysize = 0;
-
-            //If there are 2 threads, divide the screen into halves.
-            if(numThreads == 2)
-            {
-                xsize = hres / 2;
-                ysize = vres;
-            }
-            //If there are 4 threads, divide the screen into quadrants
-            else if(numThreads == 4)
-            {
-                xsize = hres / 2;
-                ysize = vres / 2;
-            }
-            else if(numThreads == 8)
-            {
-                xsize = hres / 4;
-                ysize = vres / 2;
-            }
-            else if(numThreads == 16)
-            {
-                xsize = hres / 4;
-                ysize = vres / 4;
-            }
-
-            for (int i = 0; i < numThreads; i++)
-            {
-                threadedBitmapList.Add(new Bitmap(xsize, ysize));
-            }
-
-            //Set up the live view window
-            live_view = new LiveViewer(this);
-            live_view.set_up_liveview();
-        }
-        */
 
         /// <summary>
         /// Performs the required colorspace conversions
@@ -287,16 +255,18 @@ namespace RayTracer
         /// <param name="row"></param>
         /// <param name="column"></param>
         /// <param name="pixel_color"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void display_pixel(int row, int column, RGBColor pixel_color)
         {
             RGBColor disp_color = new RGBColor(pixel_color.vals * 255.0f);
             Vector3 cols = disp_color.clamp().vals;
-            byte r = (byte)cols.X;
-            byte g = (byte)cols.Y;
-            byte b = (byte)cols.Z;
             int x = column;
             int y = vp.vres-1-row;
-            live_view.live_image.SetPixel((uint)column, (uint)(vp.vres-1-row), new SFML.Graphics.Color(r, g, b));
+            //live_view.live_image.SetPixel((uint)column, (uint)(vp.vres-1-row), new SFML.Graphics.Color(r, g, b));
+            image[(y * 4 * vp.hres) + (x * 4)] = (byte)cols.X;
+            image[(y * 4 * vp.hres) + (x * 4) + 1] = (byte)cols.Y;
+            image[(y * 4 * vp.hres) + (x * 4) + 2] = (byte)cols.Z;
+            image[(y * 4 * vp.hres) + (x * 4) + 3] = 255;
         }
 
         public Thread get_window_thread()
@@ -311,70 +281,6 @@ namespace RayTracer
         {
             live_view.live_image.SaveToFile(path);
         }
-
-
-        /*
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void display_pixel_threadsafe(int row, int column, RGBColor pixel_color, ref BitmapData bmp)
-        {
-            RGBColor disp_color = pixel_color.clamp();
-            byte r = (byte)(255 * disp_color.r);
-            byte g = (byte)(255 * disp_color.g);
-            byte b = (byte)(255 * disp_color.b);
-            int stride = bmp.Stride;
-            unsafe
-            {
-                byte* ptr = (byte*)bmp.Scan0;
-                ptr[(column * 3) + row * stride] = b;
-                ptr[(column * 3) + row * stride + 1] = g;
-                ptr[(column * 3) + row * stride + 2] = r;
-            }
-            //bmp.SetPixel(column, row, Color.FromArgb(255, (int)(disp_color.r * 250), (int)(disp_color.g * 250), (int)(disp_color.b * 250)));
-        }
-        
-        public void update_liveimage_threadsafe(int row, int column, RGBColor pixel_color)
-        {
-            RGBColor disp_color = pixel_color.clamp();
-            
-            byte[] color = new byte[4];
-            byte r = (byte)(255 * disp_color.r);
-            byte g = (byte)(255 * disp_color.g);
-            byte b = (byte)(255 * disp_color.b);
-            //live_image.SetPixel((uint)column, (uint)(vp.vres-row-1), new SFML.Graphics.Color(r, g, b));
-            
-        }
-        
-        public void join_bitmaps(int numThreads)
-        {
-            Graphics joinedImage = Graphics.FromImage(drawPlan);
-            if(numThreads == 2)
-            {
-                joinedImage.Clear(System.Drawing.Color.Black);
-                joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres / 2, 0));
-            }
-            else if(numThreads == 4)
-            {
-                joinedImage.Clear(System.Drawing.Color.Black);
-                joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres / 2, 0));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[2], new Point(0, vp.vres / 2));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[3], new Point(vp.hres / 2, vp.vres / 2));
-            }
-            else if(numThreads == 8)
-            {
-                joinedImage.Clear(System.Drawing.Color.Black);
-                joinedImage.DrawImageUnscaled(threadedBitmapList[0], new Point(0, 0));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[1], new Point(vp.hres/4, 0));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[2], new Point(vp.hres/2, 0));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[3], new Point(3*vp.hres/4, 0));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[4], new Point(0, vp.vres/2));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[5], new Point(vp.hres/4, vp.vres/2));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[6], new Point(vp.hres/2, vp.vres/2));
-                joinedImage.DrawImageUnscaled(threadedBitmapList[7], new Point(3*vp.hres/4, vp.vres/2));
-            }
-        }
-        */
 
         public Material getMaterialById(string idarg)
         {

@@ -13,14 +13,14 @@ namespace RayTracer
 {
     class UniformGrid : CompoundRenderable
     {
-        private List<RenderableObject> cells;
+        private RenderableObject[] cells;
         private BoundingBox bbox;
         int nx, ny, nz;
 
         //Constructors
         public UniformGrid() : base()
         {
-            cells = new List<RenderableObject>();
+            //cells = new List<RenderableObject>();
             bbox = new BoundingBox();
         }
 
@@ -59,17 +59,17 @@ namespace RayTracer
             //Get the computed number of cells
             int num_cells = nx * ny * nz;
             //Null initialize the set of cells
-            cells = new List<RenderableObject>(num_cells);
+            cells = new RenderableObject[num_cells];
             for(int i = 0; i < num_cells; i++)
             {
-                cells.Add(null);
+                cells[i] = null;
             }
 
             //Temporary list to hold the number of objects in each cell
-            List<int> counts = new List<int>(num_cells);
+            int[] counts = new int[num_cells];
             for(int i = 0;i < num_cells;i++)
             {
-                counts.Add(0);
+                counts[i] = 0;
             }
 
             BoundingBox object_bbox;
@@ -459,7 +459,7 @@ namespace RayTracer
                 ix_stop = -1;
             }
             //Avoid divide by zero error
-            if (dx == 0.0)
+            if (dx == 0.0f)
             {
                 tx_next = GlobalVars.kHugeValue;
                 ix_step = -1;
@@ -479,7 +479,7 @@ namespace RayTracer
                 iy_stop = -1;
             }
             //Avoid divide by zero error
-            if (dy == 0.0)
+            if (dy == 0.0f)
             {
                 ty_next = GlobalVars.kHugeValue;
                 iy_step = -1;
@@ -499,7 +499,7 @@ namespace RayTracer
                 iz_stop = -1;
             }
             //Avoid divide by zero error
-            if (dz == 0.0)
+            if (dz == 0.0f)
             {
                 tz_next = GlobalVars.kHugeValue;
                 iz_step = -1;

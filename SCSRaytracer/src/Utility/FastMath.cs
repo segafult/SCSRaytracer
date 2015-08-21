@@ -5,6 +5,7 @@
 //    
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace RayTracer
 {
@@ -271,6 +272,20 @@ namespace RayTracer
         static public float max(float a, float b)
         {
             return (a > b) ? a : b;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static public float clamp(float x, float xmin, float xmax)
+        {
+            if (x < xmin)
+            {
+                return xmin;
+            }
+            else if (x > xmax)
+            {
+                return xmax;
+            }
+            else { return x; }
         }
     }
 }

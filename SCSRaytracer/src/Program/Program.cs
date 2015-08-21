@@ -6,6 +6,8 @@
 
 using System;
 using System.IO;
+using System.Numerics;
+
 
 namespace RayTracer
 {
@@ -13,7 +15,6 @@ namespace RayTracer
     {
         static void Main(string[] args)
         {
-            
             bool multithread = false;
             int threads = 2;
 

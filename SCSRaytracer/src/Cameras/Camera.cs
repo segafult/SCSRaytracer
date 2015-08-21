@@ -105,6 +105,7 @@ namespace RayTracer
 
             } while (!allDone);
             //}
+            w.live_view.live_image = new SFML.Graphics.Image((uint)vp.hres, (uint)vp.vres, w.image);
 
         }
         protected abstract void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo);

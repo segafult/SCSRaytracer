@@ -19,6 +19,12 @@ namespace RayTracer
         public Vector3 coords;
         
         //Constructors
+        /*
+        public Vect3D()
+        {
+            coords = new Vector3(0, 0, 0);
+        }
+        */
         public Vect3D(float x, float y, float z)
         {
             coords = new Vector3(x, y, z);
@@ -180,7 +186,10 @@ namespace RayTracer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vect3D operator * (Matrix4x4 m, Vect3D v)
         {
-            return new Vect3D(Vector3.Transform(v.coords, m));
+            //Get new matrix with a 0 translation component
+            Matrix4x4 t = m;
+            t.Translation = new Vector3(0, 0, 0);
+            return new Vect3D(Vector3.Transform(v.coords, t));
         }
     }
 }
