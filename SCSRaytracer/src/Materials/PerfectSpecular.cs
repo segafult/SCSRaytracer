@@ -10,6 +10,7 @@ namespace SCSRaytracer
     {
         private float kr;
         private RGBColor cr;
+        private Texture cr_tex = null;
 
         public PerfectSpecular()
         {
@@ -24,6 +25,7 @@ namespace SCSRaytracer
 
         public void setKr(float kr_arg) { kr = kr_arg; }
         public void setCr(RGBColor cr_arg) { cr = cr_arg; }
+        public void setCr(Texture cr_arg) { cr_tex = cr_arg; }
         public float getKr() { return kr; }
         public RGBColor getCr() { return cr; }
 
@@ -31,8 +33,10 @@ namespace SCSRaytracer
         {
             float ndotwo = sr.normal * wo;
             wi = -wo + 2.0f * sr.normal * ndotwo;
-
-            return (kr * cr / (sr.normal * wi));
+            if (cr_tex == null)
+                return (kr * cr / (sr.normal * wi));
+            else
+                return (kr * cr_tex.getColor(sr) / (sr.normal * wi));
         }
     }
 }

@@ -44,7 +44,7 @@ namespace SCSRaytracer
 
             //Dispatch thread for window.
             render_thread = new Thread(() => this.live_render_loop(live_sprite, live_texture, live_image));
-            render_thread.Priority = ThreadPriority.Lowest;
+            render_thread.Priority = ThreadPriority.Normal;
             render_thread.Start();
         }
 

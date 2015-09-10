@@ -5,10 +5,6 @@
 //    
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -188,7 +184,7 @@ namespace SCSRaytracer
         }
 
         //Evaluates given implicit function at a point, should be overridden in subclasses.
-        protected virtual float evalF(Point3D p)
+        public virtual float evalF(Point3D p)
         {
             return 1.0f;
         }

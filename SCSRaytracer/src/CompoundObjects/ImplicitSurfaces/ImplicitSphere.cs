@@ -16,7 +16,7 @@ namespace SCSRaytracer
         public ImplicitSphere()
         {
             r = 1.0f;
-            disp = new Vector3(1, 0, 0);
+            disp = new Vector3(0, 0, 0);
             bbox = new BoundingBox();
             lowbound = new Vector3(-2*r);
             highbound = new Vector3(2*r);
@@ -26,7 +26,7 @@ namespace SCSRaytracer
             trigger_dist = 0.1f;
         }
 
-        protected override float evalF(Point3D p)
+        public override float evalF(Point3D p)
         {
             Vector3 pretranslation = p.coords - disp;
             Vector3 tmp = pretranslation * pretranslation;

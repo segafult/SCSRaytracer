@@ -35,6 +35,6 @@ namespace SCSRaytracer
         //static public float lookat_zcoord= 0;
 
         //static public string path = "E:\\renderimages\\";
-        //static public int frameno = 0;
+        static public int frameno = 0;
     }
 }

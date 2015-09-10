@@ -105,7 +105,7 @@ namespace SCSRaytracer
             //Elevate process priority to high
 
             using (Process p = Process.GetCurrentProcess())
-                p.PriorityClass = ProcessPriorityClass.RealTime;
+                p.PriorityClass = ProcessPriorityClass.High;
             World w = new World();
             GlobalVars.worldref = w;
 
@@ -113,7 +113,7 @@ namespace SCSRaytracer
             w.open_window(w.vp.hres, w.vp.vres);
             //while (GlobalVars.frameno < 120)
             //{
-            //    w.camera.setEye(new Point3D(200, 200, GlobalVars.cam_zcoord));
+                //w.camera.setEye(new Point3D(200, 200, GlobalVars.cam_zcoord));
             //    w.camera.setLookat(new Point3D(0, 0, GlobalVars.lookat_zcoord));
             //    w.camera.compute_uvw();
 
@@ -129,9 +129,11 @@ namespace SCSRaytracer
 
                 w.save_displayed_image(GlobalVars.outFile);
 
-            //    GlobalVars.cam_zcoord -= 10;
-            //    GlobalVars.lookat_zcoord -= 10;
-            //    GlobalVars.frameno += 1;
+                //    GlobalVars.cam_zcoord -= 10;
+                //    GlobalVars.lookat_zcoord -= 10;
+                //    GlobalVars.frameno += 1;
+                //w.animate();
+                //GlobalVars.frameno++;
             //}
 
 

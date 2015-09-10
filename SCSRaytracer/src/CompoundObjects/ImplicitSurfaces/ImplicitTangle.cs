@@ -19,7 +19,7 @@ namespace SCSRaytracer
             c = 11.8f;
         }
 
-        protected override float evalF(Point3D p)
+        public override float evalF(Point3D p)
         {
             Vector3 sqrd = p.coords * p.coords;
             Vector3 fourpow = sqrd * sqrd;

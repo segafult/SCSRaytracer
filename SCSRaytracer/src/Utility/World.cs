@@ -24,8 +24,8 @@ namespace SCSRaytracer
 
         public List<RenderableObject> renderList;  //Renderlist is the actual list of objects to render
         public List<RenderableObject> objectList;  //Objectlist isn't rendered, and instead serves to hold objects to be instanced
-
         public List<Light> lightList;
+
         public AmbientLight ambientLight;
         public Camera camera;
 
@@ -33,7 +33,8 @@ namespace SCSRaytracer
 
         public LiveViewer live_view;
         public byte[] image;
-        
+        WeightedAverageImplicit test;
+
         public World ()
         {
             vp = new ViewPlane();
@@ -157,24 +158,27 @@ namespace SCSRaytracer
                 //mysphere.setMaterial(getMaterialById("myreflective"));
                 //add_Object(mysphere);
                 //((ThinLensCamera)camera).set_sampler(vp.vpSampler);
-                /*
+                
                 UniformGrid mygrid = new UniformGrid();
 
-                Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
-                groundplane.setMaterial(new DebugCheckerboard());
-                add_Object(groundplane);
+                //Plane groundplane = new Plane(new Point3D(0, -100, 0), new Normal(0, 1, 0));
+                //groundplane.setMaterial(new DebugCheckerboard());
+                //add_Object(groundplane);
 
                 SphericalMapper sphere_map = new SphericalMapper();
+                RectangularMapper rect_map = new RectangularMapper();
                 Image my_image = new Image();
                 my_image.loadFromFile("E:\\earth.jpg");
 
                 ImageTexture my_tex = new ImageTexture();
-                my_tex.setMapper(sphere_map);
+                my_tex.setMapper(rect_map);
                 my_tex.set_image(my_image);
 
                 MatteShader mymatte = new MatteShader();
+                //mymatte.setCr(my_tex);
                 mymatte.setCd(my_tex);
-                mymatte.setKa(0.9f);
+                //mymatte.setReflectivity(0.95f);
+                //mymatte.setKa(0.9f);
                 //PhongShader myshader = (PhongShader)getMaterialById("myphong");
                 //myshader.setCd(my_tex);
                 //Sphere mysphere = new Sphere(new Point3D(0, 0, 0), 20);
@@ -206,18 +210,19 @@ namespace SCSRaytracer
                 //mygrid.setup_cells();
                 //add_Object(mygrid);
                 
-                ImplicitBarthSextic test = new ImplicitBarthSextic();
+                test = new WeightedAverageImplicit();
                 test.setup_bounds();
-                test.setMaterial(getMaterialById("myreflective"));
+                test.setMaterial(mymatte);
+
 
                 Instance implicitInstance = new Instance(test);
-                
+                implicitInstance.id = "cloth";
                 implicitInstance.scale(50, 50, 50);
-                implicitInstance.rotate(-45, 45, 45);
-                implicitInstance.translate(10, 0, 0);
+                implicitInstance.rotate(25, 0, 0);
+                //implicitInstance.translate(10, 0, 0);
 
                 add_Object(implicitInstance);
-                */
+                
                 
             }
             //Custom build function if no input file specified
@@ -235,6 +240,11 @@ namespace SCSRaytracer
 
                     ///----------------------------------------------------------------------------------------
             }
+        }
+
+        public void animate()
+        {
+            test.crossFade(GlobalVars.frameno / 120.0f);
         }
 
         /// <summary>

@@ -54,8 +54,8 @@ namespace SCSRaytracer
         {
             ViewPlane vp = w.vp;
 
-
-            vp.s /= zoom;
+            if(GlobalVars.frameno == 0)
+                vp.s /= zoom;
 
             List<RenderFragmentParameters> threads = new List<RenderFragmentParameters>();
             taskQueue = new ConcurrentQueue<RenderFragmentParameters>();

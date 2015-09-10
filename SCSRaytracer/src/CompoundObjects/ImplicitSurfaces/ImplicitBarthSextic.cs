@@ -23,7 +23,7 @@ namespace SCSRaytracer
             trigger_dist = 0.01f;
         }
 
-        protected override float evalF(Point3D p)
+        public override float evalF(Point3D p)
         {
             float x_sqr = p.coords.X * p.coords.X;
             float y_sqr = p.coords.Y * p.coords.Y;

@@ -23,7 +23,7 @@ namespace SCSRaytracer
             dist_mult = 0.1f;
         }
 
-        protected override float evalF(Point3D p)
+        public override float evalF(Point3D p)
         {
             Vector3 sqrd = p.coords * p.coords;
             float cbedz = sqrd.Z * p.coords.Z;

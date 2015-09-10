@@ -34,6 +34,7 @@ namespace SCSRaytracer
         {
             reflective_brdf.setCr(c);
         }
+        virtual public void setCr(Texture c) { reflective_brdf.setCr(c); }
         public override RGBColor shade(ShadeRec sr)
         {
             RGBColor L = base.shade(sr); //Factor in all direct illumination
