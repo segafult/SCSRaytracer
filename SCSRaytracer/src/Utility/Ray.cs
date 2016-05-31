@@ -11,21 +11,45 @@ namespace SCSRaytracer
     /// </summary>
     struct Ray
     {
-        //Note, members are public due to their frequent external access.
-        public Point3D origin;
-        public Vect3D direction;
+        private Point3D _origin;
+        private Vect3D _direction;
+
+        // accessors
+        public Point3D Origin
+        {
+            get
+            {
+                return _origin;
+            }
+            set
+            {
+                _origin = value;
+            }
+        }
+        public Vect3D Direction
+        {
+            get
+            {
+                return _direction;
+            }
+            set
+            {
+                _direction = value;
+            }
+        }
 
         //Constructors
-        public Ray (Point3D o, Vect3D d)
+        public Ray (Point3D origin, Vect3D direction)
         {
-            origin = new Point3D(o);
-            direction = new Vect3D(d.hat());
+            _origin = new Point3D(origin);
+            _direction = new Vect3D(direction.Hat());
         }
+
         //Copy constructor
-        public Ray(Ray r)
+        public Ray(Ray ray)
         {
-            origin = new Point3D(r.origin);
-            direction = new Vect3D(r.direction);
+            _origin = new Point3D(ray.Origin);
+            _direction = new Vect3D(ray.Direction);
         }
     }
 }

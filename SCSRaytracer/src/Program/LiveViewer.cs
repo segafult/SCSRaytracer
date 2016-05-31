@@ -14,72 +14,107 @@ namespace SCSRaytracer
 {
     sealed class LiveViewer
     {
-        public SFML.Graphics.Image live_image;
+        private SFML.Graphics.Image _liveImage;
+        private Thread _renderThread;
+        private RenderWindow _liveWindow;
+        private SFML.Graphics.Texture _liveTexture;
+        private Sprite _liveSprite;
+        private float _lookAt = 0;
+        private World _world;
 
-        RenderWindow live_window;
-        SFML.Graphics.Texture live_texture;
-        Sprite live_sprite;
-        Thread render_thread;
-
-        float lookat = 0;
-        World w;
-
-        public LiveViewer(World worldref)
+        // accessors
+        public SFML.Graphics.Image LiveImage
         {
-            w = worldref;
+            get
+            {
+                return _liveImage;
+            }
+            set
+            {
+                _liveImage = value;
+            }
+        }
+        public Thread RenderThread
+        {
+            get
+            {
+                return _renderThread;
+            }
         }
 
-        public void set_up_liveview()
+        public LiveViewer(World worldRef)
         {
-			//Live view window
-			live_window = new RenderWindow(new VideoMode((uint)w.vp.hres, (uint)w.vp.vres), "Live render view");
-			live_window.Closed += new EventHandler(LiveviewOnClose);
-            //live_window.KeyPressed += new EventHandler<KeyEventArgs>(LiveviewOnKeypress);
-            //live_window.SetActive();
+            _world = worldRef;
+        }
+
+        public void SetUpLiveView()
+        {
+			//Create new rendering window and add event handling for when the window is closed
+			_liveWindow = new RenderWindow(new VideoMode((uint)_world.CurrentViewPlane.HorizontalResolution, (uint)_world.CurrentViewPlane.VerticalResolution), "Live render view");
+			_liveWindow.Closed += new EventHandler(LiveViewOnClose);
 
             //Initialize render targets
-            live_image = new SFML.Graphics.Image((uint)w.vp.hres, (uint)w.vp.vres);
-            live_texture = new SFML.Graphics.Texture(live_image);
-            live_sprite = new Sprite(live_texture);
+            _liveImage = new SFML.Graphics.Image((uint)_world.CurrentViewPlane.HorizontalResolution, (uint)_world.CurrentViewPlane.VerticalResolution);
+            _liveTexture = new SFML.Graphics.Texture(_liveImage);
+            _liveSprite = new Sprite(_liveTexture);
 
             //Dispatch thread for window.
-            render_thread = new Thread(() => this.live_render_loop(live_sprite, live_texture, live_image));
-            render_thread.Priority = ThreadPriority.Normal;
-            render_thread.Start();
+            _renderThread = new Thread(() => this.LiveRenderLoop(_liveSprite, _liveTexture, _liveImage));
+            _renderThread.Priority = ThreadPriority.Normal;
+            _renderThread.Start();
         }
 
-        private void live_render_loop(Sprite spr, SFML.Graphics.Texture tex, SFML.Graphics.Image img)
+        /// <summary>
+        /// Method executed by main rendering thread.
+        /// </summary>
+        /// <param name="spr">Sprite reference</param>
+        /// <param name="tex">Texture reference</param>
+        /// <param name="img">Image reference</param>
+        private void LiveRenderLoop(Sprite spr, SFML.Graphics.Texture tex, SFML.Graphics.Image img)
         {
-			while (live_window!=null && !GlobalVars.should_close)
+            // Spin loop. Loop until window should be closed, update texture, draw and display it based on current
+            // status of rendering
+			while (_liveWindow != null && !GlobalVars.should_close)
             {
-                tex.Update(w.image);
-				if(live_window.IsOpen)
-                	live_window.Draw(spr);
-				if(live_window.IsOpen)
-					live_window.Display();
+                tex.Update(_world.RenderImage);
+				if(_liveWindow.IsOpen)
+                	_liveWindow.Draw(spr);
+				if(_liveWindow.IsOpen)
+					_liveWindow.Display();
             }
 				
-			return;
         }
-        private void LiveviewOnClose(Object sender, EventArgs e)
+
+        /// <summary>
+        /// Event handling for live view window closed
+        /// </summary>
+        /// <param name="sender">Window that sent the message</param>
+        /// <param name="e">Event arguments</param>
+        private void LiveViewOnClose(Object sender, EventArgs e)
         {
             Window window = (Window)sender;
 			GlobalVars.should_close = true;
 			window.SetActive (false);
             window.Close();
         }
-        private void LiveviewOnKeypress(Object sender, EventArgs e)
+
+        /// <summary>
+        /// Event handling for keypresses within live render window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LiveViewOnKeyPress(Object sender, EventArgs e)
         {
-            w.camera.setLookat(new Point3D(lookat += 10, 0, 0));
-            w.camera.compute_uvw();
+            _world.Camera.LookAt = new Point3D(_lookAt += 10, 0, 0);
+            _world.Camera.compute_uvw();
         }
-        public Thread get_thread()
+
+        /// <summary>
+        /// Poll events for window
+        /// </summary>
+        public void PollEvents()
         {
-            return render_thread;
-        }
-        public void poll_events()
-        {
-            live_window.DispatchEvents();
+            _liveWindow.DispatchEvents();
         }
     }
 }

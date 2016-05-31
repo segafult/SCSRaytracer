@@ -25,9 +25,9 @@ namespace SCSRaytracer
 
         public override float evalF(Point3D p)
         {
-            float x_sqr = p.coords.X * p.coords.X;
-            float y_sqr = p.coords.Y * p.coords.Y;
-            float z_sqr = p.coords.Z * p.coords.Z;
+            float x_sqr = p.X * p.X;
+            float y_sqr = p.Y * p.Y;
+            float z_sqr = p.Z * p.Z;
             float phi_sqr = PHI * PHI;
             float fin = x_sqr + y_sqr + z_sqr - 1.1f;
 

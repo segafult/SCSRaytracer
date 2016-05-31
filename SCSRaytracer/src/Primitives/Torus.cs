@@ -73,8 +73,8 @@ namespace SCSRaytracer
             /// 
             ///Using quartic solving algorithm
             /// 
-            float x1 = r.origin.coords.X; float y1 = r.origin.coords.Y; float z1 = r.origin.coords.Z;
-            float d1 = r.direction.coords.X; float d2 = r.direction.coords.Y; float d3 = r.direction.coords.Z;
+            float x1 = r.Origin.X; float y1 = r.Origin.Y; float z1 = r.Origin.Z;
+            float d1 = r.Direction.X; float d2 = r.Direction.Y; float d3 = r.Direction.Z;
 
             float[] coefficients = new float[5];
             float[] roots = new float[4];
@@ -95,7 +95,7 @@ namespace SCSRaytracer
             int numroots = FastMath.solveQuartic(coefficients, roots);
            
             bool hit = false;
-            float t = GlobalVars.kHugeValue;
+            float t = GlobalVars.K_HUGE_VALUE;
             
             if (numroots == 0)
             {
@@ -106,7 +106,7 @@ namespace SCSRaytracer
             //Find the smallest root
             for(int i = 0;i< numroots;i++)
             {
-                if(roots[i] > GlobalVars.kEpsilon && roots[i] < t)
+                if(roots[i] > GlobalVars.K_EPSILON && roots[i] < t)
                 {
                     hit = true;
                     t = roots[i];
@@ -119,7 +119,7 @@ namespace SCSRaytracer
             }
 
             tmin = t;
-            sr.hit_point_local = r.origin + (t * r.direction);
+            sr.hit_point_local = r.Origin + (t * r.Direction);
             sr.obj_material = mat;
 
             //Compute the normal at the hit point (see Thomas and Finney, 1996)
@@ -141,8 +141,8 @@ namespace SCSRaytracer
             /// 
             ///Using quartic solving algorithm
             /// 
-            float x1 = r.origin.coords.X; float y1 = r.origin.coords.Y; float z1 = r.origin.coords.Z;
-            float d1 = r.direction.coords.X; float d2 = r.direction.coords.Y; float d3 = r.direction.coords.Z;
+            float x1 = r.Origin.X; float y1 = r.Origin.Y; float z1 = r.Origin.Z;
+            float d1 = r.Direction.X; float d2 = r.Direction.Y; float d3 = r.Direction.Z;
 
             float[] coefficients = new float[5];
             float[] roots = new float[4];
@@ -172,7 +172,7 @@ namespace SCSRaytracer
             //Find the smallest root
             for (int i = 0; i < numroots; i++)
             {
-                if (roots[i] > GlobalVars.kEpsilon && roots[i] < tmin)
+                if (roots[i] > GlobalVars.K_EPSILON && roots[i] < tmin)
                 {
                     return true;
                 }
@@ -187,15 +187,15 @@ namespace SCSRaytracer
 
             float param_squared = a * a + b * b;
 
-            float x = point.coords.X;
-            float y = point.coords.Y;
-            float z = point.coords.Z;
+            float x = point.X;
+            float y = point.Y;
+            float z = point.Z;
             float sum_squared = x * x + y * y + z * z;
 
-            result.coords.X = 4.0f * x * (sum_squared - param_squared);
-            result.coords.Y = 4.0f * y * (sum_squared - param_squared + 2.0f * a * a);
-            result.coords.Z = 4.0f * z * (sum_squared - param_squared);
-            result.normalize();
+            result.X = 4.0f * x * (sum_squared - param_squared);
+            result.Y = 4.0f * y * (sum_squared - param_squared + 2.0f * a * a);
+            result.Z = 4.0f * z * (sum_squared - param_squared);
+            result.Normalize();
 
             return result;
         }

@@ -28,11 +28,11 @@ namespace SCSRaytracer
 
         public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
-            float t = GlobalVars.kHugeValue;
+            float t = GlobalVars.K_HUGE_VALUE;
             Normal normal = new Normal();
             Point3D local_hit_point = new Point3D();
             bool hit = false;
-            tmin = GlobalVars.kHugeValue;
+            tmin = GlobalVars.K_HUGE_VALUE;
             int numobjs = objs.Count;
             Material closestmat = null;
 

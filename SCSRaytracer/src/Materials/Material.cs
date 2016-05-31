@@ -10,5 +10,7 @@ namespace SCSRaytracer
     {
         public string id;
         public abstract RGBColor shade(ShadeRec sr);
+
+
     }
 }

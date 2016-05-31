@@ -38,8 +38,8 @@ namespace SCSRaytracer
 
         public void setBoundaries(Point3D min, Point3D max)
         {
-            lowbound = Vector3.Min(min.coords, max.coords);
-            highbound = Vector3.Max(min.coords, max.coords);
+            lowbound = Vector3.Min(min.Coordinates, max.Coordinates);
+            highbound = Vector3.Max(min.Coordinates, max.Coordinates);
             setup_bounds();
         }
         
@@ -55,11 +55,11 @@ namespace SCSRaytracer
         public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             //First verify intersection point of ray with bounding box.
-            Vector3 o = r.origin.coords;
+            Vector3 o = r.Origin.Coordinates;
             //float ox = r.origin.coords.X;
             //float oy = r.origin.coords.Y;
             //float oz = r.origin.coords.Z;
-            Vector3 d = r.direction.coords;
+            Vector3 d = r.Direction.Coordinates;
             //float dx = r.direction.coords.X;
             //float dy = r.direction.coords.Y;
             //float dz = r.direction.coords.Z;
@@ -128,10 +128,10 @@ namespace SCSRaytracer
             }
 
             float tpos; //Entry value of t for ray, lowest possible t value
-            if (!bbox.inside(r.origin))
+            if (!bbox.inside(r.Origin))
                 tpos = t0; //Start casting from t0 if starting from outside bounding box
             else
-                tpos = GlobalVars.kEpsilon; //Start casting from origin if starting from inside bounding box
+                tpos = GlobalVars.K_EPSILON; //Start casting from origin if starting from inside bounding box
             float tdist = 0; //Value returned by the distance function approximation
             float tposprev = 0;
             float adjdist = 0; //Adjusted distance scaled by distance adjustment parameter
@@ -141,8 +141,8 @@ namespace SCSRaytracer
             //Traverse space using raymarching algorithm
             do
             {
-                loc = r.origin + r.direction * tpos;
-                tdist = evalD(loc,r.direction, ref curval);
+                loc = r.Origin + r.Direction * tpos;
+                tdist = evalD(loc,r.Direction, ref curval);
                 adjdist = tdist * dist_mult;
 
                 //Clamp the adjusted distance between the minimum and maximum steps
@@ -164,8 +164,8 @@ namespace SCSRaytracer
             if(tdist < trigger_dist)
             {
                 tmin = tpos;
-                sr.hit_point_local = r.origin + tpos * r.direction;
-                sr.normal = approximateNormal(sr.hit_point_local, r.direction);
+                sr.hit_point_local = r.Origin + tpos * r.Direction;
+                sr.normal = approximateNormal(sr.hit_point_local, r.Direction);
                 sr.obj_material = mat;
                 return true;
             }
@@ -203,8 +203,8 @@ namespace SCSRaytracer
 
         private bool zeroExistsInInterval(Ray r, float low, float high)
         {
-            float f_low = evalF(r.origin + r.direction * (float)low);
-            float f_high = evalF(r.origin + r.direction * (float)high);
+            float f_low = evalF(r.Origin + r.Direction * (float)low);
+            float f_high = evalF(r.Origin + r.Direction * (float)high);
             return (f_low * f_high) < 0.0f;
         }
 
@@ -223,8 +223,8 @@ namespace SCSRaytracer
                 {
                     //Converged to correct location!
                     tmin = lowbound;
-                    sr.hit_point_local = r.origin + lowbound * r.direction;
-                    sr.normal = approximateNormal(sr.hit_point_local, r.direction);
+                    sr.hit_point_local = r.Origin + lowbound * r.Direction;
+                    sr.normal = approximateNormal(sr.hit_point_local, r.Direction);
                     sr.obj_material = mat;
                     return true;
                 }
@@ -233,9 +233,9 @@ namespace SCSRaytracer
             {
                 //Bottom of recursion stack, calculate relevant values
                 tmin = lowbound;
-                sr.hit_point_local = r.origin + (float)lowbound * r.direction;
-                sr.normal = approximateNormal(sr.hit_point_local, r.direction);
-                sr.obj_material = sr.w.materialList[0];
+                sr.hit_point_local = r.Origin + (float)lowbound * r.Direction;
+                sr.normal = approximateNormal(sr.hit_point_local, r.Direction);
+                sr.obj_material = sr.w.MaterialList[0];
                 return true;
             }
         }
@@ -244,15 +244,15 @@ namespace SCSRaytracer
         protected virtual Normal approximateNormal(Point3D p, Vect3D rd)
         {
             float f = evalF(p);
-            float f_x = evalF(new Point3D(p.coords.X + EPSILON, p.coords.Y, p.coords.Z));
-            float f_y = evalF(new Point3D(p.coords.X, p.coords.Y + EPSILON, p.coords.Z));
-            float f_z = evalF(new Point3D(p.coords.X, p.coords.Y, p.coords.Z + EPSILON));
+            float f_x = evalF(new Point3D(p.X + EPSILON, p.Y, p.Z));
+            float f_y = evalF(new Point3D(p.X, p.Y + EPSILON, p.Z));
+            float f_z = evalF(new Point3D(p.X, p.Y, p.Z + EPSILON));
 
             //Compute vector for normal
-            Vect3D raw_normal = (new Vect3D((float)(f_x - f), (float)(f_y - f), (float)(f_z - f))).hat();
+            Vect3D raw_normal = (new Vect3D((float)(f_x - f), (float)(f_y - f), (float)(f_z - f))).Hat();
 
             //Check if dot product is positive, if so, flip the vector so it's facing the ray origin
-            if(raw_normal * rd.hat() > 0.0f) { raw_normal = -raw_normal; }
+            if(raw_normal * rd.Hat() > 0.0f) { raw_normal = -raw_normal; }
             return (new Normal(raw_normal));
         }
     }

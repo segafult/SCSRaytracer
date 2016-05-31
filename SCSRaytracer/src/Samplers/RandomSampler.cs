@@ -19,19 +19,19 @@ namespace SCSRaytracer
         {
             randomgen = new Random();
         }
-        public override void generate_samples()
+        public override void GenerateSamples()
         {
             //Generate random samples
-            for (int s = 0; s < numsets; s++)
+            for (int s = 0; s < _numSets; s++)
             {
-                for (int i = 0; i < numsamples; i++)
+                for (int i = 0; i < _numSamples; i++)
                 {
-                    samples.Add(new Point2D((float)randomgen.NextDouble(), (float)randomgen.NextDouble()));
+                    _samples.Add(new Point2D((float)randomgen.NextDouble(), (float)randomgen.NextDouble()));
                 }
             }
         }
 
-        public override Sampler clone()
+        public override Sampler Clone()
         {
             return new RandomSampler(this);
         }

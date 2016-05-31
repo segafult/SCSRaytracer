@@ -12,133 +12,185 @@ using System.Xml;
 
 namespace SCSRaytracer
 {
+    /// <summary>
+    /// Base Camera class. Provides framework and default constructor. Cameras work in color space, and treat pixels
+    /// as colors rather than ray interesections.
+    /// </summary>
     abstract class Camera
     {
-        protected Point3D eye;
-        protected Point3D lookat;  
-        protected Vect3D up;
+        protected Point3D _eye;
+        protected Point3D _lookAt;
+        protected Vect3D _up;
+        protected float _exposureTime;
+        protected float _zoom;
         protected Vect3D u, v, w;
-        protected float exposure_time;
-        protected float zoom;
         protected ConcurrentQueue<RenderFragmentParameters> taskQueue;
+
+        //Accessors
+        public Point3D Eye
+        {
+            set
+            {
+                _eye = new Point3D(value);
+            }
+        }
+        public Point3D LookAt
+        {
+            set
+            {
+                _lookAt = new Point3D(value);
+            }
+        }
+        public Vect3D Up
+        {
+            set
+            {
+                _up = new Vect3D(value);
+            }
+        }
+        public float Exposure
+        {
+            set
+            {
+                _exposureTime = value;
+            }
+        }
+        public float Zoom
+        {
+            set
+            {
+                _zoom = value;
+            }
+        }
 
         public Camera()
         {
-            this.setUp(new Vect3D(0, 1, 0));
-            this.setEye(new Point3D(0, 0, 0));
-            this.setExposure(1.0f);
-            this.setLookat(new Point3D(0, 0, 500));
-            this.setExposure(1.0f);
-            this.setZoom(1.0f);
+            this.Up = new Vect3D(0, 1, 0);
+            this.Eye = new Point3D(0, 0, 0);
+            this.LookAt = new Point3D(0, 0, 500);
+            this.Exposure = 1.0f;
+            this.Zoom = 1.0f;
             this.compute_uvw();
         }
-        //Getters and setters
-        public void setEye(Point3D e) { eye = new Point3D(e); }
-        public void setLookat(Point3D l) { lookat = new Point3D(l); }
-        public void setUp(Vect3D u) { up = new Vect3D(u); }
-        public void setExposure(float e) { exposure_time = e; }
-        public void setZoom(float z) { zoom = z; }
+
+
 
         public void compute_uvw() 
         {
-            up = new Vect3D(0, 1, 0);
-            w = eye - lookat;
-            w.normalize();
-            u = up ^ w;
-            u.normalize();
+            _up = new Vect3D(0, 1, 0);
+            w = _eye - _lookAt;
+            w.Normalize();
+            u = _up ^ w;
+            u.Normalize();
             v = w ^ u;
         }
 
-        public abstract void render_scene(World w);
-        public virtual void render_scene_multithreaded(World w, int numThreads)
+        /// <summary>
+        /// Renders the world on a single thread [deprecated, use RenderSceneMultiThreaded]
+        /// </summary>
+        /// <param name="world">World reference</param>
+        public abstract void RenderScene(World world);
+
+        /// <summary>
+        /// Renders a frame for the current world across a given number of threads
+        /// </summary>
+        /// <param name="world">Current world with camera</param>
+        /// <param name="numThreads">Number of threads to split workload across</param>
+        public virtual void RenderSceneMultithreaded(World world, int numThreads)
         {
-            ViewPlane vp = w.vp;
+            // local ref for viewplane for minimized member accesses
+            ViewPlane vp = world.CurrentViewPlane;
 
+            // set zoom for frame zero to ensure animation does not cause increasing zoom
             if(GlobalVars.frameno == 0)
-                vp.s /= zoom;
+                vp.PixelSize /= _zoom;
 
+
+            // list of all active threads, for spinwait
             List<RenderFragmentParameters> threads = new List<RenderFragmentParameters>();
+            // concurrent queue for thread safe dequeue of render chunks
             taskQueue = new ConcurrentQueue<RenderFragmentParameters>();
 
             //Find out how many chunks the screen can be divided into;
-            int hchunks = (int)Math.Floor((decimal)vp.hres / (decimal)GlobalVars.fragment_size);
-            int vchunks = (int)Math.Floor((decimal)vp.vres / (decimal)GlobalVars.fragment_size);
+            int hChunks = (int)Math.Floor((decimal)vp.HorizontalResolution / (decimal)GlobalVars.FRAGMENT_SIZE);
+            int vChunks = (int)Math.Floor((decimal)vp.VerticalResolution / (decimal)GlobalVars.FRAGMENT_SIZE);
             //Find out the size of the boundaries which do not fit into chunks
-            int hrem = vp.hres % GlobalVars.fragment_size;
-            int vrem = vp.vres % GlobalVars.fragment_size;
+            int hRemaining = vp.HorizontalResolution % GlobalVars.FRAGMENT_SIZE;
+            int vRemaining = vp.VerticalResolution % GlobalVars.FRAGMENT_SIZE;
 
             int threadNo = 0; //Label for each thread created
 
             //Queue up render chunks
-            int h0, h1, v0, v1;
+            int hor0, hor1, vert0, vert1;
             RenderFragmentParameters parameters;
-            for(int v = 0; v < vchunks; v++)
+            for(int v = 0; v < vChunks; v++)
             {
-                for(int h = 0; h < hchunks; h++)
+                for(int h = 0; h < hChunks; h++)
                 {
                     //Queue up threads
-                    h0 = GlobalVars.fragment_size * h;
-                    h1 = GlobalVars.fragment_size * (h + 1);
-                    v0 = GlobalVars.fragment_size * v;
-                    v1 = GlobalVars.fragment_size * (v + 1);
-                    parameters = new RenderFragmentParameters(w, h0, h1, v0, v1, threadNo);
+                    hor0 = GlobalVars.FRAGMENT_SIZE * h;
+                    hor1 = GlobalVars.FRAGMENT_SIZE * (h + 1);
+                    vert0 = GlobalVars.FRAGMENT_SIZE * v;
+                    vert1 = GlobalVars.FRAGMENT_SIZE * (v + 1);
+                    parameters = new RenderFragmentParameters(world, hor0, hor1, vert0, vert1, threadNo);
                     threads.Add(parameters);
                     taskQueue.Enqueue(parameters);
                     threadNo++;
                 }
                 //Add in additional fragments for the right screen edge if resolution isn't nicely
                 //divisible
-                if(hrem != 0)
+                if(hRemaining != 0)
                 {
-                    h0 = GlobalVars.fragment_size * hchunks;
-                    h1 = vp.hres;
-                    v0 = GlobalVars.fragment_size * v;
-                    v1 = GlobalVars.fragment_size * (v + 1);
-                    parameters = new RenderFragmentParameters(w, h0, h1, v0, v1, threadNo);
+                    hor0 = GlobalVars.FRAGMENT_SIZE * hChunks;
+                    hor1 = vp.HorizontalResolution;
+                    vert0 = GlobalVars.FRAGMENT_SIZE * v;
+                    vert1 = GlobalVars.FRAGMENT_SIZE * (v + 1);
+                    parameters = new RenderFragmentParameters(world, hor0, hor1, vert0, vert1, threadNo);
                     threads.Add(parameters);
                     taskQueue.Enqueue(parameters);
                 }
             }
             //Add in additional fragments for the top edge if resolution isn't nicely divisible
-            if(vrem != 0)
+            if(vRemaining != 0)
             {
-                for(int h = 0; h < hchunks; h++)
+                for(int h = 0; h < hChunks; h++)
                 {
-                    h0 = GlobalVars.fragment_size * h;
-                    h1 = GlobalVars.fragment_size * (h + 1);
-                    v0 = GlobalVars.fragment_size * vchunks;
-                    v1 = vp.vres;
-                    parameters = new RenderFragmentParameters(w, h0, h1, v0, v1, threadNo);
+                    hor0 = GlobalVars.FRAGMENT_SIZE * h;
+                    hor1 = GlobalVars.FRAGMENT_SIZE * (h + 1);
+                    vert0 = GlobalVars.FRAGMENT_SIZE * vChunks;
+                    vert1 = vp.VerticalResolution;
+                    parameters = new RenderFragmentParameters(world, hor0, hor1, vert0, vert1, threadNo);
                     threads.Add(parameters);
                     taskQueue.Enqueue(parameters);
                 }
                 //Add in corner edge fragment if the right edge of the screen wasn't nicely divisible
-                if (hrem != 0)
+                if (hRemaining != 0)
                 {
-                    h0 = GlobalVars.fragment_size * hchunks;
-                    h1 = vp.hres;
-                    v0 = GlobalVars.fragment_size * vchunks;
-                    v1 = vp.vres;
-                    parameters = new RenderFragmentParameters(w, h0, h1, v0, v1, threadNo);
+                    hor0 = GlobalVars.FRAGMENT_SIZE * hChunks;
+                    hor1 = vp.HorizontalResolution;
+                    vert0 = GlobalVars.FRAGMENT_SIZE * vChunks;
+                    vert1 = vp.VerticalResolution;
+                    parameters = new RenderFragmentParameters(world, hor0, hor1, vert0, vert1, threadNo);
                     threads.Add(parameters);
                     taskQueue.Enqueue(parameters);
                 }
             }
 
-            int num_to_dequeue = (numThreads < threadNo) ? numThreads : threadNo;
+            // dequeue either the provided number of threads, or the total number of threads, whichever is smaller
+            int numThreadsToDequeue = (numThreads < threadNo) ? numThreads : threadNo;
 
-            //Temporary list to prevent race conditions
-            RenderFragmentParameters[] initialThreads = new RenderFragmentParameters[num_to_dequeue];
-
-            for(int i = 0; i < num_to_dequeue; i++)
+            // dequeue the initial thread count of threads
+            RenderFragmentParameters[] initialThreads = new RenderFragmentParameters[numThreadsToDequeue];
+            for (int i = 0; i < numThreadsToDequeue; i++)
             {
                 while(!taskQueue.TryDequeue(out initialThreads[i])) { // ensure every dequeue succeeds
                 }
             }
 
-            foreach(RenderFragmentParameters r in initialThreads) //Away we go
+            // begin rendering in all dequeued threads
+            foreach(RenderFragmentParameters renderFragment in initialThreads) 
             {
-                r.Begin();
+                renderFragment.Begin();
             }
 
             //Set the thread priority for main thread to low
@@ -149,32 +201,54 @@ namespace SCSRaytracer
             do
             {
                 allDone = true;
-                foreach (RenderFragmentParameters t in threads)
+                foreach (RenderFragmentParameters thread in threads)
                 {
-                    if (t.t.IsAlive)
+                    if (thread.thread.IsAlive)
                     {
                         allDone = false;
                     }
                 }
-                w.poll_events();
+                world.PollEvents();
 
             } while (!allDone);
 
-            w.live_view.live_image = new SFML.Graphics.Image((uint)vp.hres, (uint)vp.vres, w.image);
+            // update liveimage
+            world.LiveView.LiveImage = new SFML.Graphics.Image((uint)vp.HorizontalResolution, (uint)vp.VerticalResolution, world.RenderImage);
             
         }
-        public abstract void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo);
-        public void dequeue_next_render_fragment()
+
+        /// <summary>
+        /// Renders a single rectangular chunk of the scene
+        /// </summary>
+        /// <param name="worldRef">Reference to the world</param>
+        /// <param name="xCoord1">Smallest x coordinate</param>
+        /// <param name="xCoord2">Largest x coordinate</param>
+        /// <param name="yCoord1">Smallest y coordinate</param>
+        /// <param name="yCoord2">Largest y coordinate</param>
+        /// <param name="threadNum">Thread number</param>
+        public abstract void RenderSceneFragment(World worldRef, int xCoord1, int xCoord2, int yCoord1, int yCoord2, int threadNum);
+
+
+        /// <summary>
+        /// Called at end of RenderSceneFragment. Attempts dequeue of next render fragment if another left in queue.
+        /// </summary>
+        public void DequeueNextRenderFragment()
         {
-            RenderFragmentParameters r;
-            while(!taskQueue.TryDequeue(out r)) //Keep trying to dequeue if concurrent queue is locked
+            RenderFragmentParameters renderFragment;
+            while(!taskQueue.TryDequeue(out renderFragment)) //Keep trying to dequeue if concurrent queue is locked
             {
                 //Check that the queue has something in it. If it's empty then no need to dequeue next render task
                 if (taskQueue.IsEmpty) break;
             }
-            if (r != null) r.Begin();
+            if (renderFragment != null) renderFragment.Begin();
         }
 
+
+        /// <summary>
+        /// Load function for XML file
+        /// </summary>
+        /// <param name="camRoot">Root element of camera tag</param>
+        /// <returns>A fully constructed Camera</returns>
         public static Camera LoadCamera(XmlElement camRoot)
         {
             string cam_type = camRoot.GetAttribute("type");
@@ -201,7 +275,7 @@ namespace SCSRaytracer
                 {
                     string str_zoom = ((XmlText)node_zoom.FirstChild).Data;
                     float zoom = (float)Convert.ToSingle(str_zoom);
-                    toReturn.setZoom(zoom);
+                    toReturn.Zoom = zoom;
                 }
 
                 //Load common attributes afterwards.
@@ -212,7 +286,7 @@ namespace SCSRaytracer
                     Point3D point = Point3D.FromCsv(str_point);
                     //if (point != null)
                     //{
-                        toReturn.setEye(point);
+                        toReturn.Eye = point;
                     //}
                 }
                 XmlNode node_lookat = camRoot.SelectSingleNode("lookat");
@@ -222,7 +296,7 @@ namespace SCSRaytracer
                     Point3D lookat = Point3D.FromCsv(str_lookat);
                     //if (lookat != null)
                     //{
-                        toReturn.setLookat(lookat);
+                        toReturn.LookAt = lookat;
                     //}
                 }
                 XmlNode node_exp = camRoot.SelectSingleNode("exposure");
@@ -230,7 +304,7 @@ namespace SCSRaytracer
                 {
                     string str_exp = ((XmlText)node_exp.FirstChild).Data;
                     float exposure = (float)Convert.ToSingle(str_exp);
-                    toReturn.setExposure(exposure);
+                    toReturn.Exposure = exposure;
                 }
 
                 toReturn.compute_uvw();
@@ -244,28 +318,41 @@ namespace SCSRaytracer
             }
         }
 
+        /// <summary>
+        /// Locally used utility class for storage of parameters and thread handle for dequeue
+        /// </summary>
         protected class RenderFragmentParameters
         {
-            public int h0, h1, v0, v1;
-            public World w;
+            public int horizontal0, horizontal1, vertical0, vertical1;
+            public World worldRef;
             public int threadNo;
-            public Thread t;
+            public Thread thread;
 
+            /// <summary>
+            /// Parameterized constructor for a given render fragment
+            /// </summary>
+            /// <param name="w_arg">Reference to world, passed to RenderSceneFragment</param>
+            /// <param name="h0_arg">Smallest horizontal render point</param>
+            /// <param name="h1_arg">Largest horizontal render point</param>
+            /// <param name="v0_arg">Smallest horizontal render point</param>
+            /// <param name="v1_arg">Largest hozitontal render point</param>
+            /// <param name="tno_arg">Thread id</param>
             public RenderFragmentParameters(World w_arg, int h0_arg, int h1_arg, int v0_arg, int v1_arg, int tno_arg)
             {
-                w = w_arg;
-                h0 = h0_arg;
-                h1 = h1_arg;
-                v0 = v0_arg;
-                v1 = v1_arg;
+                worldRef = w_arg;
+                horizontal0 = h0_arg;
+                horizontal1 = h1_arg;
+                vertical0 = v0_arg;
+                vertical1 = v1_arg;
                 threadNo = tno_arg;
-                t = new Thread(() => w.camera.render_scene_fragment(w, h0, h1, v0, v1, threadNo));
-                t.Priority = ThreadPriority.Highest;
+                // construct new thread using lambda expression for parameterized thread start
+                thread = new Thread(() => worldRef.Camera.RenderSceneFragment(worldRef, horizontal0, horizontal1, vertical0, vertical1, threadNo));
+                thread.Priority = ThreadPriority.Highest;
             }
 
             public void Begin()
             {
-                t.Start();
+                thread.Start();
             }
         }
     }

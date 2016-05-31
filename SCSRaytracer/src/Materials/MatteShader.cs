@@ -37,9 +37,9 @@ namespace SCSRaytracer
 
         public override RGBColor shade(ShadeRec sr)
         {
-            Vect3D wo = -sr.ray.direction;
-            RGBColor L = ambient_brdf.rho(sr, wo) * sr.w.ambientLight.L(sr);
-            int numLights = sr.w.lightList.Count;
+            Vect3D wo = -sr.ray.Direction;
+            RGBColor L = ambient_brdf.rho(sr, wo) * sr.w.AmbientLight.L(sr);
+            int numLights = sr.w.LightList.Count;
             Vect3D wi;
             float ndotwi;
             bool inShadow;
@@ -49,20 +49,20 @@ namespace SCSRaytracer
             //Loop through list of lights and add radiance for each diffuse light source.
             for(int i = 0; i < numLights; i++)
             {
-                wi = sr.w.lightList[i].getDirection(sr);
+                wi = sr.w.LightList[i].getDirection(sr);
                 ndotwi = sr.normal * wi;
                 //Direction must not be 0,0,0 to be a diffuse light source.
                 if(ndotwi > 0.0)
                 {
                     inShadow = false;
-                    if(sr.w.lightList[i].castsShadows())
+                    if(sr.w.LightList[i].castsShadows())
                     {
-                        shadowRay = new Ray(sr.hit_point + (GlobalVars.shadKEpsilon * wi), wi);
-                        inShadow = sr.w.lightList[i].inShadow(sr, shadowRay);
+                        shadowRay = new Ray(sr.hit_point + (GlobalVars.SHAD_K_EPSILON * wi), wi);
+                        inShadow = sr.w.LightList[i].inShadow(sr, shadowRay);
                     }
                     if(!inShadow)
                     {
-                        L += diffuse_brdf.f(sr, wo, wi) * sr.w.lightList[i].L(sr) * ndotwi;
+                        L += diffuse_brdf.f(sr, wo, wi) * sr.w.LightList[i].L(sr) * ndotwi;
                     }
                 }
             }

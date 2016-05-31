@@ -14,29 +14,29 @@ namespace SCSRaytracer
         public NRooksSampler(int s) : base(s)
         {
             randomgen = new Random();
-            numsets = 16;
+            _numSets = 16;
         }
         public NRooksSampler(Sampler clone) : base(clone)
         {
             randomgen = new Random();
         }
 
-        public override void generate_samples()
+        public override void GenerateSamples()
         {
             //Generate samples along diagonal and then shuffle coordinates
-            for(int n = 0; n < numsets; n++)
+            for(int n = 0; n < _numSets; n++)
             {
-                for(int j = 0; j < numsamples; j++)
+                for(int j = 0; j < _numSamples; j++)
                 {
-                    Point2D p = new Point2D((j + (float)randomgen.NextDouble()) / numsamples, (j + (float)randomgen.NextDouble()) / numsamples);
-                    samples.Add(p);
+                    Point2D p = new Point2D((j + (float)randomgen.NextDouble()) / _numSamples, (j + (float)randomgen.NextDouble()) / _numSamples);
+                    _samples.Add(p);
                 }
             }
             //shuffle_x_coords();
             //shuffle_y_coords();
         }
 
-        public override Sampler clone()
+        public override Sampler Clone()
         {
             return new NRooksSampler(this);
         }

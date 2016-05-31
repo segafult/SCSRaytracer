@@ -26,6 +26,7 @@ namespace SCSRaytracer
             {
                 Console.WriteLine("Usage: scsraytracer -I \"Input XML path\" -O \"Output bmp path\"");
                 Console.WriteLine("Additional options:\n-V: Verbose output, default off\n-T #: Number of threads");
+                Console.ReadKey();
                 return;
             }
             try {
@@ -100,6 +101,7 @@ namespace SCSRaytracer
                 Console.WriteLine(e.ToString());
                 Console.WriteLine("Usage: scsraytracer -I \"Input XML path\" -O \"Output bmp path\"");
                 Console.WriteLine("Additional options:\n-V: Verbose output, default off\n-T #: Number of threads");
+                Console.ReadKey();
                 return;
             }
             //Elevate process priority to high
@@ -107,10 +109,10 @@ namespace SCSRaytracer
             using (Process p = Process.GetCurrentProcess())
                 p.PriorityClass = ProcessPriorityClass.High;
             World w = new World();
-            GlobalVars.worldref = w;
+            GlobalVars.WORLD_REF = w;
 
-            w.build();
-            w.open_window(w.vp.hres, w.vp.vres);
+            w.Build();
+            w.OpenWindow(w.CurrentViewPlane.HorizontalResolution, w.CurrentViewPlane.VerticalResolution);
             //while (GlobalVars.frameno < 120)
             //{
                 //w.camera.setEye(new Point3D(200, 200, GlobalVars.cam_zcoord));
@@ -120,14 +122,14 @@ namespace SCSRaytracer
                 switch (multithread)
                 {
                     case false:
-                        w.camera.render_scene_multithreaded(w, 1);
+                        w.Camera.RenderSceneMultithreaded(w, 1);
                         break;
                     case true:
-                        w.camera.render_scene_multithreaded(w, threads);
+                        w.Camera.RenderSceneMultithreaded(w, threads);
                         break;
                 }
 
-                w.save_displayed_image(GlobalVars.outFile);
+                w.SaveDisplayedImage(GlobalVars.outFile);
 
                 //    GlobalVars.cam_zcoord -= 10;
                 //    GlobalVars.lookat_zcoord -= 10;
@@ -139,8 +141,9 @@ namespace SCSRaytracer
 
 			while(!GlobalVars.should_close)
             {
-                w.poll_events();
+                w.PollEvents();
             }
+
             
         }
     }

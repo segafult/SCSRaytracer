@@ -52,19 +52,19 @@ namespace SCSRaytracer
 
         public void setPoints(Point3D p1, Point3D p2)
         {
-            x0 = p1.coords.X < p2.coords.X ? p1.coords.X : p2.coords.X;
-            x1 = p1.coords.X > p2.coords.X ? p1.coords.X : p2.coords.X;
-            y0 = p1.coords.Y < p2.coords.Y ? p1.coords.Y : p2.coords.Y;
-            y1 = p1.coords.Y > p2.coords.Y ? p1.coords.Y : p2.coords.Y;
-            z0 = p1.coords.Z < p2.coords.Z ? p1.coords.Z : p2.coords.Z;
-            z1 = p1.coords.Z > p2.coords.Z ? p1.coords.Z : p2.coords.Z;
+            x0 = p1.X < p2.X ? p1.X : p2.X;
+            x1 = p1.X > p2.X ? p1.X : p2.X;
+            y0 = p1.Y < p2.Y ? p1.Y : p2.Y;
+            y1 = p1.Y > p2.Y ? p1.Y : p2.Y;
+            z0 = p1.Z < p2.Z ? p1.Z : p2.Z;
+            z1 = p1.Z > p2.Z ? p1.Z : p2.Z;
         }
         public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             ///-------------------------------------------------------------------------------------
             /// same as colision code for axis aligned bounding box
-            float ox = r.origin.coords.X; float oy = r.origin.coords.Y; float oz = r.origin.coords.Z;
-            float dx = r.direction.coords.X; float dy = r.direction.coords.Y; float dz = r.direction.coords.Z;
+            float ox = r.Origin.X; float oy = r.Origin.Y; float oz = r.Origin.Z;
+            float dx = r.Direction.X; float dy = r.Direction.Y; float dz = r.Direction.Z;
 
             float tx_min, ty_min, tz_min;
             float tx_max, ty_max, tz_max;
@@ -145,9 +145,9 @@ namespace SCSRaytracer
             }
 
             //Hit conditions
-            if (t0 < t1 && t1 > GlobalVars.kEpsilon)
+            if (t0 < t1 && t1 > GlobalVars.K_EPSILON)
             {
-                if (t0 > GlobalVars.kEpsilon) //Ray hits outside surface
+                if (t0 > GlobalVars.K_EPSILON) //Ray hits outside surface
                 {
                     tmin = t0;
                     sr.normal = get_normal(face_in);
@@ -159,7 +159,7 @@ namespace SCSRaytracer
                     sr.normal = get_normal(face_out);
                 }
 
-                sr.hit_point_local = r.origin + tmin * r.direction;
+                sr.hit_point_local = r.Origin + tmin * r.Direction;
                 sr.obj_material = mat;
                 return true;
             }
@@ -169,8 +169,8 @@ namespace SCSRaytracer
 
         public override bool hit(Ray r, float tmin)
         {
-            float ox = r.origin.coords.X; float oy = r.origin.coords.Y; float oz = r.origin.coords.Z;
-            float dx = r.direction.coords.X; float dy = r.direction.coords.Y; float dz = r.direction.coords.Z;
+            float ox = r.Origin.X; float oy = r.Origin.Y; float oz = r.Origin.Z;
+            float dx = r.Direction.X; float dy = r.Direction.Y; float dz = r.Direction.Z;
 
             float tx_min, ty_min, tz_min;
             float tx_max, ty_max, tz_max;
@@ -250,7 +250,7 @@ namespace SCSRaytracer
 
             //If the largest entering t value is less than the smallest exiting t value, then the ray is inside
             //the bounding box for the range of t values t0 to t1;
-            return (t0 < t1 && t1 > GlobalVars.kEpsilon && t1 < tmin);
+            return (t0 < t1 && t1 > GlobalVars.K_EPSILON && t1 < tmin);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

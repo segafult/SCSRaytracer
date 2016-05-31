@@ -30,7 +30,7 @@ namespace SCSRaytracer
                 v = uv.coords.Y;
             }
 
-            return img.get_color_at_uv(u, v, true);
+            return img.GetColorAtUV(u, v, true);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace SCSRaytracer
 
         public override float evalF(Point3D p)
         {
-            return p.coords.Y - (float)(0.5 * Math.Sin(p.coords.X + 3 * w)) - 0.1f * (float)(((1 + 0.2 * Math.Sin(p.coords.X * p.coords.Z))) * Math.Cos(p.coords.Z + 3 * w));
+            return p.Y - (float)(0.5 * Math.Sin(p.X + 3 * w)) - 0.1f * (float)(((1 + 0.2 * Math.Sin(p.X * p.Z))) * Math.Cos(p.Z + 3 * w));
         }
     }
 }

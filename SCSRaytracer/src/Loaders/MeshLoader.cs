@@ -33,7 +33,7 @@ namespace SCSRaytracer
                 {
                     sum_norm += parent.normalForFace(faceList[j]);
                 }
-                sum_norm.normalize();
+                sum_norm.Normalize();
                 parent.normals[i] = sum_norm;
             }
         }

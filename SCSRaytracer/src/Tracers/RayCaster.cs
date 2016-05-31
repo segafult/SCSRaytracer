@@ -25,7 +25,7 @@ namespace SCSRaytracer
         /// <returns>Color of the object intersected, or the background color if no intersection occurred.</returns>
         public override RGBColor trace_ray(Ray ray)
         {
-            ShadeRec sr = new ShadeRec(world_pointer.hit_objects(ray));
+            ShadeRec sr = new ShadeRec(world_pointer.HitObjects(ray));
 
             if(sr.hit_an_object)
             {
@@ -34,7 +34,7 @@ namespace SCSRaytracer
                 sr.ray = ray; //Store information for specular highlight.
                 return (sr.obj_material.shade(sr)); //Call shader function for object material.
             }
-            else { return world_pointer.bg_color; } //No need to call shader function if no intersection occurred.
+            else { return world_pointer.CurrentBackgroundColor; } //No need to call shader function if no intersection occurred.
         }
 
         public override RGBColor trace_ray(Ray ray, float tmin, int depth)

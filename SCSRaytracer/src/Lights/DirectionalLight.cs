@@ -21,14 +21,14 @@ namespace SCSRaytracer
         //Constructors
         public DirectionalLight()
         {
-            direction = (new Vect3D(-1, -1, -1)).hat();
+            direction = (new Vect3D(-1, -1, -1)).Hat();
             intensity = 0.5f;
             color = new RGBColor(1, 1, 1);
             shadows = false;
         }
         public DirectionalLight(Vect3D d)
         {
-            direction = d.hat();
+            direction = d.Hat();
             intensity = 0.5f;
             color = new RGBColor(1, 1, 1);
             shadows = false;
@@ -37,12 +37,12 @@ namespace SCSRaytracer
         {
             color = new RGBColor(c);
             intensity = i;
-            direction = d.hat();
+            direction = d.Hat();
             shadows = false;
         }
 
         //Gets and sets
-        public void setDirection(Vect3D d) { direction = d.hat(); }
+        public void setDirection(Vect3D d) { direction = d.Hat(); }
         public void setIntensity(float i) { intensity = i; }
         public void setShadows(bool shad) { shadows = shad; }
         public Vect3D getDirection() { return direction; }
@@ -55,7 +55,7 @@ namespace SCSRaytracer
         }
         public override bool inShadow(ShadeRec sr, Ray ray)
         {
-            ShadeRec tempSr = sr.w.hit_objects(ray);
+            ShadeRec tempSr = sr.w.HitObjects(ray);
             return tempSr.hit_an_object;
         }
         public override Vect3D getDirection(ShadeRec sr)

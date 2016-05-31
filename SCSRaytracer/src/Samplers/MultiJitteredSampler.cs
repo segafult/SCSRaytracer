@@ -20,18 +20,18 @@ namespace SCSRaytracer
             randomgen = new Random();
         }
 
-        public override void generate_samples()
+        public override void GenerateSamples()
         {
             //Jittered sampler must be a perfect square
-            int n = (int)Math.Sqrt(numsamples);
+            int n = (int)Math.Sqrt(_numSamples);
 
-            for (int s = 0; s < numsets; s++)
+            for (int s = 0; s < _numSets; s++)
             {
                 for (int j = 0; j < n; j++)
                 {
                     for (int k = 0; k < n; k++)
                     {
-                        samples.Add(new Point2D((k + (float)randomgen.NextDouble()) / n, (j + (float)randomgen.NextDouble()) / n));
+                        _samples.Add(new Point2D((k + (float)randomgen.NextDouble()) / n, (j + (float)randomgen.NextDouble()) / n));
                     }
                 }
             }
@@ -80,7 +80,7 @@ namespace SCSRaytracer
             }
         }
         */
-        public override Sampler clone()
+        public override Sampler Clone()
         {
             return new MultiJitteredSampler(this);
         }

@@ -22,8 +22,8 @@ namespace SCSRaytracer
 
         public BoundingBox()
         {
-            c0 = new Vector3(-GlobalVars.kHugeValue);
-            c1 = new Vector3(GlobalVars.kHugeValue);
+            c0 = new Vector3(-GlobalVars.K_HUGE_VALUE);
+            c1 = new Vector3(GlobalVars.K_HUGE_VALUE);
             //x0 = -GlobalVars.kHugeValue;
             //x1 = GlobalVars.kHugeValue;
             //y0 = -GlobalVars.kHugeValue;
@@ -45,8 +45,8 @@ namespace SCSRaytracer
 
         public override bool hit(Ray r, float tmin)
         {
-            float ox = r.origin.coords.X; float oy = r.origin.coords.Y; float oz = r.origin.coords.Z;
-            float dx = r.direction.coords.X; float dy = r.direction.coords.Y; float dz = r.direction.coords.Z;
+            float ox = r.Origin.X; float oy = r.Origin.Y; float oz = r.Origin.Z;
+            float dx = r.Direction.X; float dy = r.Direction.Y; float dz = r.Direction.Z;
 
             float tx_min, ty_min, tz_min;
             float tx_max, ty_max, tz_max;
@@ -126,14 +126,14 @@ namespace SCSRaytracer
 
             //If the largest entering t value is less than the smallest exiting t value, then the ray is inside
             //the bounding box for the range of t values t0 to t1;
-            return (t0 < t1 && t1 > GlobalVars.kEpsilon);
+            return (t0 < t1 && t1 > GlobalVars.K_EPSILON);
         }
 
         public bool inside(Point3D parg)
         {
-            return (parg.coords.X > c0.X && parg.coords.X < c1.X) &&
-                (parg.coords.Y > c0.Y && parg.coords.Y < c1.Y) &&
-                (parg.coords.Z > c0.Z && parg.coords.Z < c1.Z);
+            return (parg.X > c0.X && parg.X < c1.X) &&
+                (parg.Y > c0.Y && parg.Y < c1.Y) &&
+                (parg.Z > c0.Z && parg.Z < c1.Z);
         }
     }
 }

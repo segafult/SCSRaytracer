@@ -49,14 +49,14 @@ namespace SCSRaytracer
         /// <returns></returns>
         override public bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
-            float t = (p - r.origin) * n / (r.direction * n);
+            float t = (p - r.Origin) * n / (r.Direction * n);
 
             //Intersection is in front of camera
-            if(t > GlobalVars.kEpsilon && t < tmin)
+            if(t > GlobalVars.K_EPSILON && t < tmin)
             {
                 tmin = t;
                 sr.normal = n;
-                sr.hit_point_local = r.origin + t * r.direction;
+                sr.hit_point_local = r.Origin + t * r.Direction;
                 sr.obj_material = mat;
                 return true;
             }
@@ -69,10 +69,10 @@ namespace SCSRaytracer
 
         public override bool hit(Ray r, float tmin)
         {
-            float t = (p - r.origin) * n / (r.direction * n);
+            float t = (p - r.Origin) * n / (r.Direction * n);
 
             //Intersection is in front of camera
-            if (t > GlobalVars.kEpsilon && t < tmin)
+            if (t > GlobalVars.K_EPSILON && t < tmin)
             {
                 return true;
             }

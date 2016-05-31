@@ -16,58 +16,165 @@ namespace SCSRaytracer
     /// <summary>
     /// Class containing references to all world items
     /// </summary>
-    class World
+    sealed class World
     {
-        public ViewPlane vp;
-        public RGBColor bg_color;
-        public Tracer tracer;
+        private ViewPlane _viewPlane; // viewplane
+        private RGBColor _backgroundColor; // background color
+        private Tracer _tracer; // tracer to be used in rendering scene, default Whitted
 
-        public List<RenderableObject> renderList;  //Renderlist is the actual list of objects to render
-        public List<RenderableObject> objectList;  //Objectlist isn't rendered, and instead serves to hold objects to be instanced
-        public List<Light> lightList;
+        private List<RenderableObject> _renderList;  //Renderlist is the actual list of objects to render
+        private List<RenderableObject> _objectList;  //Objectlist isn't rendered, and instead serves to hold objects to be instanced
+        private List<Light> _lightList; // List of lights
+        private List<Material> _materialList; // List of all materials to be used in scene rendering
 
-        public AmbientLight ambientLight;
-        public Camera camera;
+        private AmbientLight _ambientLight;   // Ambient lighting is treated differently from raytraced sources, keep outside list
+        private Camera _camera; // Camera reference
+        private LiveViewer _liveView; // Live viewer window
+        private byte[] _renderImage; // 1D byte array for image rendering
 
-        public List<Material> materialList;
+        // accessors
+        public ViewPlane CurrentViewPlane
+        {
+            get
+            {
+                return _viewPlane;
+            }
+        }
+        public RGBColor CurrentBackgroundColor
+        {
+            get
+            {
+                return _backgroundColor;
+            }
+        }
+        public Tracer CurrentTracer
+        {
+            get
+            {
+                return _tracer;
+            }
+            set
+            {
+                _tracer = value;
+            }
+        }
+        public List<RenderableObject> RenderList
+        {
+            get
+            {
+                return _renderList;
+            }
+        }
+        public List<RenderableObject> ObjectList
+        {
+            get
+            {
+                return _objectList;
+            }
+        }
+        public List<Light> LightList
+        {
+            get
+            {
+                return _lightList;
+            }
+        }
+        public List<Material> MaterialList
+        {
+            get
+            {
+                return _materialList;
+            }
+        }
+        public AmbientLight AmbientLight
+        {
+            get
+            {
+                return _ambientLight;
+            }
+            set
+            {
+                _ambientLight = value;
+            }
+        }
+        public Camera Camera
+        {
+            get
+            {
+                return _camera;
+            }
+            set
+            {
+                _camera = value;
+            }
+        }
+        public LiveViewer LiveView
+        {
+            get
+            {
+                return _liveView;
+            }
+        }
+        public byte[] RenderImage
+        {
+            get
+            {
+                return _renderImage;
+            }
+        }
 
-        public LiveViewer live_view;
-        public byte[] image;
-        WeightedAverageImplicit test;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public World ()
         {
-            vp = new ViewPlane();
-            renderList = new List<RenderableObject>();
-            objectList = new List<RenderableObject>();
+            // give world a default viewplane and ambient light
+            _viewPlane = new ViewPlane();
+            _ambientLight = new AmbientLight();
 
-            lightList = new List<Light>();
-            materialList = new List<Material>();
-            ambientLight = new AmbientLight();
+            // set up scene lists
+            _renderList = new List<RenderableObject>();
+            _objectList = new List<RenderableObject>();
+            _lightList = new List<Light>();
+            _materialList = new List<Material>();
+            
         }
 
         /// <summary>
         /// Appends given render object to the end of the scene list
         /// </summary>
         /// <param name="o">Object to add</param>
-        public void add_Object(RenderableObject o)
+        public void AddObjectToScene(RenderableObject o)
         {
-            renderList.Add(o);
+            _renderList.Add(o);
         }
 
-        public void add_Light(Light l)
+        /// <summary>
+        /// Appends object to the end of the instantiable objects list
+        /// </summary>
+        /// <param name="o">Object to add</param>
+        public void AddObject(RenderableObject o)
         {
-            lightList.Add(l);
+            _objectList.Add(o);
         }
 
-        public void set_ambient_light(AmbientLight l)
+        /// <summary>
+        /// Appends a light to the end of the lights list
+        /// </summary>
+        /// <param name="l">Light to add</param>
+        public void AddLight(Light l)
         {
-            ambientLight = l;
+            _lightList.Add(l);
         }
 
-        public void set_camera(Camera c)
+        /// <summary>
+        /// Appends a material to the end of the materials list
+        /// </summary>
+        /// <param name="m">Material to add</param>
+        public void AddMaterial(Material m)
         {
-            camera = c;
+            _materialList.Add(m);
         }
 
         /// <summary>
@@ -75,32 +182,41 @@ namespace SCSRaytracer
         /// Generic intersection detection for objectList called by a Tracer, returns ShadeRec describing intersection.
         /// </summary>
         /// <param name="ray">Ray for intersection calculation</param>
-        /// <returns>ShadeRec object with all relevant information about object that was intersected.</returns>
-        public ShadeRec hit_objects(Ray ray)
+        /// <returns>ShadeRec object with all relevant information about object that was intersected for generating
+        /// pixel data</returns>
+        public ShadeRec HitObjects(Ray ray)
         {
-            ShadeRec sr = new ShadeRec(this);
-            float t = GlobalVars.kHugeValue-1.0f;
+            ShadeRec sr = new ShadeRec(this); // create shaderec
+            
+            // set normal and local hit point to non-null values
             Normal normal = new Normal();
             Point3D local_hit_point = new Point3D();
-            float tmin = GlobalVars.kHugeValue;
-            int num_objects = renderList.Count;
-            Material closestmat = null;
+
+            float t = GlobalVars.K_HUGE_VALUE - 1.0f; // t value for corrent object
+            float tmin = GlobalVars.K_HUGE_VALUE; //  current lowest t value
+            int num_objects = _renderList.Count; // store count of objects to minimize unecessary member access
+            Material closestmat = null; // material reference for closest object
 
             //Find the closest intersection point along the given ray
-            for(int i = 0; i<num_objects; i++)
+            for(int i = 0; i < num_objects; i++)
             {
-                if (renderList[i].hit(ray, ref t, ref sr) && (t < tmin))
+                // Intersect each object in render list
+                // First term evaluated first, therefore (t < tmin) will be doing a comparison of t value
+                // of present object vs minimum t value.
+                if (_renderList[i].hit(ray, ref t, ref sr) && (t < tmin))
                 {
-                    sr.hit_an_object = true;
+                    sr.hit_an_object = true; // at least one intersection has occurred
+
+                    // store temporary references to information about current object with minimum t
                     tmin = t;
                     closestmat = sr.obj_material;
-                    sr.hit_point = ray.origin + t * ray.direction;
+                    sr.hit_point = ray.Origin + t * ray.Direction; // calculate hit point in world space by adding t*direction to origin
                     normal = sr.normal;
                     local_hit_point = sr.hit_point_local;
                 }
             }
 
-            //If we hit an object, we need to store information about that object in sr'
+            //If we hit an object, store local vars for closest object with ray intersection in sr before returning
             if(sr.hit_an_object)
             {
                 sr.t = tmin;
@@ -111,44 +227,47 @@ namespace SCSRaytracer
 
             return (sr);
         }
+
         /// <summary>
         /// Builds the world
         /// </summary>
-        public void build()
+        public void Build()
         {
-            bg_color = GlobalVars.color_black;
+            _backgroundColor = GlobalVars.COLOR_BLACK;
 
             if (GlobalVars.inFile != null)
             {
-
+                // Attempt to open an input file
                 XMLProcessor sceneLoader = new XMLProcessor(GlobalVars.inFile, this);
 
+                // Load materials from XML file, if verbose output enabled provide debug info in console
                 sceneLoader.LoadMaterials();
-
                 if (GlobalVars.verbose)
                 {
                     Console.WriteLine("Materials loaded:");
-                    foreach (Material m in materialList)
+                    foreach (Material m in _materialList)
                     {
                         Console.WriteLine(m.ToString());
                     }
                 }
 
+                // Load objects for instancing from XML file, if verbose output enabled provide debug info in console
                 sceneLoader.LoadObjects();
                 if (GlobalVars.verbose)
                 {
                     Console.WriteLine("Object definitions loaded:");
-                    foreach (RenderableObject o in objectList)
+                    foreach (RenderableObject o in _objectList)
                     {
                         Console.WriteLine(o.ToString());
                     }
                 }
 
+                // Finally, load the scene from XML file, if verbose output enabled provide debug info in console
                 sceneLoader.LoadWorld();
                 if (GlobalVars.verbose)
                 {
                     Console.WriteLine("Scene loaded!");
-                    foreach (RenderableObject o in renderList)
+                    foreach (RenderableObject o in _renderList)
                     {
                         Console.WriteLine(o.ToString());
                     }
@@ -168,7 +287,7 @@ namespace SCSRaytracer
                 SphericalMapper sphere_map = new SphericalMapper();
                 RectangularMapper rect_map = new RectangularMapper();
                 Image my_image = new Image();
-                my_image.loadFromFile("E:\\earth.jpg");
+                my_image.LoadFromFile("E:\\earth.jpg");
 
                 ImageTexture my_tex = new ImageTexture();
                 my_tex.setMapper(rect_map);
@@ -191,7 +310,7 @@ namespace SCSRaytracer
                 //add_Object(myinstance);
 
                 Image my_skybox = new Image();
-                my_skybox.loadFromFile("E:\\skybox.jpg");
+                my_skybox.LoadFromFile("E:\\skybox.jpg");
 
                 my_tex = new ImageTexture();
                 my_tex.setMapper(sphere_map);
@@ -205,30 +324,21 @@ namespace SCSRaytracer
                 Sphere skybox = new Sphere(new Point3D(0, 0, 0),1000);
                 skybox.setMaterial(skymatte);
                 //mygrid.add_object(skybox);
-                add_Object(skybox);
+                AddObjectToScene(skybox);
 
                 //mygrid.setup_cells();
                 //add_Object(mygrid);
-                
-                test = new WeightedAverageImplicit();
-                test.setup_bounds();
-                test.setMaterial(mymatte);
 
-
-                Instance implicitInstance = new Instance(test);
-                implicitInstance.id = "cloth";
-                implicitInstance.scale(50, 50, 50);
-                implicitInstance.rotate(25, 0, 0);
-                //implicitInstance.translate(10, 0, 0);
-
-                add_Object(implicitInstance);
-                
-                
+                Mesh dragon = new Mesh();
+                dragon.loadFromFile("E:\\dragon.off", true);
+                dragon.setup_cells();
+                dragon.setMaterial(new MatteShader());
+                Instance myInstance = new Instance(dragon);
+                myInstance.scale(100, 100, 100);
+                myInstance.rotate(90, 0, 0);
+                AddObjectToScene(myInstance);
             }
             //Custom build function if no input file specified
-
-
-            
             else
             {
                     ///---------------------------------------------------------------------------------------
@@ -242,22 +352,25 @@ namespace SCSRaytracer
             }
         }
 
-        public void animate()
+        /// <summary>
+        /// Animate is called on every frame. Allows for custom animation instructions to be inserted.
+        /// </summary>
+        public void Animate()
         {
-            test.crossFade(GlobalVars.frameno / 120.0f);
+            
         }
 
         /// <summary>
-        /// Sets up rendering field, be it screen or image
+        /// Sets up rendering field
         /// </summary>
-        /// <param name="hres"></param>
-        /// <param name="vres"></param>
-        public void open_window(int hres, int vres)
+        /// <param name="hres">Horizontal resolution</param>
+        /// <param name="vres">Vertical resolution</param>
+        public void OpenWindow(int hres, int vres)
         {
-            //drawPlan = new Bitmap(hres, vres);
-            live_view = new LiveViewer(this);
-            image = new byte[hres * vres * 4];
-            live_view.set_up_liveview();
+            // Create live viewer window, and allocate memory for the live view image
+            _liveView = new LiveViewer(this);
+            _renderImage = new byte[hres * vres * 4];
+            _liveView.SetUpLiveView();
         }
 
         /// <summary>
@@ -267,33 +380,51 @@ namespace SCSRaytracer
         /// <param name="column"></param>
         /// <param name="pixel_color"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void display_pixel(int row, int column, RGBColor pixel_color)
+        public void DisplayPixel(int row, int column, RGBColor pixel_color)
         {
-            RGBColor disp_color = new RGBColor(pixel_color.vals * 255.0f);
-            Vector3 cols = disp_color.clamp().vals;
+            RGBColor disp_color = new RGBColor(pixel_color.Values * 255.0f);
+            Vector3 cols = disp_color.clamp().Values;
             int x = column;
-            int y = vp.vres-1-row;
+            int y = _viewPlane.VerticalResolution-1-row;
             //live_view.live_image.SetPixel((uint)column, (uint)(vp.vres-1-row), new SFML.Graphics.Color(r, g, b));
-            image[(y * 4 * vp.hres) + (x * 4)] = (byte)cols.X;
-            image[(y * 4 * vp.hres) + (x * 4) + 1] = (byte)cols.Y;
-            image[(y * 4 * vp.hres) + (x * 4) + 2] = (byte)cols.Z;
-            image[(y * 4 * vp.hres) + (x * 4) + 3] = 255;
+            _renderImage[(y * 4 * _viewPlane.HorizontalResolution) + (x * 4)] = (byte)cols.X;
+            _renderImage[(y * 4 * _viewPlane.HorizontalResolution) + (x * 4) + 1] = (byte)cols.Y;
+            _renderImage[(y * 4 * _viewPlane.HorizontalResolution) + (x * 4) + 2] = (byte)cols.Z;
+            _renderImage[(y * 4 * _viewPlane.HorizontalResolution) + (x * 4) + 3] = 255;
         }
 
-        public Thread get_window_thread()
+        /// <summary>
+        /// Utitilty function, provides handle for window thread for processing window events
+        /// </summary>
+        /// <returns>Handle for thread that the live view window is displayed on</returns>
+        public Thread GetWindowThread()
         {
-            return live_view.get_thread();
-        }
-        public void poll_events()
-        {
-            live_view.poll_events();
-        }
-        public void save_displayed_image(string path)
-        {
-            live_view.live_image.SaveToFile(path);
+            return _liveView.RenderThread;
         }
 
-        public Material getMaterialById(string idarg)
+        /// <summary>
+        /// Polls mouse and keyboard events for live view window
+        /// </summary>
+        public void PollEvents()
+        {
+            _liveView.PollEvents();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        public void SaveDisplayedImage(string path)
+        {
+            _liveView.LiveImage.SaveToFile(path);
+        }
+
+        /// <summary>
+        /// Perform lookup of material in materials list by material id
+        /// </summary>
+        /// <param name="idarg">Material ID to look up</param>
+        /// <returns>A default matte shader in the event that material does not exist, material with ID=idarg if it exists</returns>
+        public Material GetMaterialByID(string idarg)
         {
             //idarg will be null if no node is returned by the XmlProcessor
             if (idarg == null)
@@ -302,60 +433,47 @@ namespace SCSRaytracer
             }
             else
             {
-                int numMats = materialList.Count;
-                bool foundMat = false;
+                int numMats = _materialList.Count;
 
-                int matIndex = 0;
+                // Search for material and return it
                 for (int i = 0; i < numMats; i++)
                 {
-                    if (materialList[i].id.Equals(idarg))
+                    if (_materialList[i].id.Equals(idarg))
                     {
-                        foundMat = true;
-                        matIndex = i;
-                        break;
+                        return _materialList[i];
                     }
                 }
-
-                if (foundMat)
-                {
-                    return materialList[matIndex];
-                }
-                else
-                {
-                    return new MatteShader();
-                }
+                // If not found, return a default
+                return new MatteShader();
             }
         }
-        public RenderableObject getObjectById(string objarg)
+
+        /// <summary>
+        /// Performs lookup of an object in the objects list using a provided string for object id
+        /// </summary>
+        /// <param name="objarg">Object ID</param>
+        /// <returns>Null if object not found, object with ID of objarg if found</returns>
+        public RenderableObject GetObjectByID(string objarg)
         {
+            // return null for null argument
             if(objarg == null)
             {
                 return null;
             }
             else
             {
-                int numObjs = objectList.Count;
-                bool foundObj = false;
-                int objIndex = 0;
+                int numObjs = _objectList.Count;
 
+                // Search for object and return it
                 for(int i = 0; i < numObjs; i++)
                 {
-                    if (objectList[i].id.Equals(objarg))
+                    if (_objectList[i].id.Equals(objarg))
                     {
-                        foundObj = true;
-                        objIndex = i;
-                        break;
+                        return _objectList[i];
                     }
                 }
-
-                if(foundObj)
-                {
-                    return objectList[objIndex];
-                }
-                else
-                {
-                    return null;
-                }
+                // If not found, return a default
+                return null;
             }
         }
     } 

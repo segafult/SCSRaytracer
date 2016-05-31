@@ -17,7 +17,7 @@ namespace SCSRaytracer
     {
         public override float evalF(Point3D p)
         {
-            Vector3 one = p.coords;
+            Vector3 one = p.Coordinates;
             Vector3 sqr = one * one;
             float t1 = Convert.ToSingle((sqr.X + sqr.Y + sqr.Z < 0.2));
             float t2 = (Convert.ToSingle(sqr.Y + sqr.Z < 0.08) * Convert.ToSingle(one.X < 0.4) * Convert.ToSingle(one.X > 0));

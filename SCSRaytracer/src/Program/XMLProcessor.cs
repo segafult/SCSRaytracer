@@ -11,32 +11,37 @@ namespace SCSRaytracer
 {
     sealed class XMLProcessor
     {
-        private XmlDocument sceneXML;
-        private XmlReader sceneReader;
-        private XmlNode root;
-
-        World w;
+        private XmlDocument _sceneXML;
+        private XmlReader _sceneReader;
+        private XmlNode _rootNode;
+        private World _world;
 
         public XMLProcessor(World worldref)
         {
-            sceneXML = new XmlDocument();
-            w = worldref;
+            _sceneXML = new XmlDocument();
+            _world = worldref;
         }
         public XMLProcessor(XmlReader doc, World worldref)
         {
-            sceneXML = new XmlDocument();
-            sceneReader = doc;
-            sceneXML.Load(sceneReader);
-            w = worldref;
+            _sceneXML = new XmlDocument();
+            _sceneReader = doc;
+            _sceneXML.Load(_sceneReader);
+            _world = worldref;
         }
+
+        /// <summary>
+        /// Constructor, requires filename and handle for the world
+        /// </summary>
+        /// <param name="filename">File to open</param>
+        /// <param name="worldref">World reference</param>
         public XMLProcessor(string filename, World worldref)
         {
             try {
-                sceneXML = new XmlDocument();
-                sceneReader = new XmlTextReader(filename);
-                sceneXML.Load(sceneReader);
-                root = sceneXML.DocumentElement;
-                w = worldref;
+                _sceneXML = new XmlDocument();
+                _sceneReader = new XmlTextReader(filename);
+                _sceneXML.Load(_sceneReader);
+                _rootNode = _sceneXML.DocumentElement;
+                _world = worldref;
             }
             catch (System.IO.FileNotFoundException e)
             {
@@ -45,10 +50,15 @@ namespace SCSRaytracer
             }
         }
 
+        /// <summary>
+        /// Loads all materials provided in the header section of provided SCSML document
+        /// </summary>
         public void LoadMaterials()
         {
-            try {
-                XmlNodeList mats = root.SelectNodes("materials");
+            // Attempt to select all nodes within the <materials> section of the header.
+            try
+            {
+                XmlNodeList mats = _rootNode.SelectNodes("materials");
                 if (mats == null)
                     throw new XmlException("Invalid SCSML: No material tags present in XML document.");
                 foreach (XmlNode matRoot in mats)
@@ -64,29 +74,28 @@ namespace SCSRaytracer
                 Console.WriteLine(e.ToString());
             }
         }
+
+        /// <summary>
+        /// Loads all objects provided in header section of provided SCSML document
+        /// </summary>
         public void LoadObjects()
         {
             try
             {
-                XmlNodeList objs = root.SelectNodes("objects");
-                if (objs == null)
+                XmlNodeList objects = _rootNode.SelectNodes("objects");
+                if (objects == null)
                     throw new XmlException("Invalid SCSML: No object tags present in XML document.");
-                foreach (XmlNode objRoot in objs) {
+                foreach (XmlNode objectRoot in objects) {
+                    
                     //Get the list of renderables
-                    XmlNodeList renderables = objRoot.SelectNodes("renderable");
+                    XmlNodeList renderables = objectRoot.SelectNodes("renderable");
 
                     foreach(XmlElement rendRoot in renderables)
                     {
                         RenderableObject rend = RenderableObject.LoadRenderableObject(rendRoot);
                         if (rend != null)
-                            w.objectList.Add(rend);
+                            _world.AddObject(rend);
                     }
-                    /*this.LoadPlanes(objRoot, 0);
-                    this.LoadSpheres(objRoot, 0);
-                    this.LoadToruses(objRoot, 0);
-                    this.LoadTrianglePrimitives(objRoot, 0);
-                    this.LoadBoxes(objRoot, 0);
-                    */
                 }
             }
             catch (XmlException e)
@@ -98,7 +107,7 @@ namespace SCSRaytracer
         {
             try
             {
-                XmlNode scene = root.SelectSingleNode("scene");
+                XmlNode scene = _rootNode.SelectSingleNode("scene");
                 if (scene == null)
                     throw new XmlException("No scene defined!");
 
@@ -111,7 +120,7 @@ namespace SCSRaytracer
                 {
                     RenderableObject myrend = RenderableObject.LoadRenderableObject(renderable);
                     if (myrend != null)
-                        w.add_Object(myrend);
+                        _world.AddObjectToScene(myrend);
                 }
             }
             catch (XmlException e)
@@ -172,7 +181,7 @@ namespace SCSRaytracer
                     }
                     catch (System.Exception e) { Console.WriteLine(e.ToString()); }
 
-                    w.materialList.Add(matte);
+                    _world.AddMaterial(matte);
                 }
                 else
                 {
@@ -246,7 +255,7 @@ namespace SCSRaytracer
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
 
-                    w.materialList.Add(phong);
+                    _world.AddMaterial(phong);
                 }
                 else
                 {
@@ -332,7 +341,7 @@ namespace SCSRaytracer
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
 
 
-                    w.materialList.Add(reflective);
+                    _world.AddMaterial(reflective);
                 }
                 else
                 {
@@ -347,42 +356,42 @@ namespace SCSRaytracer
         private void SetupWorldParameters(XmlElement scene)
         {
             //Setup world according to default parameters before doing anything.
-            w.vp.set_hres(GlobalVars.hres);
-            w.vp.set_vres(GlobalVars.vres);
-            w.vp.set_gamma(1.0f);
-            w.vp.set_pixel_size(1.0f);
-            w.vp.set_max_depth(5);
-            w.vp.set_samples(1);
-            w.vp.set_sampler(new RegularSampler(w.vp.numSamples));
-            w.vp.vpSampler.generate_samples();
-            w.set_camera(new PinholeCamera());
-            w.tracer = new RayCaster(w);
+            _world.CurrentViewPlane.HorizontalResolution = GlobalVars.H_RES;
+            _world.CurrentViewPlane.VerticalResolution = GlobalVars.V_RES;
+            _world.CurrentViewPlane.Gamma = 1.0f;
+            _world.CurrentViewPlane.PixelSize = 1.0f;
+            _world.CurrentViewPlane.MaximumRenderDepth = 5;
+            _world.CurrentViewPlane.NumSamples = 1;
+            _world.CurrentViewPlane.ViewPlaneSampler = new RegularSampler(_world.CurrentViewPlane.NumSamples);
+            _world.CurrentViewPlane.ViewPlaneSampler.GenerateSamples();
+            _world.Camera = new PinholeCamera();
+            _world.CurrentTracer = new RayCaster(_world);
 
             //Good to go, begin reading in parameters as provided
             string str_hres = scene.GetAttribute("hres");
             if (!str_hres.Equals(""))
             {
-                w.vp.set_hres(Convert.ToInt32(str_hres));
+                _world.CurrentViewPlane.HorizontalResolution = Convert.ToInt32(str_hres);
             }
             string str_vres = scene.GetAttribute("vres");
             if (!str_vres.Equals(""))
             {
-                w.vp.set_vres(Convert.ToInt32(str_vres));
+                _world.CurrentViewPlane.VerticalResolution = Convert.ToInt32(str_vres);
             }
             string str_gamma = scene.GetAttribute("gamma");
             if (!str_gamma.Equals(""))
             {
-                w.vp.set_gamma(Convert.ToSingle(str_gamma));
+                _world.CurrentViewPlane.Gamma = Convert.ToSingle(str_gamma);
             }
             string str_pixelsize = scene.GetAttribute("px");
             if (!str_pixelsize.Equals(""))
             {
-                w.vp.set_pixel_size(Convert.ToSingle(str_pixelsize));
+                _world.CurrentViewPlane.PixelSize = Convert.ToSingle(str_pixelsize);
             }
             string str_renderdepth = scene.GetAttribute("renderdepth");
             if (!str_pixelsize.Equals(""))
             {
-                w.vp.set_max_depth(Convert.ToInt32(str_renderdepth));
+                _world.CurrentViewPlane.MaximumRenderDepth = Convert.ToInt32(str_renderdepth);
             }
             string str_samples = scene.GetAttribute("multisample");
             if (!str_samples.Equals(""))
@@ -392,7 +401,7 @@ namespace SCSRaytracer
                 int sqrt_samples = (int)Math.Floor(Math.Sqrt(int_samples));
                 if (sqrt_samples * sqrt_samples == int_samples)
                 {
-                    w.vp.set_numSamples(int_samples);
+                    _world.CurrentViewPlane.NumSamples = int_samples;
                     
                 }
                 else
@@ -400,14 +409,14 @@ namespace SCSRaytracer
                     Console.WriteLine("Given number of samples (" + int_samples + ") is a not a square number, multisampling disabled.");
                 }
             }
-            GlobalVars.num_samples = w.vp.numSamples;
+            GlobalVars.NUM_SAMPLES = _world.CurrentViewPlane.NumSamples;
 
             string str_sampler = scene.GetAttribute("sampler");
             if (!str_sampler.Equals(""))
             {
-                w.vp.set_sampler(Sampler.LoadSampler(str_sampler));
+                _world.CurrentViewPlane.ViewPlaneSampler = Sampler.LoadSampler(str_sampler);
             }
-            GlobalVars.vp_sampler = w.vp.vpSampler;
+            GlobalVars.VIEWPLANE_SAMPLER = _world.CurrentViewPlane.ViewPlaneSampler;
 
             string str_algorithm = scene.GetAttribute("algorithm");
             if (!str_algorithm.Equals(""))
@@ -415,11 +424,11 @@ namespace SCSRaytracer
                 //Determine raytracing algorithm
                 if (str_algorithm.Equals("raycast"))
                 {
-                    w.tracer = new RayCaster(w);
+                    _world.CurrentTracer = new RayCaster(_world);
                 }
                 else if (str_algorithm.Equals("whitted"))
                 {
-                    w.tracer = new Whitted(w);
+                    _world.CurrentTracer = new Whitted(_world);
                 }
                 else
                 {
@@ -433,7 +442,7 @@ namespace SCSRaytracer
                 XmlNode node_cam = scene.SelectSingleNode("camera[@id=\"" + str_cam + "\"]");
                 if (node_cam != null)
                 {
-                    w.set_camera(Camera.LoadCamera((XmlElement)node_cam));
+                    _world.Camera = Camera.LoadCamera((XmlElement)node_cam);
                 }
                 else
                 {
@@ -446,7 +455,7 @@ namespace SCSRaytracer
             }
 
             //Cleanup
-            w.camera.compute_uvw();
+            _world.Camera.compute_uvw();
         }
         private void LoadLights(XmlElement scene)
         {
@@ -457,7 +466,7 @@ namespace SCSRaytracer
                 XmlNode node_amb = scene.SelectSingleNode("light[@id=\"" + str_amb + "\" and @type=\"ambient\"]");
                 if (node_amb != null)
                 {
-                    w.set_ambient_light(AmbientLight.LoadAmbient((XmlElement)node_amb));
+                    _world.AmbientLight = AmbientLight.LoadAmbient((XmlElement)node_amb);
                 }
                 else
                 {
@@ -471,7 +480,7 @@ namespace SCSRaytracer
             foreach (XmlNode light in light_list)
             {
                 Light toAdd = Light.LoadLight((XmlElement)light);
-                w.add_Light(toAdd);
+                _world.AddLight(toAdd);
             }
         }
     }

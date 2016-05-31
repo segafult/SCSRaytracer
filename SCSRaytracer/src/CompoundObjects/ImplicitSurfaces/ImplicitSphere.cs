@@ -28,7 +28,7 @@ namespace SCSRaytracer
 
         public override float evalF(Point3D p)
         {
-            Vector3 pretranslation = p.coords - disp;
+            Vector3 pretranslation = p.Coordinates - disp;
             Vector3 tmp = pretranslation * pretranslation;
             return tmp.X + tmp.Y + tmp.Z - r * r;
         }
@@ -37,7 +37,7 @@ namespace SCSRaytracer
         {
             //Translate the point
             cur = evalF(p);
-            return (p.coords - disp).Length() - r;
+            return (p.Coordinates - disp).Length() - r;
         }
     }
 }

@@ -42,7 +42,7 @@ namespace SCSRaytracer
             Vect3D rawNormal = v0 ^ v1;
 
             normal = new Normal(rawNormal);
-            normal.normalize();
+            normal.Normalize();
         }
         public Normal getNormal() { return normal; }
         public override bool hit(Ray r, float tmin)
@@ -51,20 +51,20 @@ namespace SCSRaytracer
             Point3D p1 = parent.vertices[index1];
             Point3D p2 = parent.vertices[index2];
 
-            float a = p0.coords.X - p1.coords.X;
-            float b = p0.coords.X - p2.coords.X;
-            float c = r.direction.coords.X;
-            float d = p0.coords.X - r.origin.coords.X;
+            float a = p0.X - p1.X;
+            float b = p0.X - p2.X;
+            float c = r.Direction.X;
+            float d = p0.X - r.Origin.X;
 
-            float e = p0.coords.Y - p1.coords.Y;
-            float f = p0.coords.Y - p2.coords.Y;
-            float g = r.direction.coords.Y;
-            float h = p0.coords.Y - r.origin.coords.Y;
+            float e = p0.Y - p1.Y;
+            float f = p0.Y - p2.Y;
+            float g = r.Direction.Y;
+            float h = p0.Y - r.Origin.Y;
 
-            float i = p0.coords.Z - p1.coords.Z;
-            float j = p0.coords.Z - p2.coords.Z;
-            float k = r.direction.coords.Z;
-            float l = p0.coords.Z - r.origin.coords.Z;
+            float i = p0.Z - p1.Z;
+            float j = p0.Z - p2.Z;
+            float k = r.Direction.Z;
+            float l = p0.Z - r.Origin.Z;
 
             float m = f * k - g * j;
             float n = h * k - g * l;
@@ -87,7 +87,7 @@ namespace SCSRaytracer
 
             //Hit!
             float t = invDenom * (a * p - b * rd + d * s);
-            if (t < GlobalVars.kEpsilon)
+            if (t < GlobalVars.K_EPSILON)
                 return false;
 
             return true;
@@ -97,12 +97,12 @@ namespace SCSRaytracer
             Point3D p0 = parent.vertices[index0];
             Point3D p1 = parent.vertices[index1];
             Point3D p2 = parent.vertices[index2];
-            float xmin = FastMath.min(FastMath.min(p0.coords.X, p1.coords.X), p2.coords.X) - GlobalVars.kEpsilon;
-            float xmax = FastMath.max(FastMath.max(p0.coords.X, p1.coords.X), p2.coords.X) + GlobalVars.kEpsilon;
-            float ymin = FastMath.min(FastMath.min(p0.coords.Y, p1.coords.Y), p2.coords.Y) - GlobalVars.kEpsilon;
-            float ymax = FastMath.max(FastMath.max(p0.coords.Y, p1.coords.Y), p2.coords.Y) + GlobalVars.kEpsilon;
-            float zmin = FastMath.min(FastMath.min(p0.coords.Z, p1.coords.Z), p2.coords.Z) - GlobalVars.kEpsilon;
-            float zmax = FastMath.max(FastMath.max(p0.coords.Z, p1.coords.Z), p2.coords.Z) + GlobalVars.kEpsilon;
+            float xmin = FastMath.min(FastMath.min(p0.X, p1.X), p2.X) - GlobalVars.K_EPSILON;
+            float xmax = FastMath.max(FastMath.max(p0.X, p1.X), p2.X) + GlobalVars.K_EPSILON;
+            float ymin = FastMath.min(FastMath.min(p0.Y, p1.Y), p2.Y) - GlobalVars.K_EPSILON;
+            float ymax = FastMath.max(FastMath.max(p0.Y, p1.Y), p2.Y) + GlobalVars.K_EPSILON;
+            float zmin = FastMath.min(FastMath.min(p0.Z, p1.Z), p2.Z) - GlobalVars.K_EPSILON;
+            float zmax = FastMath.max(FastMath.max(p0.Z, p1.Z), p2.Z) + GlobalVars.K_EPSILON;
             return new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
         }
     }

@@ -77,11 +77,11 @@ namespace SCSRaytracer
             e1 = v2 - v1;
             e2 = v3 - v1; //Vectors for the edges shared by vertex 1
 
-            P = r.direction ^ e2;
+            P = r.Direction ^ e2;
             det = e1 * P; //Determinant calculation
 
             //If determinant is almost zero, then ray is parallel
-            if(det > -GlobalVars.kEpsilon && det < GlobalVars.kEpsilon)
+            if(det > -GlobalVars.K_EPSILON && det < GlobalVars.K_EPSILON)
             {
                 return false;
             }
@@ -89,7 +89,7 @@ namespace SCSRaytracer
             inv_det = 1.0f / det;
 
             //Distance from v1 to ray origin
-            T = r.origin - v1;
+            T = r.Origin - v1;
 
             //U parameter calculation and test
             u = (T * P) * inv_det;
@@ -101,7 +101,7 @@ namespace SCSRaytracer
 
             Q = T ^ e1;
             //V parameter calculation and test
-            v = (r.direction * Q) * inv_det;
+            v = (r.Direction * Q) * inv_det;
             //if v is negative or v+u is greater than 1, then intersection is outside of triangle
             if(v < 0.0 || u+v > 1.0 )
             {
@@ -110,13 +110,13 @@ namespace SCSRaytracer
 
             t = e2 * Q * inv_det;
 
-            if(t > GlobalVars.kEpsilon && t < tmin)
+            if(t > GlobalVars.K_EPSILON && t < tmin)
             {
                 //Ray hit something and intersection is in front of camera
                 tmin = t;
                 //Calculate normal, and ensure it's facing the direction that the ray came from
                 Vect3D triNorm = (v2 - v1) ^ (v3 - v1);
-                float triDotProd = triNorm * r.direction;
+                float triDotProd = triNorm * r.Direction;
                 if(triDotProd < 0.0)
                 {
                     sr.normal = new Normal(triNorm);
@@ -125,8 +125,8 @@ namespace SCSRaytracer
                 {
                     sr.normal = new Normal(-triNorm);
                 }
-                sr.normal.normalize();
-                sr.hit_point_local = r.origin + t * r.direction;
+                sr.normal.Normalize();
+                sr.hit_point_local = r.Origin + t * r.Direction;
                 sr.obj_material = mat;
                 return true;
             }
@@ -147,11 +147,11 @@ namespace SCSRaytracer
             e1 = v2 - v1;
             e2 = v3 - v1; //Vectors for the edges shared by vertex 1
 
-            P = r.direction ^ e2;
+            P = r.Direction ^ e2;
             det = e1 * P; //Determinant calculation
 
             //If determinant is almost zero, then ray is parallel
-            if (det > -GlobalVars.kEpsilon && det < GlobalVars.kEpsilon)
+            if (det > -GlobalVars.K_EPSILON && det < GlobalVars.K_EPSILON)
             {
                 return false;
             }
@@ -159,7 +159,7 @@ namespace SCSRaytracer
             inv_det = 1.0f / det;
 
             //Distance from v1 to ray origin
-            T = r.origin - v1;
+            T = r.Origin - v1;
 
             //U parameter calculation and test
             u = (T * P) * inv_det;
@@ -171,7 +171,7 @@ namespace SCSRaytracer
 
             Q = T ^ e1;
             //V parameter calculation and test
-            v = (r.direction * Q) * inv_det;
+            v = (r.Direction * Q) * inv_det;
             //if v is negative or v+u is greater than 1, then intersection is outside of triangle
             if (v < 0.0 || u + v > 1.0)
             {
@@ -180,7 +180,7 @@ namespace SCSRaytracer
 
             t = e2 * Q * inv_det;
 
-            if (t > GlobalVars.kEpsilon && t < tmin)
+            if (t > GlobalVars.K_EPSILON && t < tmin)
             {
                 return true;
             }

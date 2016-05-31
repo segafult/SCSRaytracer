@@ -55,7 +55,7 @@ namespace SCSRaytracer
 
         public void translate(Vect3D trans)
         {
-            Matrix4x4 temp = Matrix4x4.CreateTranslation(trans.coords);
+            Matrix4x4 temp = Matrix4x4.CreateTranslation(trans.Coordinates);
             Matrix4x4 inv_temp;
             Matrix4x4.Invert(temp, out inv_temp);
 
@@ -73,7 +73,7 @@ namespace SCSRaytracer
         }
         public void rotate(Vect3D rot)
         {
-            rotate(rot.coords.X, rot.coords.Y, rot.coords.Z);
+            rotate(rot.X, rot.Y, rot.Z);
         }
         public void rotate(float x, float y, float z)
         {
@@ -95,7 +95,7 @@ namespace SCSRaytracer
         }
         public void scale(Vect3D scale)
         {
-            Matrix4x4 temp = Matrix4x4.CreateScale(scale.coords);
+            Matrix4x4 temp = Matrix4x4.CreateScale(scale.Coordinates);
             Matrix4x4 inv_temp;
 
             Matrix4x4.Invert(temp, out inv_temp);
@@ -123,14 +123,14 @@ namespace SCSRaytracer
         {
             //Apply inverse transformation to incident ray and test for intersection
             Ray tfRay = new Ray(r);
-            tfRay.origin = inv_net_mat * r.origin;
-            tfRay.direction = inv_net_mat * r.direction;
+            tfRay.Origin = inv_net_mat * r.Origin;
+            tfRay.Direction = inv_net_mat * r.Direction;
 
             if(payload.hit(tfRay, ref tmin, ref sr))
             {
                 //Transform the computed normal into worldspace
                 sr.normal = inv_net_mat * sr.normal;
-                sr.normal.normalize();
+                sr.normal.Normalize();
                 if(mat != null)
                 {
                     sr.obj_material = mat;
@@ -147,8 +147,8 @@ namespace SCSRaytracer
         {
             //Apply inverse transformation to incident ray and test for intersection
             Ray tfRay = new Ray(r);
-            tfRay.origin = inv_net_mat * r.origin;
-            tfRay.direction = inv_net_mat * r.direction;
+            tfRay.Origin = inv_net_mat * r.Origin;
+            tfRay.Direction = inv_net_mat * r.Direction;
 
             if (payload.hit(tfRay, tmin))
             {
@@ -204,22 +204,22 @@ namespace SCSRaytracer
                 points[i] = net_mat * points[i];
             }
 
-            float xmin = GlobalVars.kHugeValue;
-            float xmax = -GlobalVars.kHugeValue;
-            float ymin = GlobalVars.kHugeValue;
-            float ymax = -GlobalVars.kHugeValue;
-            float zmin = GlobalVars.kHugeValue;
-            float zmax = -GlobalVars.kHugeValue;
+            float xmin = GlobalVars.K_HUGE_VALUE;
+            float xmax = -GlobalVars.K_HUGE_VALUE;
+            float ymin = GlobalVars.K_HUGE_VALUE;
+            float ymax = -GlobalVars.K_HUGE_VALUE;
+            float zmin = GlobalVars.K_HUGE_VALUE;
+            float zmax = -GlobalVars.K_HUGE_VALUE;
 
             //Find xmin, xmax, ymin, ymax, and zmin, zmax
             for(int i = 0; i < 8; i++)
             {
-                if (points[i].coords.X < xmin) xmin = points[i].coords.X;
-                if (points[i].coords.X > xmax) xmax = points[i].coords.X;
-                if (points[i].coords.Y < ymin) ymin = points[i].coords.Y;
-                if (points[i].coords.Y > ymax) ymax = points[i].coords.Y;
-                if (points[i].coords.Z < zmin) zmin = points[i].coords.Z;
-                if (points[i].coords.Z > zmax) zmax = points[i].coords.Z;
+                if (points[i].X < xmin) xmin = points[i].X;
+                if (points[i].X > xmax) xmax = points[i].X;
+                if (points[i].Y < ymin) ymin = points[i].Y;
+                if (points[i].Y > ymax) ymax = points[i].Y;
+                if (points[i].Z < zmin) zmin = points[i].Z;
+                if (points[i].Z > zmax) zmax = points[i].Z;
             }
 
             //Create bounding box based on transformed payload bounding box
@@ -234,13 +234,13 @@ namespace SCSRaytracer
             {
                 if (def.HasAttribute("mat"))
                 {
-                    toReturn.setMaterial(GlobalVars.worldref.getMaterialById(def.GetAttribute("mat")));
+                    toReturn.setMaterial(GlobalVars.WORLD_REF.GetMaterialByID(def.GetAttribute("mat")));
                 }
 
                 if (def.HasAttribute("obj"))
                 {
                     //Verify that object definition has been previously defined.
-                    RenderableObject objRef = GlobalVars.worldref.getObjectById(def.GetAttribute("obj"));
+                    RenderableObject objRef = GlobalVars.WORLD_REF.GetObjectByID(def.GetAttribute("obj"));
                     if (objRef != null)
                     {
                         toReturn.setHandle(objRef);

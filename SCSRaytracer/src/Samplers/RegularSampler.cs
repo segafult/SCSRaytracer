@@ -23,24 +23,24 @@ namespace SCSRaytracer
 
         }
 
-        public override void generate_samples()
+        public override void GenerateSamples()
         {
-            int n = (int)Math.Sqrt(numsamples);
-            bitmask = (ulong)numsamples - 1;
+            int n = (int)Math.Sqrt(_numSamples);
+            _bitMask = (ulong)_numSamples - 1;
 
-            for(int setloop = 0; setloop<numsets; setloop++)
+            for(int setloop = 0; setloop<_numSets; setloop++)
             {
                 for(int j = 0; j < n; j++)
                 {
                     for(int k = 0; k < n; k++)
                     {
-                        samples.Add(new Point2D((float)k / (float)n, (float)j / (float)n));
+                        _samples.Add(new Point2D((float)k / (float)n, (float)j / (float)n));
                     }
                 }
             }
         }
 
-        public override Sampler clone()
+        public override Sampler Clone()
         {
             return new RegularSampler(this);
         }

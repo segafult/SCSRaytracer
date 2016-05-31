@@ -10,106 +10,140 @@ using System.Xml;
 
 namespace SCSRaytracer
 {
+    /// <summary>
+    /// Simple pinhole camera with no depth of field simulation
+    /// </summary>
     class PinholeCamera : Camera
     {
-        private float d; //Distance between pinhole and viewplane
+        private float pinholeViewPlaneDistance; //Distance between pinhole and viewplane
 
+        public float ViewPlaneDistance
+        {
+            get
+            {
+                return pinholeViewPlaneDistance;
+            }
+            set
+            {
+                pinholeViewPlaneDistance = value;
+            }
+        }
+
+        /// <summary>
+        /// Default constructor, pinhole viewpane distance of 850
+        /// </summary>
         public PinholeCamera() : base()
         {
-            d = 850;
-        }
-        public void setVdp(float distance)
-        {
-            d = distance;
+            pinholeViewPlaneDistance = 850;
         }
 
-        public override void render_scene(World w)
+        /// <summary>
+        /// Renders the world on a single thread [deprecated, use RenderSceneMultiThreaded]
+        /// </summary>
+        /// <param name="world">World reference</param>
+        public override void RenderScene(World worldRef)
         {
-            RGBColor L;
-            ViewPlane vp = w.vp;
-            Ray ray = new Ray(eye,new Vect3D(0,0,0));
+            RGBColor lightingSum;
+            ViewPlane vp = worldRef.CurrentViewPlane;
+            Ray ray = new Ray(_eye,new Vect3D(0,0,0));
             int depth = 0; //Depth of recursion
             Point2D sp = new Point2D(); //Sample point on a unit square
             Point2D pp = new Point2D(); ; //Sample point translated into screen space
 
-            w.open_window(vp.hres, vp.vres);
-            vp.s /= zoom;
+            worldRef.OpenWindow(vp.HorizontalResolution, vp.VerticalResolution);
+            vp.PixelSize /= _zoom;
 
-            for(int row = 0; row < vp.vres; row++)
+            for(int row = 0; row < vp.VerticalResolution; row++)
             {
-                for(int column = 0; column < vp.hres; column++)
+                for(int column = 0; column < vp.HorizontalResolution; column++)
                 {
-                    L = GlobalVars.color_black; //Start with no color, everything is additive
+                    lightingSum = GlobalVars.COLOR_BLACK; //Start with no color, everything is additive
 
-                    for(int sample = 0; sample < vp.numSamples; sample ++)
+                    for(int sample = 0; sample < vp.NumSamples; sample ++)
                     {
-                        sp = w.vp.vpSampler.sample_unit_square();
-                        pp.coords.X = w.vp.s * (column - 0.5f * vp.hres + sp.coords.X);
-                        pp.coords.Y = w.vp.s * (row - 0.5f * vp.vres + sp.coords.Y);
-                        ray.direction = ray_direction(pp);
-                        L = L + w.tracer.trace_ray(ray, depth);
+                        sp = worldRef.CurrentViewPlane.ViewPlaneSampler.SampleUnitSquare();
+                        pp.coords.X = worldRef.CurrentViewPlane.PixelSize * (column - 0.5f * vp.HorizontalResolution + sp.coords.X);
+                        pp.coords.Y = worldRef.CurrentViewPlane.PixelSize * (row - 0.5f * vp.VerticalResolution + sp.coords.Y);
+                        ray.Direction = GetRayDirection(pp);
+                        lightingSum = lightingSum + worldRef.CurrentTracer.trace_ray(ray, depth);
                     }
 
-                    L /= vp.numSamples;
-                    L *= exposure_time;
-                    w.display_pixel(row, column, L);
+                    lightingSum /= vp.NumSamples;
+                    lightingSum *= _exposureTime;
+                    worldRef.DisplayPixel(row, column, lightingSum);
 
                     //Poll events in live render view
-                    w.poll_events();
+                    worldRef.PollEvents();
                 }
             }
         }
 
         /// <summary>
-        /// Subroutine for rendering a given rectangular fragment of a scene, called when multithreading.
+        /// Renders a single rectangular chunk of the scene
         /// </summary>
-        public override void render_scene_fragment(World w, int x1, int x2, int y1, int y2, int threadNo)
+        /// <param name="worldRef">Reference to the world</param>
+        /// <param name="xCoord1">Smallest x coordinate</param>
+        /// <param name="xCoord2">Largest x coordinate</param>
+        /// <param name="yCoord1">Smallest y coordinate</param>
+        /// <param name="yCoord2">Largest y coordinate</param>
+        /// <param name="threadNum">Thread number</param>
+        public override void RenderSceneFragment(World worldRef, int xCoord1, int xCoord2, int yCoord1, int yCoord2, int threadNum)
         {
             //To avoid clashes with other threads accessing sampler, clone the main world sampler
-            Sampler localSampler = w.vp.vpSampler.clone();
+            Sampler localSampler = worldRef.CurrentViewPlane.ViewPlaneSampler.Clone();
 
             RGBColor L;
-            ViewPlane vp = w.vp;
-            Ray ray = new Ray(eye, new Vect3D(0, 0, 0));
+            ViewPlane vp = worldRef.CurrentViewPlane;
+            Ray ray = new Ray(_eye, new Vect3D(0, 0, 0));
             int depth = 0; //Depth of recursion
-            Point2D sp = new Point2D(); //Sample point on a unit square
-            Point2D pp = new Point2D(); ; //Sample point translated into screen space
-            int height = y2 - y1;
-            int width = x2 - x1;
+            Point2D unitSquareSample = new Point2D(); //Sample point on a unit square
+            Point2D sampleInScreenSpace = new Point2D(); ; //Sample point translated into screen space
+            int height = yCoord2 - yCoord1;
+            int width = xCoord2 - xCoord1;
 
             for (int row = 0; row < height; row++)
             {
                 for (int column = 0; column < width; column++)
                 {
-                    L = GlobalVars.color_black; //Start with no color, everything is additive
+                    L = GlobalVars.COLOR_BLACK; //Start with no color, everything is additive
 
-                    for (int sample = 0; sample < vp.numSamples; sample++)
+                    for (int sample = 0; sample < vp.NumSamples; sample++)
                     {
-                        sp = localSampler.sample_unit_square();
-                        pp.coords.X = w.vp.s * (column + x1 - 0.5f * vp.hres + sp.coords.X);
-                        pp.coords.Y = w.vp.s * (row + y1 - 0.5f * vp.vres + sp.coords.Y);
-                        ray.direction = ray_direction(pp);
-                        L = L + w.tracer.trace_ray(ray, depth);
+                        unitSquareSample = localSampler.SampleUnitSquare();
+                        sampleInScreenSpace.coords.X = worldRef.CurrentViewPlane.PixelSize * (column + xCoord1 - 0.5f * vp.HorizontalResolution + unitSquareSample.coords.X);
+                        sampleInScreenSpace.coords.Y = worldRef.CurrentViewPlane.PixelSize * (row + yCoord1 - 0.5f * vp.VerticalResolution + unitSquareSample.coords.Y);
+                        ray.Direction = GetRayDirection(sampleInScreenSpace);
+                        L = L + worldRef.CurrentTracer.trace_ray(ray, depth);
                     }
 
-                    L /= vp.numSamples;
-                    L *= exposure_time;
+                    L /= vp.NumSamples;
+                    L *= _exposureTime;
 
-                    w.display_pixel(row + y1, column + x1, L);
+                    worldRef.DisplayPixel(row + yCoord1, column + xCoord1, L);
                 }
             }
 
-            dequeue_next_render_fragment();
+            DequeueNextRenderFragment();
         }
 
+        /// <summary>
+        /// Gets the normalized direction of a ray towards a given point starting at the origin of the camera
+        /// </summary>
+        /// <param name="point">Point to cast ray towards</param>
+        /// <returns>Normalized direction</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Vect3D ray_direction(Point2D p)
+        private Vect3D GetRayDirection(Point2D point)
         {
-            Vect3D dir = p.coords.X * u + p.coords.Y * v - d * w;
-            dir.normalize();
+            Vect3D dir = point.coords.X * u + point.coords.Y * v - pinholeViewPlaneDistance * w;
+            dir.Normalize();
             return dir;
         }
 
+        /// <summary>
+        /// XML Load function
+        /// </summary>
+        /// <param name="camRoot">Root element of camera tag</param>
+        /// <returns>Fully constructed PinholeCamera</returns>
         public static PinholeCamera LoadPinholeCamera(XmlElement camRoot)
         {
             PinholeCamera toReturn = new PinholeCamera();
@@ -119,7 +153,7 @@ namespace SCSRaytracer
             {
                 string str_vdp = ((XmlText)node_vdp.FirstChild).Data;
                 float vdp = (float)Convert.ToSingle(str_vdp);
-                toReturn.setVdp(vdp);
+                toReturn.ViewPlaneDistance = vdp;
             }
             return toReturn;
         }

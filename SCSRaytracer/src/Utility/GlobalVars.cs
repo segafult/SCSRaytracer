@@ -10,31 +10,29 @@ namespace SCSRaytracer
 {
     sealed class GlobalVars
     {
-        public const float kEpsilon = 0.0e-6f;
-        public const float shadKEpsilon = 1.0f;
-        public const float kHugeValue = 1.0e6f;
-        public const float invPI = 1.0f / (float)Math.PI;
 
-        static public bool verbose = true;
-        static public string inFile = null;
-        static public string outFile = null;
+        public const float K_EPSILON = 0.0e-6f; // very small value to prevent salt and pepper noise
+        public const float SHAD_K_EPSILON = 1.0f; // very small value to prevent salt and pepper noise, specific to shaders
+        public const float K_HUGE_VALUE = 1.0e6f; // very large value 
+        public const float INVERSE_PI = 1.0f / (float)Math.PI; // inverse PI, speeds up calculations involving division by PI
+
+        // Global variables set by command line parameters
+        static public bool verbose = true; // verbose output in terminal while loading scene
+        static public string inFile = null; // input XML file
+        static public string outFile = null; // output BMP file
         
+        // Frequently referenced colors stored as constants
+        static public readonly RGBColor COLOR_BLACK = new RGBColor(0, 0, 0); // black
+        static public readonly RGBColor COLOR_RED = new RGBColor(1.0f, 0, 0); // red
+        static public readonly int H_RES = 800; // default horizontal resolution
+        static public readonly int V_RES = 600; // default vertical resolution
+        static public readonly int FRAGMENT_SIZE = 64; // default scene fragment size
+        static public int NUM_SAMPLES; // samples per pixel. set as constant 
+        static public Sampler VIEWPLANE_SAMPLER; // reference to viewplane sampler
+        static public World WORLD_REF; // reference to the world entity
 
-        static public readonly RGBColor color_black = new RGBColor(0, 0, 0);
-        static public readonly RGBColor color_red = new RGBColor(1.0f, 0, 0);
-        static public readonly int hres = 800;
-        static public readonly int vres = 600;
-        static public readonly int fragment_size = 64;
-        static public int num_samples;
-        static public Sampler vp_sampler;
-        static public World worldref;
-
-		static public bool should_close = false;
-
-        //static public float cam_zcoord = 500;
-        //static public float lookat_zcoord= 0;
-
-        //static public string path = "E:\\renderimages\\";
-        static public int frameno = 0;
+        // Animation related global variables
+		static public bool should_close = false; // flag for if rendering should end
+        static public int frameno = 0; // current frame number
     }
 }

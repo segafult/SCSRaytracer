@@ -38,9 +38,9 @@ namespace SCSRaytracer
         public override RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo)
         {
             if (cd_tex == null)
-                return (kd * cd * GlobalVars.invPI);
+                return (kd * cd * GlobalVars.INVERSE_PI);
             else
-                return (kd * cd_tex.getColor(sr) * GlobalVars.invPI);
+                return (kd * cd_tex.getColor(sr) * GlobalVars.INVERSE_PI);
         }
         public override RGBColor rho(ShadeRec sr, Vect3D wo)
         {

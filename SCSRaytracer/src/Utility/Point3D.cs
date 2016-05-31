@@ -16,35 +16,82 @@ namespace SCSRaytracer
     struct Point3D
     {
         //public float xcoord, ycoord, zcoord;
-        public Vector3 coords;
+        private Vector3 _coords;
+
+        // accessors
+        public Vector3 Coordinates
+        {
+            get
+            {
+                return _coords;
+            }
+            set
+            {
+                _coords = value;
+            }
+        }
+        public float X
+        {
+            get
+            {
+                return _coords.X;
+            }
+            set
+            {
+                _coords.X = value;
+            }
+        }
+        public float Y
+        {
+            get
+            {
+                return _coords.Y;
+            }
+            set
+            {
+                _coords.Y = value;
+            }
+        }
+        public float Z
+        {
+            get
+            {
+                return _coords.Z;
+            }
+            set
+            {
+                _coords.Z = value;
+            }
+        }
+
         //Constructors
         //Default constructor at origin
         public Point3D(float x, float y, float z)
         {
-            coords = new Vector3(x, y, z);
+            _coords = new Vector3(x, y, z);
         }
 
-        public Point3D(Vector3 v)
+        public Point3D(Vector3 vector)
         {
-            coords = v;
+            _coords = vector;
         }
         //Copy constructor
-        public Point3D(Point3D p)
+        public Point3D(Point3D point)
         {
-            coords = p.coords;
+            _coords = point.Coordinates;
         }
-        public Point3D(Vect3D v)
+        public Point3D(Vect3D vector)
         {
-            coords = v.coords;
+            _coords = vector.Coordinates;
         }
-        public Point3D(Normal n)
+        public Point3D(Normal normal)
         {
-            coords = n.coords;
+            _coords = normal.Coordinates;
         }
 
         public override string ToString()
         {
-            return "[" + coords.X +"," + coords.Y + "," + coords.Z + "]";
+            return "[" + Coordinates.X +"," + Coordinates.Y + "," + Coordinates.Z + "]";
         }
 
         //Generators
@@ -86,37 +133,37 @@ namespace SCSRaytracer
         /// 
         //Addition of a vector to a point
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Point3D operator +(Point3D a, Vect3D u)
+        public static Point3D operator +(Point3D point, Vect3D vector)
         {
-            return new Point3D(a.coords + u.coords);
+            return new Point3D(point.Coordinates + vector.Coordinates);
         }
 
         //Subtraction of a vector from a point
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Point3D operator -(Point3D a, Vect3D u)
+        public static Point3D operator -(Point3D point, Vect3D vector)
         {
-            return new Point3D(a.coords - u.coords);
+            return new Point3D(point.Coordinates - vector.Coordinates);
         }
 
         //Addition of a normal to a point (for shadow calculations)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Point3D operator +(Point3D a, Normal n)
+        public static Point3D operator +(Point3D point, Normal normal)
         {
-            return new Point3D(a.coords + n.coords);
+            return new Point3D(point.Coordinates + normal.Coordinates);
         }
 
         //Displacement vector (subtraction of a point from a point
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vect3D operator -(Point3D a, Point3D b)
+        public static Vect3D operator -(Point3D point1, Point3D point2)
         {
-            return new Vect3D(a.coords-b.coords);
+            return new Vect3D(point1.Coordinates-point2.Coordinates);
         }
 
         //Multiplication of a point by a matrix
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Point3D operator *(Matrix4x4 m, Point3D p)
+        public static Point3D operator *(Matrix4x4 matrix, Point3D point)
         {
-            return new Point3D(Vector3.Transform(p.coords, m));
+            return new Point3D(Vector3.Transform(point.Coordinates, matrix));
         }
     }
 }

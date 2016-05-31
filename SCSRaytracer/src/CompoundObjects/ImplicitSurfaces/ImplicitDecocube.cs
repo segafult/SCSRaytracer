@@ -29,7 +29,7 @@ namespace SCSRaytracer
         }
         public override float evalF(Point3D p)
         {
-            Vector3 sqrd = p.coords * p.coords;
+            Vector3 sqrd = p.Coordinates * p.Coordinates;
             Vector3 minusone = sqrd - new Vector3(1);
             float zeropoint8sqr = 0.8f * 0.8f;
 

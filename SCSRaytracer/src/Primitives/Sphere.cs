@@ -12,19 +12,42 @@ namespace SCSRaytracer
 {
     sealed class Sphere : RenderableObject
     {
-        private Point3D c;
-        private float r;
+        private Point3D _center;
+        private float _radius;
+
+        public Point3D Center
+        {
+            get
+            {
+                return _center;
+            }
+            set
+            {
+                _center = new Point3D(value);
+            }
+        }
+        public float Radius
+        {
+            get
+            {
+                return _radius;
+            }
+            set
+            {
+                _radius = value;
+            }
+        }
 
         //Constructors
         public Sphere()
         {
-            c = new Point3D(0, 0, 0);
-            r = 1.0f;
+            _center = new Point3D(0, 0, 0);
+            _radius = 1.0f;
         }
         public Sphere(Point3D center, float radius)
         {
-            c = new Point3D(center);
-            r = radius;
+            _center = new Point3D(center);
+            _radius = radius;
         }
 
         public override string ToString()
@@ -32,17 +55,21 @@ namespace SCSRaytracer
             return "Sphere primitive:\n" +
                 "  ID: " + id + "\n" +
                 "  Mat: " + this.getMaterial().id + "\n" +
-                "  c: " + c.ToString() + "\n" +
-                "  r: " + r;
+                "  c: " + _center.ToString() + "\n" +
+                "  r: " + _radius;
         }
+
+        /*
         public void set_center(Point3D center)
         {
-            c = new Point3D(center.coords.X, center.coords.Y, center.coords.Z);
+            _center = new Point3D(center.X, center.Y, center.Z);
         }
+        
         public void set_radius(float radius)
         {
-            r = radius;
+            _radius = radius;
         }
+        */
         /// <summary>
         /// Determines if given ray r intersects sphere.
         /// </summary>
@@ -54,9 +81,9 @@ namespace SCSRaytracer
         {
             float t;
             //Store variables locally to minimize member accesses
-            Point3D rorigin = ray.origin;
-            Vect3D rdirection = ray.direction;
-            Vect3D temp = rorigin - this.c;
+            Point3D rorigin = ray.Origin;
+            Vect3D rdirection = ray.Direction;
+            Vect3D temp = rorigin - this._center;
             //Rays are unit vectors
             //Intersection with a sphere is a quadratic equation (at^2 + bt + c = 0)
             //a = d*d , d = ray direction
@@ -64,7 +91,7 @@ namespace SCSRaytracer
             //c = (o-c)*(o-c)-r^2, o = ray origin, c = sphere center, r = sphere radius
             float a = rdirection * rdirection;
             float b = 2.0f * temp * rdirection;
-            float cv = (temp * temp) - (r*r);
+            float cv = (temp * temp) - (_radius*_radius);
 
             //Find discriminant, d = b^2 - 4ac
             //If d < 0, no intersection, if d = 0, one intersection, if d > 0, two intersections
@@ -80,12 +107,12 @@ namespace SCSRaytracer
                 float invdenominator = 1.0f/(2.0f * a);
 
                 t = (-b - e) * invdenominator; //Solve quadratic equation for smallest value
-                if (t > GlobalVars.kEpsilon)
+                if (t > GlobalVars.K_EPSILON)
                 {
                     tmin = t;
-                    sr.normal = new Normal((temp + t * rdirection) / r);
+                    sr.normal = new Normal((temp + t * rdirection) / _radius);
                     //Reverse the normal if ray originated inside the sphere
-                    if ((rorigin - c).coords.Length() < r)
+                    if ((rorigin - _center).Coordinates.Length() < _radius)
                     {
                         sr.normal = -sr.normal;
                     }
@@ -95,12 +122,12 @@ namespace SCSRaytracer
                 }
 
                 t = (-b + e) * invdenominator; //Solve quadratic equation for largest value
-                if(t > GlobalVars.kEpsilon)
+                if(t > GlobalVars.K_EPSILON)
                 {
                     tmin = t;
-                    sr.normal = new Normal((temp + t * rdirection) / r);
+                    sr.normal = new Normal((temp + t * rdirection) / _radius);
                     //Reverse the normal if the ray originated from inside the sphere.
-                    if((rorigin-c).coords.Length() < r)
+                    if((rorigin-_center).Coordinates.Length() < _radius)
                     {
                         sr.normal = -sr.normal;
                     }
@@ -113,14 +140,21 @@ namespace SCSRaytracer
             //Codepath shouldn't get here
             return false;
         }
+
+        /// <summary>
+        /// Hit function for uniform grid optimization
+        /// </summary>
+        /// <param name="ray">Ray to intersect</param>
+        /// <param name="tmin">Minimum distance for hit</param>
+        /// <returns>True if ray intersects sphere, false if it does not</returns>
         public override bool hit(Ray ray, float tmin)
         {
             float t;
 
             //Store variables locally to minimize member accesses
-            Point3D rorigin = ray.origin;
-            Vect3D rdirection = ray.direction;
-            Vect3D temp = rorigin - this.c;
+            Point3D rorigin = ray.Origin;
+            Vect3D rdirection = ray.Direction;
+            Vect3D temp = rorigin - this._center;
 
             //Rays are unit vectors
             //Intersection with a sphere is a quadratic equation (at^2 + bt + c = 0)
@@ -129,7 +163,7 @@ namespace SCSRaytracer
             //c = (o-c)*(o-c)-r^2, o = ray origin, c = sphere center, r = sphere radius
             float a = rdirection * rdirection;
             float b = 2.0f * temp * rdirection;
-            float cv = (temp * temp) - (r * r);
+            float cv = (temp * temp) - (_radius * _radius);
 
             //Find discriminant, d = b^2 - 4ac
             //If d < 0, no intersection, if d = 0, one intersection, if d > 0, two intersections
@@ -144,13 +178,13 @@ namespace SCSRaytracer
                 float e = (float)Math.Sqrt(d);
                 float invdenominator = 1.0f / (2.0f * a);
                 t = (-b - e) * invdenominator; //Solve quadratic equation for smallest value
-                if (t > GlobalVars.kEpsilon && t < tmin)
+                if (t > GlobalVars.K_EPSILON && t < tmin)
                 {
                     return true;
                 }
 
                 t = (-b + e) * invdenominator; //Solve quadratic equation for largest value
-                if (t > GlobalVars.kEpsilon && t < tmin)
+                if (t > GlobalVars.K_EPSILON && t < tmin)
                 {
                     return true;
                 }
@@ -160,6 +194,11 @@ namespace SCSRaytracer
             return false;
         }
 
+        /// <summary>
+        /// XML Loader function, instantiates sphere based on sphere definition in XML file
+        /// </summary>
+        /// <param name="def">XML Element in the DOM document tree</param>
+        /// <returns>Handle for instantiated sphere</returns>
         public static Sphere LoadSphere(XmlElement def)
         {
             Sphere toReturn = new Sphere();
@@ -172,7 +211,7 @@ namespace SCSRaytracer
                 Point3D cObj = Point3D.FromCsv(cText);
                 //if (cObj != null)
                 //{
-                    toReturn.set_center(cObj);
+                toReturn.Center = cObj;
                 //}
             }
 
@@ -183,7 +222,7 @@ namespace SCSRaytracer
                 if (r != null)
                 {
                     float rDouble = Convert.ToSingle(((XmlText)r.FirstChild).Data);
-                    toReturn.set_radius(rDouble);
+                    toReturn.Radius = rDouble;
                 }
             }
             catch (System.FormatException e)
@@ -196,7 +235,7 @@ namespace SCSRaytracer
 
         public override BoundingBox get_bounding_box()
         {
-            return new BoundingBox(c.coords.X - r, c.coords.X + r, c.coords.Y - r, c.coords.Y + r, c.coords.Z - r, c.coords.Z + r);
+            return new BoundingBox(_center.X - _radius, _center.X + _radius, _center.Y - _radius, _center.Y + _radius, _center.Z - _radius, _center.Z + _radius);
         }
     }
 }

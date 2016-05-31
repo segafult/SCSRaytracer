@@ -39,16 +39,16 @@ namespace SCSRaytracer
             Point3D pmin = min_coordinates();
             Point3D pmax = max_coordinates();
 
-            bbox.c0 = pmin.coords;
-            bbox.c1 = pmax.coords;
+            bbox.c0 = pmin.Coordinates;
+            bbox.c1 = pmax.Coordinates;
             //bbox.x0 = pmin.coords.X; bbox.y0 = pmin.coords.Y; bbox.z0 = pmin.coords.Z;
             //bbox.x1 = pmax.coords.X; bbox.y1 = pmax.coords.Y; bbox.z1 = pmax.coords.Z;
 
             int numobjs = objs.Count;
             //Find width of grid structure
-            float wx = pmax.coords.X - pmin.coords.X;
-            float wy = pmax.coords.Y - pmin.coords.Y;
-            float wz = pmax.coords.Z - pmin.coords.Z;
+            float wx = pmax.X - pmin.X;
+            float wy = pmax.Y - pmin.Y;
+            float wz = pmax.Z - pmin.Z;
             float multiplier = 2.0f; //For approximately 8x the number of cells as objects.
 
             //Calculate number of cells according to formulae given by Shirley (2000)
@@ -86,12 +86,12 @@ namespace SCSRaytracer
                 //Find the corners of the bounding box in terms of cell indices of the grid
                 //According to the mathematical relationship f(p) = (px - p0x)/(p1x-p0x) [0.0,1.0]
                 //index = nf(p)
-                int ixmin = (int)clamp((object_bbox.c0.X - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
-                int iymin = (int)clamp((object_bbox.c0.Y - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
-                int izmin = (int)clamp((object_bbox.c0.Z - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
-                int ixmax = (int)clamp((object_bbox.c1.X - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
-                int iymax = (int)clamp((object_bbox.c1.Y - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
-                int izmax = (int)clamp((object_bbox.c1.Z - pmin.coords.Z) * nz / (pmax.coords.Z - pmin.coords.Z), 0, nz - 1);
+                int ixmin = (int)clamp((object_bbox.c0.X - pmin.X) * nx / (pmax.X - pmin.X), 0, nx - 1);
+                int iymin = (int)clamp((object_bbox.c0.Y - pmin.Y) * ny / (pmax.Y - pmin.Y), 0, ny - 1);
+                int izmin = (int)clamp((object_bbox.c0.Z - pmin.Z) * nz / (pmax.Z - pmin.Z), 0, nz - 1);
+                int ixmax = (int)clamp((object_bbox.c1.X - pmin.X) * nx / (pmax.X - pmin.X), 0, nx - 1);
+                int iymax = (int)clamp((object_bbox.c1.Y - pmin.Y) * ny / (pmax.Y - pmin.Y), 0, ny - 1);
+                int izmax = (int)clamp((object_bbox.c1.Z - pmin.Z) * nz / (pmax.Z - pmin.Z), 0, nz - 1);
 
                 //int ixmin = (int)clamp((object_bbox.x0 - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
                 //int iymin = (int)clamp((object_bbox.y0 - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
@@ -142,12 +142,12 @@ namespace SCSRaytracer
         
         public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
-            float ox = r.origin.coords.X;
-            float oy = r.origin.coords.Y;
-            float oz = r.origin.coords.Z;
-            float dx = r.direction.coords.X;
-            float dy = r.direction.coords.Y;
-            float dz = r.direction.coords.Z;
+            float ox = r.Origin.X;
+            float oy = r.Origin.Y;
+            float oz = r.Origin.Z;
+            float dx = r.Direction.X;
+            float dy = r.Direction.Y;
+            float dz = r.Direction.Z;
 
             float x0 = bbox.c0.X;
             float y0 = bbox.c0.Y;
@@ -209,7 +209,7 @@ namespace SCSRaytracer
 
             //Initial cell coordinates
             int ix, iy, iz;
-            if(bbox.inside(r.origin))
+            if(bbox.inside(r.Origin))
             {
                 ix = (int)clamp((ox - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray origin if inside
                 iy = (int)clamp((oy - y0) * ny / (y1 - y0), 0, ny - 1);
@@ -217,10 +217,10 @@ namespace SCSRaytracer
             }
             else
             {
-                Point3D p = r.origin + t0 * r.direction;
-                ix = (int)clamp((p.coords.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
-                iy = (int)clamp((p.coords.Y - y0) * ny / (y1 - y0), 0, ny - 1);
-                iz = (int)clamp((p.coords.Z - z0) * nz / (z1 - z0), 0, nz - 1);
+                Point3D p = r.Origin + t0 * r.Direction;
+                ix = (int)clamp((p.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
+                iy = (int)clamp((p.Y - y0) * ny / (y1 - y0), 0, ny - 1);
+                iz = (int)clamp((p.Z - z0) * nz / (z1 - z0), 0, nz - 1);
             }
 
             //Get increments for ray marching
@@ -247,7 +247,7 @@ namespace SCSRaytracer
             //Avoid divide by zero error
             if(dx == 0.0)
             {
-                tx_next = GlobalVars.kHugeValue;
+                tx_next = GlobalVars.K_HUGE_VALUE;
                 ix_step = -1;
                 ix_stop = -1;
             }
@@ -267,7 +267,7 @@ namespace SCSRaytracer
             //Avoid divide by zero error
             if(dy == 0.0)
             {
-                ty_next = GlobalVars.kHugeValue;
+                ty_next = GlobalVars.K_HUGE_VALUE;
                 iy_step = -1;
                 iy_stop = -1;
             }
@@ -287,7 +287,7 @@ namespace SCSRaytracer
             //Avoid divide by zero error
             if(dz == 0.0)
             {
-                tz_next = GlobalVars.kHugeValue;
+                tz_next = GlobalVars.K_HUGE_VALUE;
                 iz_step = -1;
                 iz_stop = -1;
             }
@@ -366,12 +366,12 @@ namespace SCSRaytracer
 
         public override bool hit(Ray r, float tmin)
         {
-            float ox = r.origin.coords.X;
-            float oy = r.origin.coords.Y;
-            float oz = r.origin.coords.Z;
-            float dx = r.direction.coords.X;
-            float dy = r.direction.coords.Y;
-            float dz = r.direction.coords.Z;
+            float ox = r.Origin.X;
+            float oy = r.Origin.Y;
+            float oz = r.Origin.Z;
+            float dx = r.Direction.X;
+            float dy = r.Direction.Y;
+            float dz = r.Direction.Z;
 
             float x0 = bbox.c0.X;
             float y0 = bbox.c0.Y;
@@ -426,14 +426,14 @@ namespace SCSRaytracer
             t1 = (tx_max < ty_max) ? tx_max : ty_max;
             if (tz_max < t1) t1 = tz_max;
 
-            if (t0 > t1 && !bbox.inside(r.origin))
+            if (t0 > t1 && !bbox.inside(r.Origin))
             {
                 return false;
             }
 
             //Initial cell coordinates
             int ix, iy, iz;
-            if (bbox.inside(r.origin))
+            if (bbox.inside(r.Origin))
             {
                 ix = (int)clamp((ox - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray origin if inside
                 iy = (int)clamp((oy - y0) * ny / (y1 - y0), 0, ny - 1);
@@ -441,10 +441,10 @@ namespace SCSRaytracer
             }
             else
             {
-                Point3D p = r.origin + t0 * r.direction;
-                ix = (int)clamp((p.coords.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
-                iy = (int)clamp((p.coords.Y - y0) * ny / (y1 - y0), 0, ny - 1);
-                iz = (int)clamp((p.coords.Z - z0) * nz / (z1 - z0), 0, nz - 1);
+                Point3D p = r.Origin + t0 * r.Direction;
+                ix = (int)clamp((p.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
+                iy = (int)clamp((p.Y - y0) * ny / (y1 - y0), 0, ny - 1);
+                iz = (int)clamp((p.Z - z0) * nz / (z1 - z0), 0, nz - 1);
             }
 
             //Get increments for ray marching
@@ -471,7 +471,7 @@ namespace SCSRaytracer
             //Avoid divide by zero error
             if (dx == 0.0f)
             {
-                tx_next = GlobalVars.kHugeValue;
+                tx_next = GlobalVars.K_HUGE_VALUE;
                 ix_step = -1;
                 ix_stop = -1;
             }
@@ -491,7 +491,7 @@ namespace SCSRaytracer
             //Avoid divide by zero error
             if (dy == 0.0f)
             {
-                ty_next = GlobalVars.kHugeValue;
+                ty_next = GlobalVars.K_HUGE_VALUE;
                 iy_step = -1;
                 iy_stop = -1;
             }
@@ -511,7 +511,7 @@ namespace SCSRaytracer
             //Avoid divide by zero error
             if (dz == 0.0f)
             {
-                tz_next = GlobalVars.kHugeValue;
+                tz_next = GlobalVars.K_HUGE_VALUE;
                 iz_step = -1;
                 iz_stop = -1;
             }
@@ -592,20 +592,20 @@ namespace SCSRaytracer
         private Point3D min_coordinates()
         {
             BoundingBox bbox;
-            Point3D pmin = new Point3D(GlobalVars.kHugeValue, GlobalVars.kHugeValue, GlobalVars.kHugeValue);
+            Point3D pmin = new Point3D(GlobalVars.K_HUGE_VALUE, GlobalVars.K_HUGE_VALUE, GlobalVars.K_HUGE_VALUE);
 
             int numobjects = objs.Count;
             for(int i = 0; i < numobjects; i++)
             {
                 bbox = objs[i].get_bounding_box();
-                if (bbox.c0.X < pmin.coords.X) pmin.coords.X = bbox.c0.X;
-                if (bbox.c0.Y < pmin.coords.Y) pmin.coords.Y = bbox.c0.Y;
-                if (bbox.c0.Z < pmin.coords.Z) pmin.coords.Z = bbox.c0.Z;
+                if (bbox.c0.X < pmin.X) pmin.X = bbox.c0.X;
+                if (bbox.c0.Y < pmin.Y) pmin.Y = bbox.c0.Y;
+                if (bbox.c0.Z < pmin.Z) pmin.Z = bbox.c0.Z;
             }
 
-            pmin.coords.X -= GlobalVars.kEpsilon;
-            pmin.coords.Y -= GlobalVars.kEpsilon;
-            pmin.coords.Z -= GlobalVars.kEpsilon;
+            pmin.X -= GlobalVars.K_EPSILON;
+            pmin.Y -= GlobalVars.K_EPSILON;
+            pmin.Z -= GlobalVars.K_EPSILON;
 
             return pmin;
         }
@@ -616,20 +616,20 @@ namespace SCSRaytracer
         private Point3D max_coordinates()
         {
             BoundingBox bbox;
-            Point3D pmax = new Point3D(-GlobalVars.kHugeValue, -GlobalVars.kHugeValue, -GlobalVars.kHugeValue);
+            Point3D pmax = new Point3D(-GlobalVars.K_HUGE_VALUE, -GlobalVars.K_HUGE_VALUE, -GlobalVars.K_HUGE_VALUE);
 
             int numobjects = objs.Count;
             for(int i = 0; i < numobjects; i++)
             {
                 bbox = objs[i].get_bounding_box();
-                if (bbox.c1.X > pmax.coords.X) pmax.coords.X = bbox.c1.X;
-                if (bbox.c1.Y > pmax.coords.Y) pmax.coords.Y = bbox.c1.Y;
-                if (bbox.c1.Z > pmax.coords.Z) pmax.coords.Z = bbox.c1.Z;
+                if (bbox.c1.X > pmax.X) pmax.X = bbox.c1.X;
+                if (bbox.c1.Y > pmax.Y) pmax.Y = bbox.c1.Y;
+                if (bbox.c1.Z > pmax.Z) pmax.Z = bbox.c1.Z;
             }
 
-            pmax.coords.X += GlobalVars.kEpsilon;
-            pmax.coords.Y += GlobalVars.kEpsilon;
-            pmax.coords.Z += GlobalVars.kEpsilon;
+            pmax.X += GlobalVars.K_EPSILON;
+            pmax.Y += GlobalVars.K_EPSILON;
+            pmax.Z += GlobalVars.K_EPSILON;
 
             return pmax;
         }

@@ -9,9 +9,9 @@ namespace SCSRaytracer
 
     sealed class Image
     {
-        int rows, cols;
-        byte[] pixels;
-        private readonly float INVTWOFITTYFI = 1.0f / 255.0f;
+        private int rows, cols;
+        private byte[] pixels;
+        private readonly float INV_TWOFIFTYFIVE = 1.0f / 255.0f;
 
 
         public Image()
@@ -19,9 +19,13 @@ namespace SCSRaytracer
 
         }
 
-        public void loadFromFile(string file)
+        /// <summary>
+        /// Fills this image object with pixel data
+        /// </summary>
+        /// <param name="fileName">File to load the image from</param>
+        public void LoadFromFile(string fileName)
         {
-            SFML.Graphics.Image img = new SFML.Graphics.Image(file);
+            SFML.Graphics.Image img = new SFML.Graphics.Image(fileName);
             SFML.System.Vector2u dimensions = img.Size;
 
             rows = (int)dimensions.Y;
@@ -40,7 +44,7 @@ namespace SCSRaytracer
             }    
         }
 
-        public RGBColor get_color_at_uv(float u, float v, bool interpolate)
+        public RGBColor GetColorAtUV(float u, float v, bool interpolate)
         {
             //Convert provided UV coordinates to texel coordinates
             float rv0 = v * (rows - 1) - 0.5f;
@@ -48,9 +52,9 @@ namespace SCSRaytracer
             int row0 = (int)(rv0);
             int col0 = (int)(cu0);
 
-            float r0 = (float)pixels[(row0 * cols * 3) + (3 * col0)] * INVTWOFITTYFI;
-            float g0 = (float)pixels[(row0 * cols * 3) + (3 * col0) + 1] * INVTWOFITTYFI;
-            float b0 = (float)pixels[(row0 * cols * 3) + (3 * col0) + 2] * INVTWOFITTYFI;
+            float r0 = (float)pixels[(row0 * cols * 3) + (3 * col0)] * INV_TWOFIFTYFIVE;
+            float g0 = (float)pixels[(row0 * cols * 3) + (3 * col0) + 1] * INV_TWOFIFTYFIVE;
+            float b0 = (float)pixels[(row0 * cols * 3) + (3 * col0) + 2] * INV_TWOFIFTYFIVE;
 
             if(!interpolate)
             {
@@ -68,15 +72,15 @@ namespace SCSRaytracer
                 //c1 = texture[col1][row0]
                 //c2 = texture[col0][row1]
                 //c3 = texture[col1][row1]
-                float r1 = (float)pixels[(row0 * cols * 3) + (3 * col1)] * INVTWOFITTYFI;
-                float g1 = (float)pixels[(row0 * cols * 3) + (3 * col1) + 1] * INVTWOFITTYFI;
-                float b1 = (float)pixels[(row0 * cols * 3) + (3 * col1) + 2] * INVTWOFITTYFI;
-                float r2 = (float)pixels[(row1 * cols * 3) + (3 * col0)] * INVTWOFITTYFI;
-                float g2 = (float)pixels[(row1 * cols * 3) + (3 * col0) + 1] * INVTWOFITTYFI;
-                float b2 = (float)pixels[(row1 * cols * 3) + (3 * col0) + 2] * INVTWOFITTYFI;
-                float r3 = (float)pixels[(row1 * cols * 3) + (3 * col1)] * INVTWOFITTYFI;
-                float g3 = (float)pixels[(row1 * cols * 3) + (3 * col1) + 1] * INVTWOFITTYFI;
-                float b3 = (float)pixels[(row1 * cols * 3) + (3 * col1) + 2] * INVTWOFITTYFI;
+                float r1 = (float)pixels[(row0 * cols * 3) + (3 * col1)] * INV_TWOFIFTYFIVE;
+                float g1 = (float)pixels[(row0 * cols * 3) + (3 * col1) + 1] * INV_TWOFIFTYFIVE;
+                float b1 = (float)pixels[(row0 * cols * 3) + (3 * col1) + 2] * INV_TWOFIFTYFIVE;
+                float r2 = (float)pixels[(row1 * cols * 3) + (3 * col0)] * INV_TWOFIFTYFIVE;
+                float g2 = (float)pixels[(row1 * cols * 3) + (3 * col0) + 1] * INV_TWOFIFTYFIVE;
+                float b2 = (float)pixels[(row1 * cols * 3) + (3 * col0) + 2] * INV_TWOFIFTYFIVE;
+                float r3 = (float)pixels[(row1 * cols * 3) + (3 * col1)] * INV_TWOFIFTYFIVE;
+                float g3 = (float)pixels[(row1 * cols * 3) + (3 * col1) + 1] * INV_TWOFIFTYFIVE;
+                float b3 = (float)pixels[(row1 * cols * 3) + (3 * col1) + 2] * INV_TWOFIFTYFIVE;
 
                 //Pixel color ratios:
                 float ratio_col_high = cu0 - col0;

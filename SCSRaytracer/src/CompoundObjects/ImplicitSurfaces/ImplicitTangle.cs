@@ -21,7 +21,7 @@ namespace SCSRaytracer
 
         public override float evalF(Point3D p)
         {
-            Vector3 sqrd = p.coords * p.coords;
+            Vector3 sqrd = p.Coordinates * p.Coordinates;
             Vector3 fourpow = sqrd * sqrd;
             float sumsqrd = sqrd.X + sqrd.Y + sqrd.Z;
             return (fourpow.X + fourpow.Y + fourpow.Z + (a * (sumsqrd * sumsqrd)) + (b * sumsqrd) + c);

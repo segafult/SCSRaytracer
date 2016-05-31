@@ -16,7 +16,7 @@ namespace SCSRaytracer
         public override Point2D get_uv(Point3D hit_point)
         {
             //Map hit point to a unit sphere by normalizing vector from origin to hit point.
-            Vector3 hit_normalized = Vector3.Normalize(hit_point.coords);
+            Vector3 hit_normalized = Vector3.Normalize(hit_point.Coordinates);
 
             float phi = (float)Math.Atan2(hit_normalized.X, hit_normalized.Z) + FastMath.FPI;
             float omega = (float)Math.Acos(hit_normalized.Y);

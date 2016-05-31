@@ -67,7 +67,7 @@ namespace SCSRaytracer
 
                 toReturn.id = objRoot.GetAttribute("id");
                 if(objRoot.HasAttribute("mat"))
-                    toReturn.setMaterial(GlobalVars.worldref.getMaterialById(objRoot.GetAttribute("mat")));
+                    toReturn.setMaterial(GlobalVars.WORLD_REF.GetMaterialByID(objRoot.GetAttribute("mat")));
 
                 return toReturn;
             }

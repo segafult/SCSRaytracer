@@ -11,7 +11,7 @@ namespace SCSRaytracer
         public override Point2D get_uv(Point3D hit_point)
         {
             //simple rectangular mapper maps to unit rectangle in xz plane
-            return new Point2D((hit_point.coords.Z + 1.0f) / 2.0f, (hit_point.coords.X + 1.0f) / 2.0f);
+            return new Point2D((hit_point.Z + 1.0f) / 2.0f, (hit_point.X + 1.0f) / 2.0f);
         }
     }
 }

@@ -38,7 +38,7 @@ namespace SCSRaytracer
             hit_point_local = new Point3D(0, 0, 0);
             normal = new Normal(0, 0, 0);
             color = new RGBColor(0, 0, 0);
-            t = GlobalVars.kHugeValue;
+            t = GlobalVars.K_HUGE_VALUE;
             ray = new Ray(new Point3D(0, 0, 0), new Vect3D(0, 0, 0));
             dir = new Vect3D(0, 0, 0);
             u = 0;

@@ -15,120 +15,122 @@ namespace SCSRaytracer
     /// </summary>
     abstract class Sampler
     {
-        protected int numsamples; //Number of samples per pixel
-        protected int numsets; //Number of stored "sample sets"
-        protected List<Point2D> samples; //Sample points on unit square;
-        protected List<Point2D> disk_samples; //Sample points on disk
-        protected List<Point2D> sphere_samples; //Sample points on sphere
-        protected List<int> shuffledIndices; //Shuffled samples array indices
+        protected int _numSamples; //Number of samples per pixel
+        protected int _numSets; //Number of stored "sample sets"
+        protected List<Point2D> _samples; //Sample points on unit square;
+        protected List<Point2D> _diskSamples; //Sample points on disk
+        protected List<Point2D> _sphereSamples; //Sample points on sphere
+        protected List<int> _shuffledIndices; //Shuffled samples array indices
         protected ulong count; //Current number of sample points
-        protected ulong bitmask; //Bit mask 
-        protected int jump; //Random index jump
+        protected ulong _bitMask; //Bit mask 
+        protected int _jump; //Random index jump
         protected Random randomgen;
+
+        // accessors
+        public int NumSamples { get { return _numSamples; } }
+        public int NumSets { get { return _numSets; } }
+        public List<Point2D> Samples { get { return _samples; } }
+        public List<Point2D> DiskSamples { get { return _diskSamples; } }
+        public List<Point2D> SphereSamples { get { return _sphereSamples; } }
+        public List<int> ShuffledIndices { get { return _shuffledIndices; } }
+        public ulong BitMask { get { return _bitMask; } }
+        public int Jump { get { return _jump; } }
+
 
         protected Sampler(int s)
         {
             count = 0;
-            jump = 0;
-            numsamples = s;
-            numsets = 25;
-            samples = new List<Point2D>();
-            disk_samples = new List<Point2D>();
-            sphere_samples = new List<Point2D>();
-            shuffledIndices = new List<int>();
+            _jump = 0;
+            _numSamples = s;
+            _numSets = 25;
+            _samples = new List<Point2D>();
+            _diskSamples = new List<Point2D>();
+            _sphereSamples = new List<Point2D>();
+            _shuffledIndices = new List<int>();
             randomgen = new Random();
         }
         protected Sampler(Sampler clone)
         {
             count = 0;
-            numsamples = clone.getNumSamples();
-            numsets = clone.getNumSets();
-            samples = clone.getSamples();
-            disk_samples = clone.getDiskSamples();
-            sphere_samples = clone.getSphereSamples();
-            shuffledIndices = clone.getShuffledIndices();
-            jump = clone.getJump();
+            _numSamples = clone.NumSamples;
+            _numSets = clone.NumSets;
+            _samples = clone.Samples;
+            _diskSamples = clone.DiskSamples;
+            _sphereSamples = clone.SphereSamples;
+            _shuffledIndices = clone.ShuffledIndices;
+            _jump = clone.Jump;
             randomgen = new Random();
         }
 
-        public int getNumSamples() { return numsamples; }
-        public int getNumSets() { return numsets; }
-        public List<Point2D> getSamples() { return samples; }
-        public List<Point2D> getDiskSamples() { return disk_samples; }
-        public List<Point2D> getSphereSamples() { return sphere_samples; }
-        public List<int> getShuffledIndices() { return shuffledIndices; }
-        public ulong getBitMask() { return bitmask; }
-        public int getJump() { return jump; }
+        public abstract Sampler Clone();
 
-        public abstract Sampler clone();
-
-        public virtual void generate_samples()
+        public virtual void GenerateSamples()
         {
             //do nothing
         }
-        public virtual void map_samples_to_disk()
+        public virtual void MapSamplesToDisk()
         {
-            for(int i = 0; i < (numsamples*numsets); i++)
+            for(int i = 0; i < (_numSamples*_numSets); i++)
             {
-                disk_samples.Add(new Point2D());
+                _diskSamples.Add(new Point2D());
 
                 float r;
                 float phi;
 
                 //Determine the quadrant for which to map according to the Shirley concentric map
                 //Quadrant 1 and 2:
-                if(samples[i].coords.X > -samples[i].coords.Y)
+                if(_samples[i].coords.X > -_samples[i].coords.Y)
                 {
                     //Conditions for quadrant 1
-                    if(samples[i].coords.X > samples[i].coords.Y)
+                    if(_samples[i].coords.X > _samples[i].coords.Y)
                     {
-                        r = samples[i].coords.X;
-                        phi = (samples[i].coords.Y / samples[i].coords.X) * ((float)Math.PI / 4.0f);
+                        r = _samples[i].coords.X;
+                        phi = (_samples[i].coords.Y / _samples[i].coords.X) * ((float)Math.PI / 4.0f);
                     }
                     //Otherwise in quadrant 2
                     else
                     {
-                        r = samples[i].coords.Y;
-                        phi = (samples[i].coords.Y != 0.0f) ? (2 - samples[i].coords.X / samples[i].coords.Y) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
+                        r = _samples[i].coords.Y;
+                        phi = (_samples[i].coords.Y != 0.0f) ? (2 - _samples[i].coords.X / _samples[i].coords.Y) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
                     }
                 }
                 //Quadrant 3 and 4
                 else
                 {
                     //Conditions for quadrant 3
-                    if(samples[i].coords.X < samples[i].coords.Y)
+                    if(_samples[i].coords.X < _samples[i].coords.Y)
                     {
-                        r = -samples[i].coords.X;
-                        phi = (samples[i].coords.X != 0.0f) ? (4 + samples[i].coords.Y / samples[i].coords.X) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
+                        r = -_samples[i].coords.X;
+                        phi = (_samples[i].coords.X != 0.0f) ? (4 + _samples[i].coords.Y / _samples[i].coords.X) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
                     }
                     //Otherwise in quadrant 4
                     else
                     {
-                        r = -samples[i].coords.Y;
-                        phi = (samples[i].coords.Y != 0.0f) ? (6 - samples[i].coords.X / samples[i].coords.Y) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
+                        r = -_samples[i].coords.Y;
+                        phi = (_samples[i].coords.Y != 0.0f) ? (6 - _samples[i].coords.X / _samples[i].coords.Y) * ((float)Math.PI / 4.0f) : 0.0f; //Don't divide by zero
                     }
                 }
 
-                disk_samples[i] = new Point2D(r * (float)Math.Cos(phi), r * (float)Math.Sin(phi));
+                _diskSamples[i] = new Point2D(r * (float)Math.Cos(phi), r * (float)Math.Sin(phi));
             }
         }
-        public virtual void setup_shuffled_indices()
+        public virtual void SetupShuffledIndices()
         {
             List<int> indices = new List<int>();
 
-            for (int i = 0; i < numsamples; i++)
+            for (int i = 0; i < _numSamples; i++)
                 indices.Add(i);
-            for(int i = 0; i < numsets; i++)
+            for(int i = 0; i < _numSets; i++)
             {
-                shuffle_samples(ref indices);
+                ShuffleSamples(ref indices);
 
-                for (int j = 0; j < numsamples; j++)
+                for (int j = 0; j < _numSamples; j++)
                 {
-                    shuffledIndices.Add(indices[j]);
+                    _shuffledIndices.Add(indices[j]);
                 }
             }
         }
-        public virtual void shuffle_samples(ref List<int> index)
+        public virtual void ShuffleSamples(ref List<int> index)
         {
             //shuffle the index list using the Fisher yates shuffling algorithm
             for(int i = index.Count - 1; i > 1; i--)
@@ -141,19 +143,19 @@ namespace SCSRaytracer
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual Point2D sample_unit_square()
+        public virtual Point2D SampleUnitSquare()
         {
-            if (count % (ulong)numsamples == 0)
-                jump = (randomgen.Next() % numsets);
-            return (samples[jump + shuffledIndices[(int)((ulong)jump + count++ % (ulong)(numsamples))]]);
+            if (count % (ulong)_numSamples == 0)
+                _jump = (randomgen.Next() % _numSets);
+            return (_samples[_jump + _shuffledIndices[(int)((ulong)_jump + count++ % (ulong)(_numSamples))]]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual Point2D sample_disk()
+        public virtual Point2D SampleDisk()
         {
-            if(count%(ulong)numsamples == 0)
-                jump = (randomgen.Next() % numsets);
-            return (disk_samples[jump + shuffledIndices[(int)((ulong)jump + count++ % (ulong)(numsamples))]]);
+            if(count%(ulong)_numSamples == 0)
+                _jump = (randomgen.Next() % _numSets);
+            return (_diskSamples[_jump + _shuffledIndices[(int)((ulong)_jump + count++ % (ulong)(_numSamples))]]);
         }
 
         public static Sampler LoadSampler(string str_sampler)
@@ -161,23 +163,23 @@ namespace SCSRaytracer
             Sampler toReturn;
             //Determine sampler type and load accordingly.
             if (str_sampler.Equals("regular"))
-                toReturn = new RegularSampler(GlobalVars.num_samples);
+                toReturn = new RegularSampler(GlobalVars.NUM_SAMPLES);
             else if (str_sampler.Equals("random"))
-                toReturn = new RandomSampler(GlobalVars.num_samples);
+                toReturn = new RandomSampler(GlobalVars.NUM_SAMPLES);
             else if (str_sampler.Equals("jittered"))
-                toReturn = new JitteredSampler(GlobalVars.num_samples);
+                toReturn = new JitteredSampler(GlobalVars.NUM_SAMPLES);
             else if (str_sampler.Equals("nrooks"))
-                toReturn = new NRooksSampler(GlobalVars.num_samples);
+                toReturn = new NRooksSampler(GlobalVars.NUM_SAMPLES);
             else if (str_sampler.Equals("multijittered"))
-                toReturn = new MultiJitteredSampler(GlobalVars.num_samples);
+                toReturn = new MultiJitteredSampler(GlobalVars.NUM_SAMPLES);
             else
             {
                 Console.WriteLine("Unknown sampler type: " + str_sampler);
-                toReturn = new RegularSampler(GlobalVars.num_samples);
+                toReturn = new RegularSampler(GlobalVars.NUM_SAMPLES);
             }
 
-            toReturn.generate_samples();
-            toReturn.setup_shuffled_indices();
+            toReturn.GenerateSamples();
+            toReturn.SetupShuffledIndices();
             return toReturn;
         }
     }
