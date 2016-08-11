@@ -15,26 +15,65 @@ namespace SCSRaytracer
     /// </summary>
     sealed class Instance : RenderableObject
     {
-        private Matrix4x4 inv_net_mat; //Inverse transformation matrix (for ray transformation)
-        private Matrix4x4 net_mat; //Transformation matrix (for bounding box generation for instancing inside grid or octree)
+        private Matrix4x4 inverseNetTransformationMatrix; //Inverse transformation matrix (for ray transformation)
+        private Matrix4x4 netTransformationMatrix; //Transformation matrix (for bounding box generation for instancing inside grid or octree)
 
         private RenderableObject payload; //Serves as wrapper for another renderable object
-        private BoundingBox bbox;
-        
+        private BoundingBox boundingBox;
+
+        // accessors
+        public override Material Material
+        {
+            get
+            {
+                if (_material == null)
+                {
+                    return payload.Material;
+                }
+                else
+                {
+                    return _material;
+                }
+            }
+            set
+            {
+                _material = value;
+            }
+        }
+        public override BoundingBox BoundingBox
+        {
+            get
+            {
+                ComputeBoundingBox();
+                return boundingBox;
+            }
+        }
+        public RenderableObject Handle
+        {
+            get
+            {
+                return payload;
+            }
+            set
+            {
+                payload = value;
+            }
+        }
+
         //Default constructor
         public Instance()
         {
-            inv_net_mat = Matrix4x4.Identity;
-            net_mat = Matrix4x4.Identity;
-            this.setMaterial(null);
+            inverseNetTransformationMatrix = Matrix4x4.Identity;
+            netTransformationMatrix = Matrix4x4.Identity;
+            this.Material = null;
         }
         //Constructor with handle
         public Instance(RenderableObject handle)
         {
-            inv_net_mat = Matrix4x4.Identity;
-            net_mat = Matrix4x4.Identity;
+            inverseNetTransformationMatrix = Matrix4x4.Identity;
+            netTransformationMatrix = Matrix4x4.Identity;
             payload = handle;
-            this.setMaterial(null);
+            this.Material = null;
         }
 
         public override string ToString()
@@ -42,8 +81,9 @@ namespace SCSRaytracer
             return "Instanced object:\n" +
                 "  ID: " + id + "\n" +
                 "  Obj: " + payload.id+ "\n"+
-                "  Mat: " + (mat == null ? payload.getMaterial().id : mat.id);
+                "  Mat: " + (_material == null ? payload.Material.id : _material.id);
         }
+        /*
         public RenderableObject getHandle()
         {
             return payload;
@@ -52,30 +92,30 @@ namespace SCSRaytracer
         {
             payload = handle;
         }
-
-        public void translate(Vect3D trans)
+        */
+        public void Translate(Vect3D trans)
         {
             Matrix4x4 temp = Matrix4x4.CreateTranslation(trans.Coordinates);
             Matrix4x4 inv_temp;
             Matrix4x4.Invert(temp, out inv_temp);
 
-            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
-            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
+            inverseNetTransformationMatrix = inv_temp * inverseNetTransformationMatrix; //Post multiply for inverse transformation matrix
+            netTransformationMatrix = netTransformationMatrix * temp; //Pre multiply for transformation matrix.
         }
-        public void translate(float x, float y, float z)
+        public void Translate(float x, float y, float z)
         {
             Matrix4x4 temp = Matrix4x4.CreateTranslation(x, y, z);
             Matrix4x4 inv_temp;
             Matrix4x4.Invert(temp, out inv_temp);
 
-            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
-            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
+            inverseNetTransformationMatrix = inv_temp * inverseNetTransformationMatrix; //Post multiply for inverse transformation matrix
+            netTransformationMatrix = netTransformationMatrix * temp; //Pre multiply for transformation matrix.
         }
-        public void rotate(Vect3D rot)
+        public void Rotate(Vect3D rot)
         {
-            rotate(rot.X, rot.Y, rot.Z);
+            Rotate(rot.X, rot.Y, rot.Z);
         }
-        public void rotate(float x, float y, float z)
+        public void Rotate(float x, float y, float z)
         {
             Vect3D rot = new Vect3D(x, y, z);
             Matrix4x4 xmat = Matrix4x4.CreateRotationX(x * FastMath.THREESIXTYINVTWOPI);
@@ -89,11 +129,11 @@ namespace SCSRaytracer
             Matrix4x4 inv_temp = zmatinv * ymatinv * xmatinv;
 
 
-            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
-            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
+            inverseNetTransformationMatrix = inv_temp * inverseNetTransformationMatrix; //Post multiply for inverse transformation matrix
+            netTransformationMatrix = netTransformationMatrix * temp; //Pre multiply for transformation matrix.
 
         }
-        public void scale(Vect3D scale)
+        public void Scale(Vect3D scale)
         {
             Matrix4x4 temp = Matrix4x4.CreateScale(scale.Coordinates);
             Matrix4x4 inv_temp;
@@ -101,39 +141,39 @@ namespace SCSRaytracer
             Matrix4x4.Invert(temp, out inv_temp);
 
 
-            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
-            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
+            inverseNetTransformationMatrix = inv_temp * inverseNetTransformationMatrix; //Post multiply for inverse transformation matrix
+            netTransformationMatrix = netTransformationMatrix * temp; //Pre multiply for transformation matrix.
         }
-        public void scale(float x, float y, float z)
+        public void Scale(float x, float y, float z)
         {
             Matrix4x4 temp = Matrix4x4.CreateScale(x, y, z);
             Matrix4x4 inv_temp;
             Matrix4x4.Invert(temp, out inv_temp);
 
-            inv_net_mat = inv_temp * inv_net_mat; //Post multiply for inverse transformation matrix
-            net_mat = net_mat * temp; //Pre multiply for transformation matrix.
+            inverseNetTransformationMatrix = inv_temp * inverseNetTransformationMatrix; //Post multiply for inverse transformation matrix
+            netTransformationMatrix = netTransformationMatrix * temp; //Pre multiply for transformation matrix.
         }
-        public void applyTransformation(Matrix4x4 trans, Matrix4x4 inv_trans)
+        public void ApplyTransformation(Matrix4x4 trans, Matrix4x4 inv_trans)
         {
-            inv_net_mat = inv_trans;
-            net_mat = trans;
+            inverseNetTransformationMatrix = inv_trans;
+            netTransformationMatrix = trans;
         }
 
-        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             //Apply inverse transformation to incident ray and test for intersection
             Ray tfRay = new Ray(r);
-            tfRay.Origin = inv_net_mat * r.Origin;
-            tfRay.Direction = inv_net_mat * r.Direction;
+            tfRay.Origin = inverseNetTransformationMatrix * r.Origin;
+            tfRay.Direction = inverseNetTransformationMatrix * r.Direction;
 
-            if(payload.hit(tfRay, ref tmin, ref sr))
+            if(payload.Hit(tfRay, ref tmin, ref sr))
             {
                 //Transform the computed normal into worldspace
-                sr.normal = inv_net_mat * sr.normal;
-                sr.normal.Normalize();
-                if(mat != null)
+                sr.Normal = inverseNetTransformationMatrix * sr.Normal;
+                sr.Normal.Normalize();
+                if(_material != null)
                 {
-                    sr.obj_material = mat;
+                    sr.ObjectMaterial = _material;
                 }
                 return true;
             }
@@ -143,14 +183,14 @@ namespace SCSRaytracer
             }
         }
 
-        public override bool hit(Ray r, float tmin)
+        public override bool Hit(Ray r, float tmin)
         {
             //Apply inverse transformation to incident ray and test for intersection
             Ray tfRay = new Ray(r);
-            tfRay.Origin = inv_net_mat * r.Origin;
-            tfRay.Direction = inv_net_mat * r.Direction;
+            tfRay.Origin = inverseNetTransformationMatrix * r.Origin;
+            tfRay.Direction = inverseNetTransformationMatrix * r.Direction;
 
-            if (payload.hit(tfRay, tmin))
+            if (payload.Hit(tfRay, tmin))
             {
                 return true;
             }
@@ -160,32 +200,35 @@ namespace SCSRaytracer
             }
         }
 
+        /*
         public override Material getMaterial()
         {
-            if (mat == null)
+            if (_material == null)
             {
                 return payload.getMaterial();
             }
             else
             {
-                return mat;
+                return _material;
             }
         }
+        
         public override BoundingBox get_bounding_box()
         {
             compute_bounding_box();
             return bbox;
         }
-        public void compute_bounding_box()
+        */
+        public void ComputeBoundingBox()
         {
             //Get the bounding box of the payload prior to transformation.
-            BoundingBox preTransform = payload.get_bounding_box();
-            float x0 = preTransform.c0.X;
-            float x1 = preTransform.c1.X;
-            float y0 = preTransform.c0.Y;
-            float y1 = preTransform.c1.Y;
-            float z0 = preTransform.c0.Z;
-            float z1 = preTransform.c1.Z;
+            BoundingBox preTransform = payload.BoundingBox;
+            float x0 = preTransform.corner0.X;
+            float x1 = preTransform.corner1.X;
+            float y0 = preTransform.corner0.Y;
+            float y1 = preTransform.corner1.Y;
+            float z0 = preTransform.corner0.Z;
+            float z1 = preTransform.corner1.Z;
 
             //Get points representing all 8 corners of the bounding box
             Point3D[] points = new Point3D[8];
@@ -201,7 +244,7 @@ namespace SCSRaytracer
             //Transform all corner points
             for(int i = 0; i < 8; i++)
             {
-                points[i] = net_mat * points[i];
+                points[i] = netTransformationMatrix * points[i];
             }
 
             float xmin = GlobalVars.K_HUGE_VALUE;
@@ -223,7 +266,7 @@ namespace SCSRaytracer
             }
 
             //Create bounding box based on transformed payload bounding box
-            bbox = new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
+            boundingBox = new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
         }
 
         public static Instance LoadInstance(XmlElement def)
@@ -234,7 +277,7 @@ namespace SCSRaytracer
             {
                 if (def.HasAttribute("mat"))
                 {
-                    toReturn.setMaterial(GlobalVars.WORLD_REF.GetMaterialByID(def.GetAttribute("mat")));
+                    toReturn.Material = GlobalVars.WORLD_REF.GetMaterialByID(def.GetAttribute("mat"));
                 }
 
                 if (def.HasAttribute("obj"))
@@ -243,7 +286,7 @@ namespace SCSRaytracer
                     RenderableObject objRef = GlobalVars.WORLD_REF.GetObjectByID(def.GetAttribute("obj"));
                     if (objRef != null)
                     {
-                        toReturn.setHandle(objRef);
+                        toReturn.Handle = objRef;
                     }
                     else
                     {
@@ -255,7 +298,7 @@ namespace SCSRaytracer
                     //See if there's a nested object
                     XmlNode childobj = def.SelectSingleNode("renderable");
                     if (childobj != null)
-                        toReturn.setHandle(RenderableObject.LoadRenderableObject((XmlElement)childobj));
+                        toReturn.Handle = RenderableObject.LoadRenderableObject((XmlElement)childobj);
                     else
                         throw new XmlException("Error: Cannot create instance without obj paired with an object id.");
                 }
@@ -270,7 +313,7 @@ namespace SCSRaytracer
                     //if (rotations != null)
                     //{
                         //Accumulate rotation on base transformation matrix
-                        toReturn.rotate(rotations);
+                        toReturn.Rotate(rotations);
                     //}
                 }
 
@@ -284,7 +327,7 @@ namespace SCSRaytracer
                     //if (scaling != null)
                     //{
                         //Accumulate scaling on base transformation matrix
-                        toReturn.scale(scaling);
+                        toReturn.Scale(scaling);
                     //}
                 }
 
@@ -298,12 +341,12 @@ namespace SCSRaytracer
                     //if (translation != null)
                     //{
                         //Accumulate translation on base transformation matrix
-                        toReturn.translate(translation);
+                        toReturn.Translate(translation);
                     //}
                 }
             }
             catch (XmlException e) { Console.WriteLine(e.ToString()); }
-            toReturn.compute_bounding_box();
+            toReturn.ComputeBoundingBox();
 
             return toReturn;
         }

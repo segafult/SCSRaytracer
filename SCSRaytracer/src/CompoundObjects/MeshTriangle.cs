@@ -18,6 +18,23 @@ namespace SCSRaytracer
         protected Mesh parent;
         protected Normal normal;
 
+        public override BoundingBox BoundingBox
+        {
+            get
+            {
+                Point3D p0 = parent.vertices[index0];
+                Point3D p1 = parent.vertices[index1];
+                Point3D p2 = parent.vertices[index2];
+                float xmin = FastMath.min(FastMath.min(p0.X, p1.X), p2.X) - GlobalVars.K_EPSILON;
+                float xmax = FastMath.max(FastMath.max(p0.X, p1.X), p2.X) + GlobalVars.K_EPSILON;
+                float ymin = FastMath.min(FastMath.min(p0.Y, p1.Y), p2.Y) - GlobalVars.K_EPSILON;
+                float ymax = FastMath.max(FastMath.max(p0.Y, p1.Y), p2.Y) + GlobalVars.K_EPSILON;
+                float zmin = FastMath.min(FastMath.min(p0.Z, p1.Z), p2.Z) - GlobalVars.K_EPSILON;
+                float zmax = FastMath.max(FastMath.max(p0.Z, p1.Z), p2.Z) + GlobalVars.K_EPSILON;
+                return new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
+            }
+        }
+
         public MeshTriangle(Mesh p_arg)
         {
             parent = p_arg;
@@ -45,7 +62,7 @@ namespace SCSRaytracer
             normal.Normalize();
         }
         public Normal getNormal() { return normal; }
-        public override bool hit(Ray r, float tmin)
+        public override bool Hit(Ray r, float tmin)
         {
             Point3D p0 = parent.vertices[index0];
             Point3D p1 = parent.vertices[index1];
@@ -92,6 +109,8 @@ namespace SCSRaytracer
 
             return true;
         }
+
+        /*
         public override BoundingBox get_bounding_box()
         {
             Point3D p0 = parent.vertices[index0];
@@ -105,5 +124,6 @@ namespace SCSRaytracer
             float zmax = FastMath.max(FastMath.max(p0.Z, p1.Z), p2.Z) + GlobalVars.K_EPSILON;
             return new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
         }
+        */
     }
 }

@@ -40,14 +40,14 @@ namespace SCSRaytracer
             if (cd_tex == null)
                 return (kd * cd * GlobalVars.INVERSE_PI);
             else
-                return (kd * cd_tex.getColor(sr) * GlobalVars.INVERSE_PI);
+                return (kd * cd_tex.GetColor(sr) * GlobalVars.INVERSE_PI);
         }
         public override RGBColor rho(ShadeRec sr, Vect3D wo)
         {
             if (cd_tex == null)
                 return (kd * cd);
             else
-                return (kd * cd_tex.getColor(sr));
+                return (kd * cd_tex.GetColor(sr));
         }
     }
 }

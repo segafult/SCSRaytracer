@@ -43,7 +43,7 @@ namespace SCSRaytracer
         //Gets and sets
         
         public float getIntensity() { return intensity; }
-        public override Vect3D getDirection(ShadeRec sr) { return ((location - sr.hit_point).Hat()); }
+        public override Vect3D getDirection(ShadeRec sr) { return ((location - sr.HitPoint).Hat()); }
         public override bool castsShadows(){ return shadows; }
         public void setIntensity(float i) { intensity = i; }
         public void setLocation(Point3D p) { location = new Point3D(p); }
@@ -61,14 +61,14 @@ namespace SCSRaytracer
         /// <returns></returns>
         public override bool inShadow(ShadeRec sr, Ray ray)
         {
-            int num_objects = sr.w.RenderList.Count;
+            int num_objects = sr.WorldPointer.RenderList.Count;
             float tmin;
 
             //Find the closest intersection point along the given ray
             for (int i = 0; i < num_objects; i++)
             {
-                tmin = (location - sr.hit_point).Coordinates.Length();
-                if (sr.w.RenderList[i].hit(ray, tmin))
+                tmin = (location - sr.HitPoint).Coordinates.Length();
+                if (sr.WorldPointer.RenderList[i].Hit(ray, tmin))
                 {
                     return true;
                 }

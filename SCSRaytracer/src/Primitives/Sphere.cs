@@ -37,6 +37,13 @@ namespace SCSRaytracer
                 _radius = value;
             }
         }
+        public override BoundingBox BoundingBox
+        {
+            get
+            {
+                return new BoundingBox(_center.X - _radius, _center.X + _radius, _center.Y - _radius, _center.Y + _radius, _center.Z - _radius, _center.Z + _radius);
+            }
+        }
 
         //Constructors
         public Sphere()
@@ -54,7 +61,7 @@ namespace SCSRaytracer
         {
             return "Sphere primitive:\n" +
                 "  ID: " + id + "\n" +
-                "  Mat: " + this.getMaterial().id + "\n" +
+                "  Mat: " + this.Material.id + "\n" +
                 "  c: " + _center.ToString() + "\n" +
                 "  r: " + _radius;
         }
@@ -70,6 +77,7 @@ namespace SCSRaytracer
             _radius = radius;
         }
         */
+
         /// <summary>
         /// Determines if given ray r intersects sphere.
         /// </summary>
@@ -77,62 +85,63 @@ namespace SCSRaytracer
         /// <param name="tmin">Return by reference, minimum distance to intersection</param>
         /// <param name="sr">Return by reference, shader parameters</param>
         /// <returns></returns>
-        public override bool hit(Ray ray, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray ray, ref float tmin, ref ShadeRec sr)
         {
             float t;
             //Store variables locally to minimize member accesses
-            Point3D rorigin = ray.Origin;
-            Vect3D rdirection = ray.Direction;
-            Vect3D temp = rorigin - this._center;
+            Point3D rOrigin = ray.Origin;
+            Vect3D rDirection = ray.Direction;
+            Vect3D temp = rOrigin - this._center;
+
             //Rays are unit vectors
             //Intersection with a sphere is a quadratic equation (at^2 + bt + c = 0)
             //a = d*d , d = ray direction
             //b = 2(o-c)*d, o = ray origin, c = sphere center, d = ray direction
             //c = (o-c)*(o-c)-r^2, o = ray origin, c = sphere center, r = sphere radius
-            float a = rdirection * rdirection;
-            float b = 2.0f * temp * rdirection;
+            float a = rDirection * rDirection;
+            float b = 2.0f * temp * rDirection;
             float cv = (temp * temp) - (_radius*_radius);
 
             //Find discriminant, d = b^2 - 4ac
             //If d < 0, no intersection, if d = 0, one intersection, if d > 0, two intersections
-            float d = b * b - 4 * a * cv;
+            float discriminant = b * b - 4 * a * cv;
 
-            if(d < 0.0)
+            if(discriminant < 0.0)
             {
                 return false;
             }
             else
             {
-                float e = (float)Math.Sqrt(d);
-                float invdenominator = 1.0f/(2.0f * a);
+                float e = (float)Math.Sqrt(discriminant);
+                float invDenominator = 1.0f/(2.0f * a);
 
-                t = (-b - e) * invdenominator; //Solve quadratic equation for smallest value
+                t = (-b - e) * invDenominator; //Solve quadratic equation for smallest value
                 if (t > GlobalVars.K_EPSILON)
                 {
                     tmin = t;
-                    sr.normal = new Normal((temp + t * rdirection) / _radius);
+                    sr.Normal = new Normal((temp + t * rDirection) / _radius);
                     //Reverse the normal if ray originated inside the sphere
-                    if ((rorigin - _center).Coordinates.Length() < _radius)
+                    if ((rOrigin - _center).Coordinates.Length() < _radius)
                     {
-                        sr.normal = -sr.normal;
+                        sr.Normal = -sr.Normal;
                     }
-                    sr.hit_point_local = rorigin + t * rdirection;
-                    sr.obj_material = mat;
+                    sr.HitPointLocal = rOrigin + t * rDirection;
+                    sr.ObjectMaterial = _material;
                     return true;
                 }
 
-                t = (-b + e) * invdenominator; //Solve quadratic equation for largest value
+                t = (-b + e) * invDenominator; //Solve quadratic equation for largest value
                 if(t > GlobalVars.K_EPSILON)
                 {
                     tmin = t;
-                    sr.normal = new Normal((temp + t * rdirection) / _radius);
+                    sr.Normal = new Normal((temp + t * rDirection) / _radius);
                     //Reverse the normal if the ray originated from inside the sphere.
-                    if((rorigin-_center).Coordinates.Length() < _radius)
+                    if((rOrigin-_center).Coordinates.Length() < _radius)
                     {
-                        sr.normal = -sr.normal;
+                        sr.Normal = -sr.Normal;
                     }
-                    sr.hit_point_local = rorigin + t * rdirection;
-                    sr.obj_material = mat;
+                    sr.HitPointLocal = rOrigin + t * rDirection;
+                    sr.ObjectMaterial = _material;
                     return true;
                 }
             }
@@ -147,22 +156,22 @@ namespace SCSRaytracer
         /// <param name="ray">Ray to intersect</param>
         /// <param name="tmin">Minimum distance for hit</param>
         /// <returns>True if ray intersects sphere, false if it does not</returns>
-        public override bool hit(Ray ray, float tmin)
+        public override bool Hit(Ray ray, float tmin)
         {
             float t;
 
             //Store variables locally to minimize member accesses
-            Point3D rorigin = ray.Origin;
-            Vect3D rdirection = ray.Direction;
-            Vect3D temp = rorigin - this._center;
+            Point3D rOrigin = ray.Origin;
+            Vect3D rDirection = ray.Direction;
+            Vect3D temp = rOrigin - this._center;
 
             //Rays are unit vectors
             //Intersection with a sphere is a quadratic equation (at^2 + bt + c = 0)
             //a = d*d , d = ray direction
             //b = 2(o-c)*d, o = ray origin, c = sphere center, d = ray direction
             //c = (o-c)*(o-c)-r^2, o = ray origin, c = sphere center, r = sphere radius
-            float a = rdirection * rdirection;
-            float b = 2.0f * temp * rdirection;
+            float a = rDirection * rDirection;
+            float b = 2.0f * temp * rDirection;
             float cv = (temp * temp) - (_radius * _radius);
 
             //Find discriminant, d = b^2 - 4ac
@@ -232,10 +241,11 @@ namespace SCSRaytracer
 
             return toReturn;
         }
-
+        /*
         public override BoundingBox get_bounding_box()
         {
             return new BoundingBox(_center.X - _radius, _center.X + _radius, _center.Y - _radius, _center.Y + _radius, _center.Z - _radius, _center.Z + _radius);
         }
+        */
     }
 }

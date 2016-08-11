@@ -55,8 +55,8 @@ namespace SCSRaytracer
         }
         public override bool inShadow(ShadeRec sr, Ray ray)
         {
-            ShadeRec tempSr = sr.w.HitObjects(ray);
-            return tempSr.hit_an_object;
+            ShadeRec tempSr = sr.WorldPointer.HitObjects(ray);
+            return tempSr.HitAnObject;
         }
         public override Vect3D getDirection(ShadeRec sr)
         {

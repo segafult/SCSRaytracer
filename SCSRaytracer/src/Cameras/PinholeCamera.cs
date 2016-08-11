@@ -65,7 +65,7 @@ namespace SCSRaytracer
                         pp.coords.X = worldRef.CurrentViewPlane.PixelSize * (column - 0.5f * vp.HorizontalResolution + sp.coords.X);
                         pp.coords.Y = worldRef.CurrentViewPlane.PixelSize * (row - 0.5f * vp.VerticalResolution + sp.coords.Y);
                         ray.Direction = GetRayDirection(pp);
-                        lightingSum = lightingSum + worldRef.CurrentTracer.trace_ray(ray, depth);
+                        lightingSum = lightingSum + worldRef.CurrentTracer.TraceRay(ray, depth);
                     }
 
                     lightingSum /= vp.NumSamples;
@@ -113,7 +113,7 @@ namespace SCSRaytracer
                         sampleInScreenSpace.coords.X = worldRef.CurrentViewPlane.PixelSize * (column + xCoord1 - 0.5f * vp.HorizontalResolution + unitSquareSample.coords.X);
                         sampleInScreenSpace.coords.Y = worldRef.CurrentViewPlane.PixelSize * (row + yCoord1 - 0.5f * vp.VerticalResolution + unitSquareSample.coords.Y);
                         ray.Direction = GetRayDirection(sampleInScreenSpace);
-                        L = L + worldRef.CurrentTracer.trace_ray(ray, depth);
+                        L = L + worldRef.CurrentTracer.TraceRay(ray, depth);
                     }
 
                     L /= vp.NumSamples;

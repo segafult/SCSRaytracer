@@ -13,7 +13,7 @@ namespace SCSRaytracer
 
         }
 
-        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             Point3D p0 = parent.vertices[index0];
             Point3D p1 = parent.vertices[index1];
@@ -59,8 +59,8 @@ namespace SCSRaytracer
                 return false;
 
             tmin = t;
-            sr.normal = interpolate_normal(beta, gamma);
-            sr.hit_point_local = r.Origin + t * r.Direction;
+            sr.Normal = interpolate_normal(beta, gamma);
+            sr.HitPointLocal = r.Origin + t * r.Direction;
             return true;
         }
 

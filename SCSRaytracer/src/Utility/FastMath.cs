@@ -158,7 +158,7 @@ namespace SCSRaytracer
         /// <param name="c">Quartic parameters</param>
         /// <param name="s">Array reference for returning roots by reference</param>
         /// <returns></returns>
-        static public int solveQuartic(float[] c, float[] s)
+        static public int SolveQuartic(float[] c, float[] s)
         {
             float[] coeffs = new float[4];
             float z, u, v, sub;

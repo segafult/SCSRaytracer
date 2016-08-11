@@ -14,6 +14,6 @@ namespace SCSRaytracer
         protected readonly float INVTWOPI = 1.0f / (2.0f * (float)Math.PI);
 
 
-        abstract public Point2D get_uv(Point3D hit_point);
+        abstract public Point2D GetUV(Point3D hitPoint);
     }
 }

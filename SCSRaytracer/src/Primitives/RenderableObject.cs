@@ -12,27 +12,47 @@ namespace SCSRaytracer
     {
         public string id;
         //public RGBColor color;
-        protected Material mat;
+        protected Material _material;
 
-        public virtual bool hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public virtual Material Material
+        {
+            get
+            {
+                return _material;
+            }
+            set
+            {
+                _material = value;
+            }
+        }
+        public virtual BoundingBox BoundingBox
+        {
+            get
+            {
+                return new BoundingBox();
+            }
+        }
+
+        public virtual bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             return false;
         }
-        public virtual bool hit(Ray r, float tmin)
+        public virtual bool Hit(Ray r, float tmin)
         {
             return false;
         }
-        public virtual Material getMaterial() { return mat; }
+        /*
+        public virtual Material getMaterial() { return _material; }
         public virtual void setMaterial(Material m)
         {
-            mat = m;
+            _material = m;
         }
-
+        
         public virtual BoundingBox get_bounding_box()
         {
             return new BoundingBox();
         }
-
+        */
         public static RenderableObject LoadRenderableObject(XmlElement objRoot)
         {
             RenderableObject toReturn = null;
@@ -67,7 +87,7 @@ namespace SCSRaytracer
 
                 toReturn.id = objRoot.GetAttribute("id");
                 if(objRoot.HasAttribute("mat"))
-                    toReturn.setMaterial(GlobalVars.WORLD_REF.GetMaterialByID(objRoot.GetAttribute("mat")));
+                    toReturn.Material = GlobalVars.WORLD_REF.GetMaterialByID(objRoot.GetAttribute("mat"));
 
                 return toReturn;
             }

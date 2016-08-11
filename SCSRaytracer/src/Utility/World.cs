@@ -203,26 +203,26 @@ namespace SCSRaytracer
                 // Intersect each object in render list
                 // First term evaluated first, therefore (t < tmin) will be doing a comparison of t value
                 // of present object vs minimum t value.
-                if (_renderList[i].hit(ray, ref t, ref sr) && (t < tmin))
+                if (_renderList[i].Hit(ray, ref t, ref sr) && (t < tmin))
                 {
-                    sr.hit_an_object = true; // at least one intersection has occurred
+                    sr.HitAnObject = true; // at least one intersection has occurred
 
                     // store temporary references to information about current object with minimum t
                     tmin = t;
-                    closestmat = sr.obj_material;
-                    sr.hit_point = ray.Origin + t * ray.Direction; // calculate hit point in world space by adding t*direction to origin
-                    normal = sr.normal;
-                    local_hit_point = sr.hit_point_local;
+                    closestmat = sr.ObjectMaterial;
+                    sr.HitPoint = ray.Origin + t * ray.Direction; // calculate hit point in world space by adding t*direction to origin
+                    normal = sr.Normal;
+                    local_hit_point = sr.HitPointLocal;
                 }
             }
 
             //If we hit an object, store local vars for closest object with ray intersection in sr before returning
-            if(sr.hit_an_object)
+            if(sr.HitAnObject)
             {
-                sr.t = tmin;
-                sr.normal = normal;
-                sr.hit_point_local = local_hit_point;
-                sr.obj_material = closestmat;
+                sr.TMinimum = tmin;
+                sr.Normal = normal;
+                sr.HitPointLocal = local_hit_point;
+                sr.ObjectMaterial = closestmat;
             }
 
             return (sr);
@@ -290,8 +290,8 @@ namespace SCSRaytracer
                 my_image.LoadFromFile("E:\\earth.jpg");
 
                 ImageTexture my_tex = new ImageTexture();
-                my_tex.setMapper(rect_map);
-                my_tex.set_image(my_image);
+                my_tex.MapType = rect_map;
+                my_tex.Image = my_image;
 
                 MatteShader mymatte = new MatteShader();
                 //mymatte.setCr(my_tex);
@@ -313,8 +313,8 @@ namespace SCSRaytracer
                 my_skybox.LoadFromFile("E:\\skybox.jpg");
 
                 my_tex = new ImageTexture();
-                my_tex.setMapper(sphere_map);
-                my_tex.set_image(my_skybox);
+                my_tex.MapType = sphere_map;
+                my_tex.Image = my_skybox;
 
                 
                 MatteShader skymatte = new MatteShader();
@@ -322,7 +322,7 @@ namespace SCSRaytracer
                 skymatte.setKa(1.0f);
 
                 Sphere skybox = new Sphere(new Point3D(0, 0, 0),1000);
-                skybox.setMaterial(skymatte);
+                skybox.Material = skymatte;
                 //mygrid.add_object(skybox);
                 AddObjectToScene(skybox);
 
@@ -332,10 +332,10 @@ namespace SCSRaytracer
                 Mesh dragon = new Mesh();
                 dragon.loadFromFile("E:\\dragon.off", true);
                 dragon.setup_cells();
-                dragon.setMaterial(new MatteShader());
+                dragon.Material = new MatteShader();
                 Instance myInstance = new Instance(dragon);
-                myInstance.scale(100, 100, 100);
-                myInstance.rotate(90, 0, 0);
+                myInstance.Scale(100, 100, 100);
+                myInstance.Rotate(90, 0, 0);
                 AddObjectToScene(myInstance);
             }
             //Custom build function if no input file specified

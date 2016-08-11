@@ -52,9 +52,9 @@ namespace SCSRaytracer
 
         public override RGBColor shade(ShadeRec sr)
         {
-            Vect3D wo = -sr.ray.Direction; //Ray pointing from point of intersection to camera.
-            RGBColor L = ambient_brdf.rho(sr, wo) * sr.w.AmbientLight.L(sr); //Start with ambient
-            int numlights = sr.w.LightList.Count;
+            Vect3D wo = -sr.Ray.Direction; //Ray pointing from point of intersection to camera.
+            RGBColor L = ambient_brdf.rho(sr, wo) * sr.WorldPointer.AmbientLight.L(sr); //Start with ambient
+            int numlights = sr.WorldPointer.LightList.Count;
             Vect3D wi; //Direction to incident light
             float ndotwi;
             bool inShadow;
@@ -63,21 +63,21 @@ namespace SCSRaytracer
             //Add together light contributions for all light sources
             for(int i = 0; i<numlights; i++)
             {
-                wi = sr.w.LightList[i].getDirection(sr); //Get the direction from the point of contact to the light source.
-                ndotwi = (float)(sr.normal * wi); //Dot product of normal and light source, 0 if orthogonal, 1 if parallel.
+                wi = sr.WorldPointer.LightList[i].getDirection(sr); //Get the direction from the point of contact to the light source.
+                ndotwi = (float)(sr.Normal * wi); //Dot product of normal and light source, 0 if orthogonal, 1 if parallel.
                 if(ndotwi > 0.0f)//Avoid unnecessary light summation
                 {
                     inShadow = false;
 
-                    if(sr.w.LightList[i].castsShadows())
+                    if(sr.WorldPointer.LightList[i].castsShadows())
                     {
-                        shadowRay = new Ray(sr.hit_point+(GlobalVars.SHAD_K_EPSILON*wi), wi);
-                        inShadow = sr.w.LightList[i].inShadow(sr, shadowRay);
+                        shadowRay = new Ray(sr.HitPoint+(GlobalVars.SHAD_K_EPSILON*wi), wi);
+                        inShadow = sr.WorldPointer.LightList[i].inShadow(sr, shadowRay);
                     }
                     if (!inShadow)
                     {
                         //Add diffuse and specular components.
-                        L += (diffuse_brdf.f(sr, wo, wi) + specular_brdf.f(sr, wo, wi)) * sr.w.LightList[i].L(sr) * ndotwi;
+                        L += (diffuse_brdf.f(sr, wo, wi) + specular_brdf.f(sr, wo, wi)) * sr.WorldPointer.LightList[i].L(sr) * ndotwi;
                     }
                 }
             }

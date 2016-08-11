@@ -13,13 +13,14 @@ namespace SCSRaytracer
     sealed class SphericalMapper : Mapper
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override Point2D get_uv(Point3D hit_point)
+        public override Point2D GetUV(Point3D hitPoint)
         {
             //Map hit point to a unit sphere by normalizing vector from origin to hit point.
-            Vector3 hit_normalized = Vector3.Normalize(hit_point.Coordinates);
+            //Vector3 hitNormalized = Vector3.Normalize(hitPoint.Coordinates);
+            Vect3D hitNormalized = new Vect3D(hitPoint).Hat();
 
-            float phi = (float)Math.Atan2(hit_normalized.X, hit_normalized.Z) + FastMath.FPI;
-            float omega = (float)Math.Acos(hit_normalized.Y);
+            float phi = (float)Math.Atan2(hitNormalized.X, hitNormalized.Z) + FastMath.FPI;
+            float omega = (float)Math.Acos(hitNormalized.Y);
 
             //Calculate spherical UV coordinates
             float u = phi * FastMath.FINVTWOPI;

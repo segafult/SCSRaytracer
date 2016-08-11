@@ -16,6 +16,23 @@ namespace SCSRaytracer
     {
         protected List<RenderableObject> objs;
 
+        // accessors
+        public override Material Material
+        {
+            get
+            {
+                return _material;
+            }
+            set
+            {
+                int numobjs = objs.Count;
+                for (int i = 0; i < numobjs; i++)
+                {
+                    objs[i].Material = value;
+                }
+            }
+        }
+
         public CompoundRenderable()
         {
             objs = new List<RenderableObject>();
@@ -26,7 +43,7 @@ namespace SCSRaytracer
             objs.Add(toAdd);
         }
 
-        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             float t = GlobalVars.K_HUGE_VALUE;
             Normal normal = new Normal();
@@ -40,27 +57,28 @@ namespace SCSRaytracer
             //hit function
             for(int i = 0; i < numobjs; i++)
             {
-                if(objs[i].hit(r, ref t, ref sr) && (t<tmin))
+                if(objs[i].Hit(r, ref t, ref sr) && (t<tmin))
                 {
                     hit = true;
                     tmin = t;
-                    closestmat = sr.obj_material;
-                    normal = sr.normal;
-                    local_hit_point = sr.hit_point_local;
+                    closestmat = sr.ObjectMaterial;
+                    normal = sr.Normal;
+                    local_hit_point = sr.HitPointLocal;
                 }
             }
 
             if(hit)
             {
-                sr.t = tmin;
-                sr.normal = normal;
-                sr.hit_point_local = local_hit_point;
-                sr.obj_material = closestmat;
+                sr.TMinimum = tmin;
+                sr.Normal = normal;
+                sr.HitPointLocal = local_hit_point;
+                sr.ObjectMaterial = closestmat;
             }
 
             return hit;
         }
 
+        /*
         public override void setMaterial(Material m)
         {
             int numobjs = objs.Count;
@@ -69,6 +87,7 @@ namespace SCSRaytracer
                 objs[i].setMaterial(m);
             }
         }
+        */
 
         public static CompoundRenderable LoadCompoundRenderable(XmlElement def)
         {

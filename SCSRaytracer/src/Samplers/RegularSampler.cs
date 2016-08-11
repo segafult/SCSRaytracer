@@ -14,7 +14,7 @@ namespace SCSRaytracer
     sealed class RegularSampler : Sampler
     {
 
-        public RegularSampler(int s) : base(s)
+        public RegularSampler(int numSamples) : base(numSamples)
         {
 
         }
@@ -25,16 +25,16 @@ namespace SCSRaytracer
 
         public override void GenerateSamples()
         {
-            int n = (int)Math.Sqrt(_numSamples);
+            int squareSize = (int)Math.Sqrt(_numSamples);
             _bitMask = (ulong)_numSamples - 1;
 
             for(int setloop = 0; setloop<_numSets; setloop++)
             {
-                for(int j = 0; j < n; j++)
+                for(int j = 0; j < squareSize; j++)
                 {
-                    for(int k = 0; k < n; k++)
+                    for(int k = 0; k < squareSize; k++)
                     {
-                        _samples.Add(new Point2D((float)k / (float)n, (float)j / (float)n));
+                        _samples.Add(new Point2D((float)k / (float)squareSize, (float)j / (float)squareSize));
                     }
                 }
             }

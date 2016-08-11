@@ -11,34 +11,60 @@ namespace SCSRaytracer
 
     sealed class Plane : RenderableObject
     {
-        private Point3D p;
-        private Normal n;
+        private Point3D _p;
+        private Normal _n;
+
+        // Accessors
+        public Point3D PointOnPlane
+        {
+            get
+            {
+                return _p;
+            }
+            set
+            {
+                _p = value;
+            }
+        }
+        public Normal Normal
+        {
+            get
+            {
+                return _n;
+            }
+            set
+            {
+                _n = value;
+            }
+        }
 
         public Plane()
         {
-            p = new Point3D(0, 0, 0);
-            n = new Normal(0, 1, 0);
+            _p = new Point3D(0, 0, 0);
+            _n = new Normal(0, 1, 0);
         }
         public Plane(Point3D point, Normal normal)
         {
-            p = point;
-            n = normal;
+            _p = point;
+            _n = normal;
         }
 
         public override string ToString()
         {
             return "Plane primitive\n" +
                 "  ID: " + id + "\n" +
-                "  Mat: " + this.getMaterial().id + "\n" +
-                "  P: " + p.ToString() + "\n" +
-                "  N: " + n.ToString();
+                "  Mat: " + this.Material.id + "\n" +
+                "  P: " + _p.ToString() + "\n" +
+                "  N: " + _n.ToString();
         }
 
         //Gets and sets
-        public void setP(Point3D parg) { p = parg; }
-        public void setN(Normal narg) { n = narg; }
-        public Point3D getP() { return p; }
-        public Normal getN() { return n; }
+        /*
+        public void setP(Point3D parg) { _p = parg; }
+        public void setN(Normal narg) { _n = narg; }
+        public Point3D getP() { return _p; }
+        public Normal getN() { return _n; }
+        */
 
         /// <summary>
         /// Determines t value for intersection of plane and given ray, passes shading info back through sr;
@@ -47,17 +73,17 @@ namespace SCSRaytracer
         /// <param name="tmin">Passed by reference, minimum t value</param>
         /// <param name="sr">ShadeRec to store shading info in</param>
         /// <returns></returns>
-        override public bool hit(Ray r, ref float tmin, ref ShadeRec sr)
+        override public bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
-            float t = (p - r.Origin) * n / (r.Direction * n);
+            float t = (_p - r.Origin) * _n / (r.Direction * _n);
 
             //Intersection is in front of camera
             if(t > GlobalVars.K_EPSILON && t < tmin)
             {
                 tmin = t;
-                sr.normal = n;
-                sr.hit_point_local = r.Origin + t * r.Direction;
-                sr.obj_material = mat;
+                sr.Normal = _n;
+                sr.HitPointLocal = r.Origin + t * r.Direction;
+                sr.ObjectMaterial = _material;
                 return true;
             }
             //Intersection is behind camera
@@ -67,9 +93,9 @@ namespace SCSRaytracer
             }
         }
 
-        public override bool hit(Ray r, float tmin)
+        public override bool Hit(Ray r, float tmin)
         {
-            float t = (p - r.Origin) * n / (r.Direction * n);
+            float t = (_p - r.Origin) * _n / (r.Direction * _n);
 
             //Intersection is in front of camera
             if (t > GlobalVars.K_EPSILON && t < tmin)
@@ -92,7 +118,7 @@ namespace SCSRaytracer
                 Point3D pObj = Point3D.FromCsv(pText);
                 //if (pObj != null)
                 //{
-                    toReturn.setP(pObj);
+                    toReturn.PointOnPlane = pObj;
                 //}
             }
 
@@ -104,7 +130,7 @@ namespace SCSRaytracer
                 Normal nObj = Normal.FromCsv(nText);
                 //if (nObj != null)
                 //{
-                    toReturn.setN(nObj);
+                    toReturn.Normal = nObj;
                 //}
             }
 

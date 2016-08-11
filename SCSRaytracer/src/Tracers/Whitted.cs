@@ -22,38 +22,38 @@ namespace SCSRaytracer
             
         }
 
-        public override RGBColor trace_ray(Ray ray)
+        public override RGBColor TraceRay(Ray ray)
         {
             throw new NotImplementedException();
         }
 
-        public override RGBColor trace_ray(Ray ray, int depth)
+        public override RGBColor TraceRay(Ray ray, int depth)
         {
             // If depth exceeded maximum depth, no hits will occurr, and pixel will be black
-            if(depth > world_pointer.CurrentViewPlane.MaximumRenderDepth)
+            if(depth > worldPointer.CurrentViewPlane.MaximumRenderDepth)
             {
                 return (GlobalVars.COLOR_BLACK);
             }
             // Otherwise fetch shader info for current ray, assuming a hit occurs
             else
             {
-                ShadeRec sr = world_pointer.HitObjects(ray);
+                ShadeRec shadeRec = worldPointer.HitObjects(ray);
 
-                if(sr.hit_an_object)
+                if(shadeRec.HitAnObject)
                 {
-                    sr.depth = depth;
-                    sr.ray = ray;
+                    shadeRec.RecursionDepth = depth;
+                    shadeRec.Ray = ray;
                     // apply shading and return color
-                    return (sr.obj_material.shade(sr));
+                    return (shadeRec.ObjectMaterial.shade(shadeRec));
                 }
                 else
                 {
                     // return background color if no hits
-                    return world_pointer.CurrentBackgroundColor;
+                    return worldPointer.CurrentBackgroundColor;
                 }
             }
         }
-        public override RGBColor trace_ray(Ray ray, float tmin, int depth)
+        public override RGBColor TraceRay(Ray ray, float tMin, int depth)
         {
             throw new NotImplementedException();
         }

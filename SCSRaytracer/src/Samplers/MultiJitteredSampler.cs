@@ -11,7 +11,7 @@ namespace SCSRaytracer
     sealed class MultiJitteredSampler : Sampler
     {
 
-        public MultiJitteredSampler(int s) : base(s)
+        public MultiJitteredSampler(int numSamples) : base(numSamples)
         {
             randomgen = new Random();
         }

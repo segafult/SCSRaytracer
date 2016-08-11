@@ -9,16 +9,24 @@ namespace SCSRaytracer
     abstract class Texture
     {
 
-        protected Mapper maptype = null;
+        protected Mapper _mapType = null;
+
+        public Mapper MapType
+        {
+            set
+            {
+                _mapType = value;
+            }
+        }
 
         public Texture()
         {
 
         }
 
-        public void setMapper(Mapper map) { maptype = map; }
+        //public void setMapper(Mapper map) { _mapType = map; }
 
-        virtual public RGBColor getColor(ShadeRec sr)
+        virtual public RGBColor GetColor(ShadeRec sr)
         {
             return new RGBColor(1, 1, 1);
         }

@@ -46,13 +46,13 @@ namespace SCSRaytracer
         public void setup_bounds()
         {
             //Construct bounding box
-            bbox.c0 = lowbound;
-            bbox.c1 = highbound;
+            bbox.corner0 = lowbound;
+            bbox.corner1 = highbound;
             //bbox.x0 = lowbound.X; bbox.y0 = lowbound.Y; bbox.z0 = lowbound.Z;
             //bbox.x1 = highbound.X; bbox.y1 = highbound.Y; bbox.z1 = highbound.Z;
         }
 
-        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             //First verify intersection point of ray with bounding box.
             Vector3 o = r.Origin.Coordinates;
@@ -64,8 +64,8 @@ namespace SCSRaytracer
             //float dy = r.direction.coords.Y;
             //float dz = r.direction.coords.Z;
 
-            Vector3 c0 = bbox.c0;
-            Vector3 c1 = bbox.c1;
+            Vector3 c0 = bbox.corner0;
+            Vector3 c1 = bbox.corner1;
             //float x0 = bbox.c0.X;
             //float y0 = bbox.c0.Y;
             //float z0 = bbox.c0.Z;
@@ -164,9 +164,9 @@ namespace SCSRaytracer
             if(tdist < trigger_dist)
             {
                 tmin = tpos;
-                sr.hit_point_local = r.Origin + tpos * r.Direction;
-                sr.normal = approximateNormal(sr.hit_point_local, r.Direction);
-                sr.obj_material = mat;
+                sr.HitPointLocal = r.Origin + tpos * r.Direction;
+                sr.Normal = approximateNormal(sr.HitPointLocal, r.Direction);
+                sr.ObjectMaterial = _material;
                 return true;
             }
             else
@@ -223,9 +223,9 @@ namespace SCSRaytracer
                 {
                     //Converged to correct location!
                     tmin = lowbound;
-                    sr.hit_point_local = r.Origin + lowbound * r.Direction;
-                    sr.normal = approximateNormal(sr.hit_point_local, r.Direction);
-                    sr.obj_material = mat;
+                    sr.HitPointLocal = r.Origin + lowbound * r.Direction;
+                    sr.Normal = approximateNormal(sr.HitPointLocal, r.Direction);
+                    sr.ObjectMaterial = _material;
                     return true;
                 }
             }
@@ -233,9 +233,9 @@ namespace SCSRaytracer
             {
                 //Bottom of recursion stack, calculate relevant values
                 tmin = lowbound;
-                sr.hit_point_local = r.Origin + (float)lowbound * r.Direction;
-                sr.normal = approximateNormal(sr.hit_point_local, r.Direction);
-                sr.obj_material = sr.w.MaterialList[0];
+                sr.HitPointLocal = r.Origin + (float)lowbound * r.Direction;
+                sr.Normal = approximateNormal(sr.HitPointLocal, r.Direction);
+                sr.ObjectMaterial = sr.WorldPointer.MaterialList[0];
                 return true;
             }
         }

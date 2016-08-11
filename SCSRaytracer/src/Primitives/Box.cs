@@ -50,7 +50,7 @@ namespace SCSRaytracer
             z1 = z1_arg;
         }
 
-        public void setPoints(Point3D p1, Point3D p2)
+        public void SetPoints(Point3D p1, Point3D p2)
         {
             x0 = p1.X < p2.X ? p1.X : p2.X;
             x1 = p1.X > p2.X ? p1.X : p2.X;
@@ -59,7 +59,7 @@ namespace SCSRaytracer
             z0 = p1.Z < p2.Z ? p1.Z : p2.Z;
             z1 = p1.Z > p2.Z ? p1.Z : p2.Z;
         }
-        public override bool hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
         {
             ///-------------------------------------------------------------------------------------
             /// same as colision code for axis aligned bounding box
@@ -150,24 +150,24 @@ namespace SCSRaytracer
                 if (t0 > GlobalVars.K_EPSILON) //Ray hits outside surface
                 {
                     tmin = t0;
-                    sr.normal = get_normal(face_in);
+                    sr.Normal = GetNormal(face_in);
                 }
                 else//Ray hits inside surface
                 {
                     //Console.Write("hit inside");
                     tmin = t1;
-                    sr.normal = get_normal(face_out);
+                    sr.Normal = GetNormal(face_out);
                 }
 
-                sr.hit_point_local = r.Origin + tmin * r.Direction;
-                sr.obj_material = mat;
+                sr.HitPointLocal = r.Origin + tmin * r.Direction;
+                sr.ObjectMaterial = _material;
                 return true;
             }
             else
                 return false;
         }
 
-        public override bool hit(Ray r, float tmin)
+        public override bool Hit(Ray r, float tmin)
         {
             float ox = r.Origin.X; float oy = r.Origin.Y; float oz = r.Origin.Z;
             float dx = r.Direction.X; float dy = r.Direction.Y; float dz = r.Direction.Z;
@@ -254,7 +254,7 @@ namespace SCSRaytracer
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Normal get_normal(int face_hit)
+        private Normal GetNormal(int face_hit)
         {
             switch(face_hit)
             {
@@ -286,7 +286,7 @@ namespace SCSRaytracer
                 plist.Add(Point3D.FromCsv(((XmlText)points[0].FirstChild).Data));
                 plist.Add(Point3D.FromCsv(((XmlText)points[1].FirstChild).Data));
 
-                toReturn.setPoints(plist[0], plist[1]);
+                toReturn.SetPoints(plist[0], plist[1]);
             }
             else
             {

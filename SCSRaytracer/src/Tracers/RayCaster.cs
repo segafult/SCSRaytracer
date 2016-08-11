@@ -15,7 +15,7 @@ namespace SCSRaytracer
     {
         public RayCaster(World w)
         {
-            world_pointer = w;
+            worldPointer = w;
         }
 
         /// <summary>
@@ -23,27 +23,27 @@ namespace SCSRaytracer
         /// </summary>
         /// <param name="ray">Ray for tracing</param>
         /// <returns>Color of the object intersected, or the background color if no intersection occurred.</returns>
-        public override RGBColor trace_ray(Ray ray)
+        public override RGBColor TraceRay(Ray ray)
         {
-            ShadeRec sr = new ShadeRec(world_pointer.HitObjects(ray));
+            ShadeRec shadeRec = new ShadeRec(worldPointer.HitObjects(ray));
 
-            if(sr.hit_an_object)
+            if(shadeRec.HitAnObject)
             {
                 //Console.Write("hit");
                 //return new RGBColor(1.0, 0, 0);
-                sr.ray = ray; //Store information for specular highlight.
-                return (sr.obj_material.shade(sr)); //Call shader function for object material.
+                shadeRec.Ray = ray; //Store information for specular highlight.
+                return (shadeRec.ObjectMaterial.shade(shadeRec)); //Call shader function for object material.
             }
-            else { return world_pointer.CurrentBackgroundColor; } //No need to call shader function if no intersection occurred.
+            else { return worldPointer.CurrentBackgroundColor; } //No need to call shader function if no intersection occurred.
         }
 
-        public override RGBColor trace_ray(Ray ray, float tmin, int depth)
+        public override RGBColor TraceRay(Ray ray, float tMin, int depth)
         {
             throw new NotImplementedException();
         }
-        public override RGBColor trace_ray(Ray ray, int depth)
+        public override RGBColor TraceRay(Ray ray, int depth)
         {
-            return trace_ray(ray);
+            return TraceRay(ray);
         }
     }
 }

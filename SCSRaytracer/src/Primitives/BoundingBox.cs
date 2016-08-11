@@ -17,13 +17,13 @@ namespace SCSRaytracer
         //public float x0, x1;
         //public float y0, y1;
         //public float z0, z1;
-        public Vector3 c0;
-        public Vector3 c1;
+        public Vector3 corner0;
+        public Vector3 corner1;
 
         public BoundingBox()
         {
-            c0 = new Vector3(-GlobalVars.K_HUGE_VALUE);
-            c1 = new Vector3(GlobalVars.K_HUGE_VALUE);
+            corner0 = new Vector3(-GlobalVars.K_HUGE_VALUE);
+            corner1 = new Vector3(GlobalVars.K_HUGE_VALUE);
             //x0 = -GlobalVars.kHugeValue;
             //x1 = GlobalVars.kHugeValue;
             //y0 = -GlobalVars.kHugeValue;
@@ -33,8 +33,8 @@ namespace SCSRaytracer
         }
         public BoundingBox(float x0_arg, float x1_arg, float y0_arg, float y1_arg, float z0_arg, float z1_arg)
         {
-            c0 = new Vector3(x0_arg, y0_arg, z0_arg);
-            c1 = new Vector3(x1_arg, y1_arg, z1_arg);
+            corner0 = new Vector3(x0_arg, y0_arg, z0_arg);
+            corner1 = new Vector3(x1_arg, y1_arg, z1_arg);
             //x0 = x0_arg;
             //x1 = x1_arg;
             //y0 = y0_arg;
@@ -43,7 +43,7 @@ namespace SCSRaytracer
             //z1 = z1_arg;
         }
 
-        public override bool hit(Ray r, float tmin)
+        public override bool Hit(Ray r, float tmin)
         {
             float ox = r.Origin.X; float oy = r.Origin.Y; float oz = r.Origin.Z;
             float dx = r.Direction.X; float dy = r.Direction.Y; float dz = r.Direction.Z;
@@ -59,37 +59,37 @@ namespace SCSRaytracer
             float a = 1.0f / dx;
             if(a >= 0.0)
             {
-                tx_min = (c0.X - ox) * a;
-                tx_max = (c1.X - ox) * a;
+                tx_min = (corner0.X - ox) * a;
+                tx_max = (corner1.X - ox) * a;
             }
             else
             {
-                tx_min = (c1.X - ox) * a;
-                tx_max = (c0.X - ox) * a;
+                tx_min = (corner1.X - ox) * a;
+                tx_max = (corner0.X - ox) * a;
             }
 
             float b = 1.0f / dy;
             if( b >= 0.0)
             {
-                ty_min = (c0.Y - oy) * b;
-                ty_max = (c1.Y - oy) * b;
+                ty_min = (corner0.Y - oy) * b;
+                ty_max = (corner1.Y - oy) * b;
             }
             else
             {
-                ty_min = (c1.Y - oy) * b;
-                ty_max = (c0.Y - oy) * b;
+                ty_min = (corner1.Y - oy) * b;
+                ty_max = (corner0.Y - oy) * b;
             }
 
             float c = 1.0f / dz;
             if( c >= 0.0)
             {
-                tz_min = (c0.Z - oz) * c;
-                tz_max = (c1.Z - oz) * c;
+                tz_min = (corner0.Z - oz) * c;
+                tz_max = (corner1.Z - oz) * c;
             }
             else
             {
-                tz_min = (c1.Z - oz) * c;
-                tz_max = (c0.Z - oz) * c;
+                tz_min = (corner1.Z - oz) * c;
+                tz_max = (corner0.Z - oz) * c;
             }
 
             float t0, t1;
@@ -131,9 +131,9 @@ namespace SCSRaytracer
 
         public bool inside(Point3D parg)
         {
-            return (parg.X > c0.X && parg.X < c1.X) &&
-                (parg.Y > c0.Y && parg.Y < c1.Y) &&
-                (parg.Z > c0.Z && parg.Z < c1.Z);
+            return (parg.X > corner0.X && parg.X < corner1.X) &&
+                (parg.Y > corner0.Y && parg.Y < corner1.Y) &&
+                (parg.Z > corner0.Z && parg.Z < corner1.Z);
         }
     }
 }

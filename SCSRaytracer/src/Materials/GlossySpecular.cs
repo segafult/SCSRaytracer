@@ -40,8 +40,8 @@ namespace SCSRaytracer
         public override RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo)
         {
             RGBColor L = new RGBColor(0.0f, 0.0f, 0.0f);
-            float ndotwi = (sr.normal * wi); //Dot product of normal and angle of incidence gives the angle of mirror reflection
-            Vect3D r = new Vect3D(-wi + 2.0f * sr.normal * ndotwi); //Vector describing direction of mirror reflection
+            float ndotwi = (sr.Normal * wi); //Dot product of normal and angle of incidence gives the angle of mirror reflection
+            Vect3D r = new Vect3D(-wi + 2.0f * sr.Normal * ndotwi); //Vector describing direction of mirror reflection
             float rdotwo = (r * wo);
 
             if(rdotwo > 0.0)

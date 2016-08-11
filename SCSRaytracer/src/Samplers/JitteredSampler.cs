@@ -11,7 +11,7 @@ namespace SCSRaytracer
     sealed class JitteredSampler : Sampler
     {
 
-        public JitteredSampler(int s) : base(s)
+        public JitteredSampler(int numSamples) : base(numSamples)
         {
             randomgen = new Random();
         }

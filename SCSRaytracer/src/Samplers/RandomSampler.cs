@@ -11,7 +11,7 @@ namespace SCSRaytracer
     sealed class RandomSampler : Sampler
     {
 
-        public RandomSampler(int s) : base(s)
+        public RandomSampler(int numSamples) : base(numSamples)
         {
             randomgen = new Random();
         }

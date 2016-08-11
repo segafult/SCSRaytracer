@@ -11,7 +11,7 @@ namespace SCSRaytracer
     sealed class NRooksSampler : Sampler
     {
 
-        public NRooksSampler(int s) : base(s)
+        public NRooksSampler(int numSamples) : base(numSamples)
         {
             randomgen = new Random();
             _numSets = 16;

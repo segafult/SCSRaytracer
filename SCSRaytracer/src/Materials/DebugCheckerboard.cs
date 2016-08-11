@@ -15,7 +15,7 @@ namespace SCSRaytracer
         {
             RGBColor multiplar = base.shade(sr);
             float scalefactor;
-            if(Math.Abs(sr.hit_point.X) % 50 < 25 && Math.Abs(sr.hit_point.Z) % 50 > 25)
+            if(Math.Abs(sr.HitPoint.X) % 50 < 25 && Math.Abs(sr.HitPoint.Z) % 50 > 25)
             {
                 scalefactor = 0.1f;
             }

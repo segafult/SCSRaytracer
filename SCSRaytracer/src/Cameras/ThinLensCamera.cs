@@ -103,7 +103,7 @@ namespace SCSRaytracer
 
                         ray.Origin = _eye + lp.coords.X * u + lp.coords.Y * v;
                         ray.Direction = GetRayDirection(pp, lp);
-                        L += w.CurrentTracer.trace_ray(ray, depth);
+                        L += w.CurrentTracer.TraceRay(ray, depth);
                     }
                     L /= vp.NumSamples;
                     L *= _exposureTime;
@@ -162,7 +162,7 @@ namespace SCSRaytracer
 
                         ray.Origin = _eye + samplePointOnLens.coords.X * u + samplePointOnLens.coords.Y * v;
                         ray.Direction = GetRayDirection(samplePointPixelSpace, samplePointOnLens);
-                        L += worldRef.CurrentTracer.trace_ray(ray, depth);
+                        L += worldRef.CurrentTracer.TraceRay(ray, depth);
                     }
                     L /= vp.NumSamples;
                     L *= _exposureTime;

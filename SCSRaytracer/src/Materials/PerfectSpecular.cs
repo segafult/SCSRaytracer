@@ -31,12 +31,12 @@ namespace SCSRaytracer
 
         public override RGBColor sample_f(ShadeRec sr, ref Vect3D wi, ref Vect3D wo)
         {
-            float ndotwo = sr.normal * wo;
-            wi = -wo + 2.0f * sr.normal * ndotwo;
+            float ndotwo = sr.Normal * wo;
+            wi = -wo + 2.0f * sr.Normal * ndotwo;
             if (cr_tex == null)
-                return (kr * cr / (sr.normal * wi));
+                return (kr * cr / (sr.Normal * wi));
             else
-                return (kr * cr_tex.getColor(sr) / (sr.normal * wi));
+                return (kr * cr_tex.GetColor(sr) / (sr.Normal * wi));
         }
     }
 }

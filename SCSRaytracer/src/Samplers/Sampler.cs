@@ -37,11 +37,11 @@ namespace SCSRaytracer
         public int Jump { get { return _jump; } }
 
 
-        protected Sampler(int s)
+        protected Sampler(int numSamples)
         {
             count = 0;
             _jump = 0;
-            _numSamples = s;
+            _numSamples = numSamples;
             _numSets = 25;
             _samples = new List<Point2D>();
             _diskSamples = new List<Point2D>();
