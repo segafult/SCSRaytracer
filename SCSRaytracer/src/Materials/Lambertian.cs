@@ -8,46 +8,78 @@ namespace SCSRaytracer
 {
     class Lambertian : BRDF
     {
-        private float kd;
-        private RGBColor cd;
-        private Texture cd_tex = null;
+        private float _diffuseReflectionCoefficient;
+        private RGBColor _colorDiffuse;
+        private Texture _colorDiffuseTexture = null;
+
+        public float DiffuseReflectionCoefficient
+        {
+            get
+            {
+                return _diffuseReflectionCoefficient;
+            }
+            set
+            {
+                _diffuseReflectionCoefficient = value;
+            }
+        }
+        public RGBColor ColorDiffuse
+        {
+            get
+            {
+                return _colorDiffuse;
+            }
+            set
+            {
+                _colorDiffuse = value;
+            }
+        }
+        public Texture Texture
+        {
+            set
+            {
+                _colorDiffuseTexture = value;
+            }
+        }
 
         public Lambertian()
         {
-            kd = 0.5F;
-            cd = new RGBColor(0.5f, 0.5f, 0.5f);
+            _diffuseReflectionCoefficient = 0.5F;
+            _colorDiffuse = new RGBColor(0.5f, 0.5f, 0.5f);
         }
         public Lambertian(float kdarg, RGBColor cdarg)
         {
-            kd = kdarg;
-            cd = cdarg;
+            _diffuseReflectionCoefficient = kdarg;
+            _colorDiffuse = cdarg;
         }
         //Copy constructor
         public Lambertian(Lambertian clone)
         {
-            kd = clone.getKd();
-            cd = clone.getCd();
+            _diffuseReflectionCoefficient = clone.DiffuseReflectionCoefficient;
+            _colorDiffuse = clone.ColorDiffuse;
         }
 
-        public float getKd() { return kd; }
-        public RGBColor getCd() { return cd; }
-        public void setKd(float kdarg) { kd = kdarg; }
-        public void setCd(RGBColor cdarg) { cd = cdarg; }
-        public void setCd(Texture texarg) { cd_tex = texarg; }
+        /*
+        public float getKd() { return _diffuseReflectionCoefficient; }
+        public RGBColor getCd() { return _colorDiffuse; }
+        public void setKd(float kdarg) { _diffuseReflectionCoefficient = kdarg; }
+        public void setCd(RGBColor cdarg) { _colorDiffuse = cdarg; }
+        public void setCd(Texture texarg) { _colorDiffuseTexture = texarg; }
+        */
         
-        public override RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo)
+        public override RGBColor F(ShadeRec sr, Vect3D incomingDirection, Vect3D reflectedDirection)
         {
-            if (cd_tex == null)
-                return (kd * cd * GlobalVars.INVERSE_PI);
+            if (_colorDiffuseTexture == null)
+                return (_diffuseReflectionCoefficient * _colorDiffuse * GlobalVars.INVERSE_PI);
             else
-                return (kd * cd_tex.GetColor(sr) * GlobalVars.INVERSE_PI);
+                return (_diffuseReflectionCoefficient * _colorDiffuseTexture.GetColor(sr) * GlobalVars.INVERSE_PI);
         }
-        public override RGBColor rho(ShadeRec sr, Vect3D wo)
+        public override RGBColor Rho(ShadeRec sr, Vect3D reflectedDirection)
         {
-            if (cd_tex == null)
-                return (kd * cd);
+            if (_colorDiffuseTexture == null)
+                return (_diffuseReflectionCoefficient * _colorDiffuse);
             else
-                return (kd * cd_tex.GetColor(sr));
+                return (_diffuseReflectionCoefficient * _colorDiffuseTexture.GetColor(sr));
         }
     }
 }

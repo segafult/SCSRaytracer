@@ -11,9 +11,9 @@ namespace SCSRaytracer
     class DebugCheckerboard : PhongShader
     {
 
-        public override RGBColor shade(ShadeRec sr)
+        public override RGBColor Shade(ShadeRec sr)
         {
-            RGBColor multiplar = base.shade(sr);
+            RGBColor multiplar = base.Shade(sr);
             float scalefactor;
             if(Math.Abs(sr.HitPoint.X) % 50 < 25 && Math.Abs(sr.HitPoint.Z) % 50 > 25)
             {

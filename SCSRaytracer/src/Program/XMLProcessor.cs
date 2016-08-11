@@ -152,7 +152,7 @@ namespace SCSRaytracer
                         if (ka != null)
                         {
                             float kaDouble = Convert.ToSingle(((XmlText)ka.FirstChild).Data);
-                            matte.setKa(kaDouble);
+                            matte.AmbientReflectionCoefficient = kaDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -163,7 +163,7 @@ namespace SCSRaytracer
                         if (kd != null)
                         {
                             float kdDouble = Convert.ToSingle(((XmlText)kd.FirstChild).Data);
-                            matte.setKd(kdDouble);
+                            matte.DiffuseReflectionCoefficient = kdDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -175,7 +175,7 @@ namespace SCSRaytracer
                         {
                             string cdStr = ((XmlText)cd.FirstChild).Data;
 
-							matte.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+							matte.ColorDiffuse = new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr));
 
                         }
                     }
@@ -206,7 +206,7 @@ namespace SCSRaytracer
                         if (ka != null)
                         {
                             float kaDouble = Convert.ToSingle(((XmlText)ka.FirstChild).Data);
-                            phong.setKa(kaDouble);
+                            phong.AmbientReflectionCoefficient = kaDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -217,7 +217,7 @@ namespace SCSRaytracer
                         if (kd != null)
                         {
                             float kdDouble = Convert.ToSingle(((XmlText)kd.FirstChild).Data);
-                            phong.setKd(kdDouble);
+                            phong.DiffuseReflectionCoefficient = kdDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -228,7 +228,7 @@ namespace SCSRaytracer
                         if (cd != null)
                         {
                             string cdStr = ((XmlText)cd.FirstChild).Data;
-                            phong.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+                            phong.Color = new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr));
                         }
                     }
                     catch (System.Exception e) { Console.WriteLine(e.ToString()); }
@@ -239,7 +239,7 @@ namespace SCSRaytracer
                         if (ks != null)
                         {
                             float ksDouble = Convert.ToSingle(((XmlText)ks.FirstChild).Data);
-                            phong.setKs(ksDouble);
+                            phong.SpecularReflectionCoefficient = ksDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -250,7 +250,7 @@ namespace SCSRaytracer
                         if (exp != null)
                         {
                             float expDouble = Convert.ToSingle(((XmlText)exp.FirstChild).Data);
-                            phong.setExp(expDouble);
+                            phong.PhongExponent = expDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -280,7 +280,7 @@ namespace SCSRaytracer
                         if (ka != null)
                         {
                             float kaDouble = Convert.ToSingle(((XmlText)ka.FirstChild).Data);
-                            reflective.setKa(kaDouble);
+                            reflective.AmbientReflectionCoefficient = kaDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -291,7 +291,7 @@ namespace SCSRaytracer
                         if (kd != null)
                         {
                             float kdDouble = Convert.ToSingle(((XmlText)kd.FirstChild).Data);
-                            reflective.setKd(kdDouble);
+                            reflective.AmbientReflectionCoefficient = kdDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -302,7 +302,7 @@ namespace SCSRaytracer
                         if (cd != null)
                         {
                             string cdStr = ((XmlText)cd.FirstChild).Data;
-                            reflective.setCd(new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
+                            reflective.Color = (new RGBColor(System.Drawing.ColorTranslator.FromHtml(cdStr)));
                         }
                     }
                     catch (System.Exception e) { Console.WriteLine(e.ToString()); }
@@ -313,7 +313,7 @@ namespace SCSRaytracer
                         if (ks != null)
                         {
                             float ksDouble = Convert.ToSingle(((XmlText)ks.FirstChild).Data);
-                            reflective.setKs(ksDouble);
+                            reflective.SpecularReflectionCoefficient = ksDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -324,7 +324,7 @@ namespace SCSRaytracer
                         if (exp != null)
                         {
                             float expDouble = Convert.ToSingle(((XmlText)exp.FirstChild).Data);
-                            reflective.setExp(expDouble);
+                            reflective.PhongExponent = expDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }
@@ -335,7 +335,7 @@ namespace SCSRaytracer
                         if (kr != null)
                         {
                             float krDouble = Convert.ToSingle(((XmlText)kr.FirstChild).Data);
-                            reflective.setReflectivity(krDouble);
+                            reflective.ReflectiveReflectionCoefficient = krDouble;
                         }
                     }
                     catch (System.FormatException e) { Console.WriteLine(e.ToString()); }

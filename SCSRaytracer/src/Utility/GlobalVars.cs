@@ -12,7 +12,7 @@ namespace SCSRaytracer
     {
 
         public const float K_EPSILON = 0.0e-6f; // very small value to prevent salt and pepper noise
-        public const float SHAD_K_EPSILON = 1.0f; // very small value to prevent salt and pepper noise, specific to shaders
+        public const float SHAD_K_EPSILON = 0.01f; // very small value to prevent salt and pepper noise, specific to shaders
         public const float K_HUGE_VALUE = 1.0e6f; // very large value 
         public const float INVERSE_PI = 1.0f / (float)Math.PI; // inverse PI, speeds up calculations involving division by PI
 

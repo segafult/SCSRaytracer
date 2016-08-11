@@ -8,46 +8,72 @@ namespace SCSRaytracer
 {
     class ReflectiveShader : PhongShader
     {
-        private PerfectSpecular reflective_brdf;
+        private PerfectSpecular reflectiveBRDF;
+
+        public float ReflectiveReflectionCoefficient
+        {
+            set
+            {
+                reflectiveBRDF.ReflectiveReflectionCoefficient = value;
+            }
+        }
+        public RGBColor ColorReflection
+        {
+            set
+            {
+                reflectiveBRDF.ColorReflection = value;
+            }
+        }
+        public Texture TextureReflection
+        {
+            set
+            {
+                reflectiveBRDF.TextureReflection = value;
+            }
+        }
 
         public ReflectiveShader() : base()
         {
-            reflective_brdf = new PerfectSpecular();
+            reflectiveBRDF = new PerfectSpecular();
         }
 
         public override string ToString()
         {
             string toReturn = "Reflective/whittal shader:\n";
             toReturn += "  ID: " + id + "\n";
-            toReturn += "  Ka: " + ambient_brdf.getKd() + "\n";
-            toReturn += "  Kd: " + diffuse_brdf.getKd() + "\n";
-            toReturn += "  Cd: " + ambient_brdf.getCd() + "\n";
-            toReturn += "  Exp: " + specular_brdf.getExp() + "\n";
-            toReturn += "  Ks: " + specular_brdf.getKs() +"\n";
-            toReturn += "  Cr: " + reflective_brdf.getCr().ToString() + "\n";
-            toReturn += "  Kr: " + reflective_brdf.getKr();
+            toReturn += "  Ka: " + ambientBRDF.DiffuseReflectionCoefficient + "\n";
+            toReturn += "  Kd: " + diffuseBRDF.DiffuseReflectionCoefficient + "\n";
+            toReturn += "  Cd: " + ambientBRDF.DiffuseReflectionCoefficient + "\n";
+            toReturn += "  Exp: " + specularBRDF.PhongExponent + "\n";
+            toReturn += "  Ks: " + specularBRDF.SpecularReflectionCoefficient +"\n";
+            toReturn += "  Cr: " + reflectiveBRDF.ColorReflection.ToString() + "\n";
+            toReturn += "  Kr: " + reflectiveBRDF.ReflectiveReflectionCoefficient;
 
             return toReturn;
         }
-        virtual public void setReflectivity(float refl) { reflective_brdf.setKr(refl); }
-        virtual public void setCr(RGBColor c)
-        {
-            reflective_brdf.setCr(c);
-        }
-        virtual public void setCr(Texture c) { reflective_brdf.setCr(c); }
-        public override RGBColor shade(ShadeRec sr)
-        {
-            RGBColor L = base.shade(sr); //Factor in all direct illumination
 
-            Vect3D wo = -sr.Ray.Direction; //Vector pointing towards camera
-            Vect3D wi = new Vect3D(1.0f,1.0f,1.0f); //Vector equivalent to perfect reflection
-            RGBColor fr = reflective_brdf.sample_f(sr, ref wi, ref wo); //Set vectors for reflection to correct values
-            Point3D hit_point = sr.HitPoint + (wi * GlobalVars.SHAD_K_EPSILON); //Avoid salt+pepper noise
-            Ray reflected_ray = new Ray(hit_point, wi); //Cast ray from point of incidence
+        public override RGBColor Shade(ShadeRec sr)
+        {
+            RGBColor L = base.Shade(sr); //Factor in all direct illumination
 
-            L += fr * sr.WorldPointer.CurrentTracer.TraceRay(reflected_ray, sr.RecursionDepth + 1) * (sr.Normal * wi); //Recurse!
+            Vect3D reflectedDirection = -sr.Ray.Direction; //Vector pointing towards camera
+            Vect3D perfectReflection = new Vect3D(1.0f,1.0f,1.0f); //Vector equivalent to perfect reflection
+            RGBColor fr = reflectiveBRDF.SampleF(sr, ref perfectReflection, ref reflectedDirection); //Set vectors for reflection to correct values
+            Point3D hitPoint = sr.HitPoint + (perfectReflection * GlobalVars.SHAD_K_EPSILON); //Avoid salt+pepper noise
+            Ray reflectedRay = new Ray(hitPoint, perfectReflection); //Cast ray from point of incidence
+
+            L += fr * sr.WorldPointer.CurrentTracer.TraceRay(reflectedRay, sr.RecursionDepth + 1) * (sr.Normal * perfectReflection); //Recurse!
 
             return L; 
         }
+
+        /*
+            virtual public void setReflectivity(float refl) { ReflectiveBRDF.ReflectiveReflectionCoefficient = refl; }
+            virtual public void setCr(RGBColor c)
+            {
+    ReflectiveBRDF.ColorReflection = c;
+}
+virtual public void setCr(Texture c) { ReflectiveBRDF.TextureReflection = c; }
+*/
     }
 }

@@ -6,20 +6,33 @@
 
 namespace SCSRaytracer
 {
+    //Base class, bidirectional reflectance distribution function
     abstract class BRDF
     {
-        protected Sampler sampler_ptr;
+        protected Sampler samplerPointer;
         protected Normal normal;
 
-        virtual public RGBColor f(ShadeRec sr, Vect3D wi, Vect3D wo)
+        public Sampler Sampler
+        {
+            get
+            {
+                return samplerPointer;
+            }
+            set
+            {
+                samplerPointer = value;
+            }
+        }
+
+        virtual public RGBColor F(ShadeRec sr, Vect3D incomingDirection, Vect3D reflectedDirection)
         {
             return GlobalVars.COLOR_BLACK;
         }
-        virtual public RGBColor sample_f(ShadeRec sr, ref Vect3D  wi, ref Vect3D wo)
+        virtual public RGBColor SampleF(ShadeRec sr, ref Vect3D incomingDirection, ref Vect3D reflectedDirection)
         {
             return GlobalVars.COLOR_BLACK;
         }
-        virtual public RGBColor rho(ShadeRec sr, Vect3D wo)
+        virtual public RGBColor Rho(ShadeRec sr, Vect3D reflectedDirection)
         {
             return GlobalVars.COLOR_BLACK;
         }

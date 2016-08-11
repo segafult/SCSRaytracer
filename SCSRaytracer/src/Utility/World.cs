@@ -272,7 +272,7 @@ namespace SCSRaytracer
                         Console.WriteLine(o.ToString());
                     }
                 }
-
+                /*
                 //Sphere mysphere = new Sphere(new Point3D(0, 0, 0), 1000);
                 //mysphere.setMaterial(getMaterialById("myreflective"));
                 //add_Object(mysphere);
@@ -295,7 +295,7 @@ namespace SCSRaytracer
 
                 MatteShader mymatte = new MatteShader();
                 //mymatte.setCr(my_tex);
-                mymatte.setCd(my_tex);
+                mymatte.Texture = my_tex;
                 //mymatte.setReflectivity(0.95f);
                 //mymatte.setKa(0.9f);
                 //PhongShader myshader = (PhongShader)getMaterialById("myphong");
@@ -318,10 +318,10 @@ namespace SCSRaytracer
 
                 
                 MatteShader skymatte = new MatteShader();
-                skymatte.setCd(my_tex);
-                skymatte.setKa(1.0f);
+                skymatte.Texture = my_tex;
+                skymatte.AmbientReflectionCoefficient = 1.0f;
 
-                Sphere skybox = new Sphere(new Point3D(0, 0, 0),1000);
+                Sphere skybox = new Sphere(new Point3D(0, 10, 0),1000);
                 skybox.Material = skymatte;
                 //mygrid.add_object(skybox);
                 AddObjectToScene(skybox);
@@ -332,11 +332,13 @@ namespace SCSRaytracer
                 Mesh dragon = new Mesh();
                 dragon.loadFromFile("E:\\dragon.off", true);
                 dragon.setup_cells();
-                dragon.Material = new MatteShader();
+                dragon.Material = new PhongShader();
                 Instance myInstance = new Instance(dragon);
                 myInstance.Scale(100, 100, 100);
-                myInstance.Rotate(90, 0, 0);
+                myInstance.Rotate(90, 40, 0);
+                myInstance.Material = new PhongShader();
                 AddObjectToScene(myInstance);
+                */
             }
             //Custom build function if no input file specified
             else

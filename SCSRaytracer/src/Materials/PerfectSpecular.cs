@@ -8,35 +8,69 @@ namespace SCSRaytracer
 {
     class PerfectSpecular : BRDF
     {
-        private float kr;
-        private RGBColor cr;
-        private Texture cr_tex = null;
+        private float _reflectiveReflectionCoefficient;
+        private RGBColor _colorReflection;
+        private Texture _textureReflection = null;
+
+        public float ReflectiveReflectionCoefficient
+        {
+            get
+            {
+                return _reflectiveReflectionCoefficient;
+            }
+            set
+            {
+                _reflectiveReflectionCoefficient = value;
+            }
+        }
+        public RGBColor ColorReflection
+        {
+            get
+            {
+                return _colorReflection;
+            }
+            set
+            {
+                _colorReflection = value;
+            }
+        }
+        public Texture TextureReflection
+        {
+            set
+            {
+                _textureReflection = value;
+            }
+        }
 
         public PerfectSpecular()
         {
-            kr = 1.0f;
-            cr = new RGBColor(1.0f, 1.0f, 1.0f);
+            _reflectiveReflectionCoefficient = 1.0f;
+            _colorReflection = new RGBColor(1.0f, 1.0f, 1.0f);
         }
         public PerfectSpecular(RGBColor color, float kr_arg)
         {
-            kr = kr_arg;
-            cr = color;
+            _reflectiveReflectionCoefficient = kr_arg;
+            _colorReflection = color;
         }
 
-        public void setKr(float kr_arg) { kr = kr_arg; }
-        public void setCr(RGBColor cr_arg) { cr = cr_arg; }
-        public void setCr(Texture cr_arg) { cr_tex = cr_arg; }
-        public float getKr() { return kr; }
-        public RGBColor getCr() { return cr; }
-
-        public override RGBColor sample_f(ShadeRec sr, ref Vect3D wi, ref Vect3D wo)
+        public override RGBColor SampleF(ShadeRec sr, ref Vect3D incomingDirection, ref Vect3D reflectedDirection)
         {
-            float ndotwo = sr.Normal * wo;
-            wi = -wo + 2.0f * sr.Normal * ndotwo;
-            if (cr_tex == null)
-                return (kr * cr / (sr.Normal * wi));
+            float nDotWo = sr.Normal * reflectedDirection;
+            incomingDirection = -reflectedDirection + 2.0f * sr.Normal * nDotWo;
+            if (_textureReflection == null)
+                return (_reflectiveReflectionCoefficient * _colorReflection / (sr.Normal * incomingDirection));
             else
-                return (kr * cr_tex.GetColor(sr) / (sr.Normal * wi));
+                return (_reflectiveReflectionCoefficient * _textureReflection.GetColor(sr) / (sr.Normal * incomingDirection));
         }
+
+        /*
+        public void setKr(float kr_arg) { _reflectiveReflectionCoefficient = kr_arg; }
+        public void setCr(RGBColor cr_arg) { _colorReflection = cr_arg; }
+        public void setCr(Texture cr_arg) { _textureReflection = cr_arg; }
+        public float getKr() { return _reflectiveReflectionCoefficient; }
+        public RGBColor getCr() { return _colorReflection; }
+        */
+
+
     }
 }

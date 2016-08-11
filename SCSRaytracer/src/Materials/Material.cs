@@ -9,7 +9,7 @@ namespace SCSRaytracer
     abstract class Material
     {
         public string id;
-        public abstract RGBColor shade(ShadeRec sr);
+        public abstract RGBColor Shade(ShadeRec sr);
 
 
     }

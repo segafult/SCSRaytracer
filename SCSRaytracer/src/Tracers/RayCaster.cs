@@ -32,7 +32,7 @@ namespace SCSRaytracer
                 //Console.Write("hit");
                 //return new RGBColor(1.0, 0, 0);
                 shadeRec.Ray = ray; //Store information for specular highlight.
-                return (shadeRec.ObjectMaterial.shade(shadeRec)); //Call shader function for object material.
+                return (shadeRec.ObjectMaterial.Shade(shadeRec)); //Call shader function for object material.
             }
             else { return worldPointer.CurrentBackgroundColor; } //No need to call shader function if no intersection occurred.
         }

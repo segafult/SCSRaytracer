@@ -44,7 +44,7 @@ namespace SCSRaytracer
                     shadeRec.RecursionDepth = depth;
                     shadeRec.Ray = ray;
                     // apply shading and return color
-                    return (shadeRec.ObjectMaterial.shade(shadeRec));
+                    return (shadeRec.ObjectMaterial.Shade(shadeRec));
                 }
                 else
                 {
