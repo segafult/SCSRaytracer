@@ -49,14 +49,14 @@ namespace SCSRaytracer
                 return;
             }
 
-            if(!loader.openFile(filename))
+            if(!loader.OpenFile(filename))
             {
                 Console.WriteLine("Failed to open file: " + filename);
                 return;
             }
 
-            loader.parseVertices(this);
-            loader.parseFaces(this, smooth);
+            loader.ParseVertices(this);
+            loader.ParseFaces(this, smooth);
         }
 
         public Normal normalForFace(int index)

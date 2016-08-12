@@ -101,7 +101,7 @@ namespace SCSRaytracer
         public override RGBColor Shade(ShadeRec sr)
         {
             Vect3D reflectedDirection = -sr.Ray.Direction; //Ray pointing from point of intersection to camera.
-            RGBColor L = ambientBRDF.Rho(sr, reflectedDirection) * sr.WorldPointer.AmbientLight.L(sr); //Start with ambient
+            RGBColor L = ambientBRDF.Rho(sr, reflectedDirection) * sr.WorldPointer.AmbientLight.GetLighting(sr); //Start with ambient
             int numlights = sr.WorldPointer.LightList.Count;
             Vect3D incomingDirection; //Direction to incident light
             float nDotWi;
@@ -111,21 +111,21 @@ namespace SCSRaytracer
             //Add together light contributions for all light sources
             for(int i = 0; i<numlights; i++)
             {
-                incomingDirection = sr.WorldPointer.LightList[i].getDirection(sr); //Get the direction from the point of contact to the light source.
+                incomingDirection = sr.WorldPointer.LightList[i].GetDirection(sr); //Get the direction from the point of contact to the light source.
                 nDotWi = (float)(sr.Normal * incomingDirection); //Dot product of normal and light source, 0 if orthogonal, 1 if parallel.
                 if(nDotWi > 0.0f)//Avoid unnecessary light summation
                 {
                     inShadow = false;
 
-                    if(sr.WorldPointer.LightList[i].castsShadows())
+                    if(sr.WorldPointer.LightList[i].CastsShadows)
                     {
                         shadowRay = new Ray(sr.HitPoint+(GlobalVars.SHAD_K_EPSILON*incomingDirection), incomingDirection);
-                        inShadow = sr.WorldPointer.LightList[i].inShadow(sr, shadowRay);
+                        inShadow = sr.WorldPointer.LightList[i].InShadow(sr, shadowRay);
                     }
                     if (!inShadow)
                     {
                         //Add diffuse and specular components.
-                        L += (diffuseBRDF.F(sr, reflectedDirection, incomingDirection) + specularBRDF.F(sr, reflectedDirection, incomingDirection)) * sr.WorldPointer.LightList[i].L(sr) * nDotWi;
+                        L += (diffuseBRDF.F(sr, reflectedDirection, incomingDirection) + specularBRDF.F(sr, reflectedDirection, incomingDirection)) * sr.WorldPointer.LightList[i].GetLighting(sr) * nDotWi;
                     }
                 }
             }

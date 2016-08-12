@@ -14,43 +14,78 @@ namespace SCSRaytracer
     /// </summary>
     class PointLight : Light
     {
-        private float intensity;
-        private Point3D location;
+        private float _intensity;
+        private Point3D _location;
+
+        public override Vect3D Direction
+        {
+            get
+            {
+                return base.Direction;
+            }
+
+            set
+            {
+                base.Direction = value;
+            }
+        }
+        public Point3D Location
+        {
+            get
+            {
+                return _location;
+            }
+            set
+            {
+                _location = new Point3D(value);
+            }
+        }
+        public float Intensity
+        {
+            get
+            {
+                return _intensity;
+            }
+            set
+            {
+                _intensity = value;
+            }
+        }
 
         //Constructors
         public PointLight()
         {
-            color = new RGBColor(1, 1, 1);
-            intensity = 0.5f;
-            location = new Point3D(0, 0, 0);
-            shadows = false;
+            _color = new RGBColor(1, 1, 1);
+            _intensity = 0.5f;
+            _location = new Point3D(0, 0, 0);
+            _castsShadows = false;
         }
         public PointLight(Point3D l)
         {
-            color = new RGBColor(1, 1, 1);
-            intensity = 0.5f;
-            location = new Point3D(l);
-            shadows = false;
+            _color = new RGBColor(1, 1, 1);
+            _intensity = 0.5f;
+            _location = new Point3D(l);
+            _castsShadows = false;
         }
         public PointLight(RGBColor c, float i, Point3D l)
         {
-            color = new RGBColor(c);
-            intensity = i;
-            location = new Point3D(l);
-            shadows = false;
+            _color = new RGBColor(c);
+            _intensity = i;
+            _location = new Point3D(l);
+            _castsShadows = false;
         }
 
         //Gets and sets
         
-        public float getIntensity() { return intensity; }
-        public override Vect3D getDirection(ShadeRec sr) { return ((location - sr.HitPoint).Hat()); }
-        public override bool castsShadows(){ return shadows; }
-        public void setIntensity(float i) { intensity = i; }
-        public void setLocation(Point3D p) { location = new Point3D(p); }
+        //public float getIntensity() { return _intensity; }
+        public override Vect3D GetDirection(ShadeRec sr) { return ((_location - sr.HitPoint).Hat()); }
+        //public override bool castsShadows(){ return _castsShadows; }
+        //public void setIntensity(float i) { _intensity = i; }
+        //public void setLocation(Point3D p) { _location = new Point3D(p); }
 
-        public override RGBColor L(ShadeRec sr)
+        public override RGBColor GetLighting(ShadeRec sr)
         {
-            return intensity * color;
+            return _intensity * _color;
         }
 
         /// <summary>
@@ -59,7 +94,7 @@ namespace SCSRaytracer
         /// <param name="sr">Shading parameters</param>
         /// <param name="ray">Ray to cast from object to point light</param>
         /// <returns></returns>
-        public override bool inShadow(ShadeRec sr, Ray ray)
+        public override bool InShadow(ShadeRec sr, Ray ray)
         {
             int num_objects = sr.WorldPointer.RenderList.Count;
             float tmin;
@@ -67,7 +102,7 @@ namespace SCSRaytracer
             //Find the closest intersection point along the given ray
             for (int i = 0; i < num_objects; i++)
             {
-                tmin = (location - sr.HitPoint).Coordinates.Length();
+                tmin = (_location - sr.HitPoint).Coordinates.Length();
                 if (sr.WorldPointer.RenderList[i].Hit(ray, tmin))
                 {
                     return true;
@@ -88,7 +123,7 @@ namespace SCSRaytracer
                 Point3D point = Point3D.FromCsv(str_point);
                 //if (point != 0)
                 //{
-                    toReturn.setLocation(point);
+                    toReturn.Location = point;
                 //}
             }
             XmlNode node_int = lightRoot.SelectSingleNode("intensity");
@@ -96,7 +131,7 @@ namespace SCSRaytracer
             {
                 string str_int = ((XmlText)node_int.FirstChild).Data;
                 float intensity = Convert.ToSingle(str_int);
-                toReturn.setIntensity(intensity);
+                toReturn.Intensity = intensity;
             }
 
             return toReturn;

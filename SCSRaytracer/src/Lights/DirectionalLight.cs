@@ -15,53 +15,78 @@ namespace SCSRaytracer
     /// </summary>
     class DirectionalLight : Light
     {
-        private float intensity;
-        private Vect3D direction;
+        private float _intensity;
+        private Vect3D _direction;
+
+        public override Vect3D Direction
+        {
+            get
+            {
+                return -_direction;
+            }
+            set
+            {
+                _direction = value.Hat();
+            }
+        }
+        public float Intensity
+        {
+            get
+            {
+                return _intensity;
+            }
+            set
+            {
+                _intensity = value;
+            }
+        }
 
         //Constructors
         public DirectionalLight()
         {
-            direction = (new Vect3D(-1, -1, -1)).Hat();
-            intensity = 0.5f;
-            color = new RGBColor(1, 1, 1);
-            shadows = false;
+            _direction = (new Vect3D(-1, -1, -1)).Hat();
+            _intensity = 0.5f;
+            _color = new RGBColor(1, 1, 1);
+            _castsShadows = false;
         }
         public DirectionalLight(Vect3D d)
         {
-            direction = d.Hat();
-            intensity = 0.5f;
-            color = new RGBColor(1, 1, 1);
-            shadows = false;
+            _direction = d.Hat();
+            _intensity = 0.5f;
+            _color = new RGBColor(1, 1, 1);
+            _castsShadows = false;
         }
         public DirectionalLight(RGBColor c, float i, Vect3D d)
         {
-            color = new RGBColor(c);
-            intensity = i;
-            direction = d.Hat();
-            shadows = false;
+            _color = new RGBColor(c);
+            _intensity = i;
+            _direction = d.Hat();
+            _castsShadows = false;
         }
 
         //Gets and sets
-        public void setDirection(Vect3D d) { direction = d.Hat(); }
-        public void setIntensity(float i) { intensity = i; }
-        public void setShadows(bool shad) { shadows = shad; }
-        public Vect3D getDirection() { return direction; }
-        public float getIntensity() { return intensity; }
+        //public void setDirection(Vect3D d) { _direction = d.Hat(); }
+        //public void setIntensity(float i) { _intensity = i; }
+        //public void setShadows(bool shad) { _castsShadows = shad; }
+        //public Vect3D getDirection() { return _direction; }
+        //public float getIntensity() { return _intensity; }
          
 
-        public override RGBColor L(ShadeRec sr)
+        public override RGBColor GetLighting(ShadeRec sr)
         {
-            return intensity * color;
+            return _intensity * _color;
         }
-        public override bool inShadow(ShadeRec sr, Ray ray)
+        public override bool InShadow(ShadeRec sr, Ray ray)
         {
             ShadeRec tempSr = sr.WorldPointer.HitObjects(ray);
             return tempSr.HitAnObject;
         }
-        public override Vect3D getDirection(ShadeRec sr)
+        
+        public override Vect3D GetDirection(ShadeRec sr)
         {
-            return -direction;
+            return -_direction;
         }
+        
 
         public static DirectionalLight LoadDirectionalLight(XmlElement lightRoot)
         {
@@ -75,7 +100,7 @@ namespace SCSRaytracer
                 Vect3D direction = Vect3D.FromCsv(str_dir);
                 //if (direction != null)
                 //{
-                    toReturn.setDirection(direction);
+                    toReturn.Direction = direction;
                 //}
             }
             XmlNode node_int = lightRoot.SelectSingleNode("intensity");
@@ -83,7 +108,7 @@ namespace SCSRaytracer
             {
                 string str_int = ((XmlText)node_int.FirstChild).Data;
                 float intensity = Convert.ToSingle(str_int);
-                toReturn.setIntensity(intensity);
+                toReturn.Intensity = intensity;
             }
 
             return toReturn;

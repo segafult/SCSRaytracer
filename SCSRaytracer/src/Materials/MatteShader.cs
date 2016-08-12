@@ -72,7 +72,7 @@ namespace SCSRaytracer
         public override RGBColor Shade(ShadeRec sr)
         {
             Vect3D reflectedDirection = -sr.Ray.Direction;
-            RGBColor L = ambientBRDF.Rho(sr, reflectedDirection) * sr.WorldPointer.AmbientLight.L(sr);
+            RGBColor L = ambientBRDF.Rho(sr, reflectedDirection) * sr.WorldPointer.AmbientLight.GetLighting(sr);
             int numLights = sr.WorldPointer.LightList.Count;
             Vect3D incomingDirection;
             float nDotWi;
@@ -83,20 +83,20 @@ namespace SCSRaytracer
             //Loop through list of lights and add radiance for each diffuse light source.
             for(int i = 0; i < numLights; i++)
             {
-                incomingDirection = sr.WorldPointer.LightList[i].getDirection(sr);
+                incomingDirection = sr.WorldPointer.LightList[i].GetDirection(sr);
                 nDotWi = sr.Normal * incomingDirection;
                 //Direction must not be 0,0,0 to be a diffuse light source.
                 if(nDotWi > 0.0)
                 {
                     inShadow = false;
-                    if(sr.WorldPointer.LightList[i].castsShadows())
+                    if(sr.WorldPointer.LightList[i].CastsShadows)
                     {
                         shadowRay = new Ray(sr.HitPoint + (GlobalVars.SHAD_K_EPSILON * incomingDirection), incomingDirection);
-                        inShadow = sr.WorldPointer.LightList[i].inShadow(sr, shadowRay);
+                        inShadow = sr.WorldPointer.LightList[i].InShadow(sr, shadowRay);
                     }
                     if(!inShadow)
                     {
-                        L += diffuseBRDF.F(sr, reflectedDirection, incomingDirection) * sr.WorldPointer.LightList[i].L(sr) * nDotWi;
+                        L += diffuseBRDF.F(sr, reflectedDirection, incomingDirection) * sr.WorldPointer.LightList[i].GetLighting(sr) * nDotWi;
                     }
                 }
             }

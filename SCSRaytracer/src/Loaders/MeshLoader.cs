@@ -10,14 +10,22 @@ namespace SCSRaytracer
 {
     abstract class MeshLoader
     {
-        protected BoundingBox bb;
+        protected BoundingBox _boundingBox;
+        virtual public BoundingBox BoundingBox
+        {
+            get
+            {
+                return _boundingBox;
+            }
+        }
 
-        abstract public bool openFile(string filename);
-        abstract public void parseVertices(Mesh parent);
-        abstract public void parseFaces(Mesh parent, bool smooth);
-        virtual public void parseUV(Mesh parent) {  }
-        virtual public BoundingBox getBoundingBox() { return bb; }
-        protected void calculateNormals(Mesh parent)
+        abstract public bool OpenFile(string filename);
+        abstract public void ParseVertices(Mesh parent);
+        abstract public void ParseFaces(Mesh parent, bool smooth);
+        virtual public void ParseUV(Mesh parent) {  }
+        //virtual public BoundingBox getBoundingBox() { return _boundingBox; }
+
+        protected void CalculateNormals(Mesh parent)
         {
             if(GlobalVars.verbose)
             {
@@ -28,13 +36,13 @@ namespace SCSRaytracer
             {
                 //Sum together all the normals of the faces attached to this vertex
                 List<int> faceList = parent.vertex_faces[i];
-                Normal sum_norm = new Normal(0,0,0);
+                Normal normalSum = new Normal(0,0,0);
                 for(int j = 0; j < faceList.Count; j++)
                 {
-                    sum_norm += parent.normalForFace(faceList[j]);
+                    normalSum += parent.normalForFace(faceList[j]);
                 }
-                sum_norm.Normalize();
-                parent.normals[i] = sum_norm;
+                normalSum.Normalize();
+                parent.normals[i] = normalSum;
             }
         }
     }

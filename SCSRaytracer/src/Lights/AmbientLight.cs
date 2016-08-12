@@ -14,39 +14,61 @@ namespace SCSRaytracer
     /// </summary>
     class AmbientLight : Light
     {
-        private float intensity;
-        
+        private float _intensity;
+
+        public float Intensity
+        {
+            get
+            {
+                return _intensity;
+            }
+            set
+            {
+                _intensity = value;
+            }
+        }
+        public override bool CastsShadows
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         //Default constructor
         public AmbientLight()
         {
-            intensity = 0.5f;
-            color = new RGBColor(1, 1, 1);
+            _intensity = 0.5f;
+            _color = new RGBColor(1, 1, 1);
         }
         public AmbientLight(RGBColor c, float i)
         {
-            color = new RGBColor(c);
-            intensity = i;
+            _color = new RGBColor(c);
+            _intensity = i;
         }
 
         //Gets and sets
-        public void setIntensity(float i) { intensity = i; }
-        public float getIntensity() { return intensity; }
+        public void setIntensity(float i) { _intensity = i; }
+        public float getIntensity() { return _intensity; }
+        /*
         public override bool castsShadows()
         {
             return false;
         }
+        */
 
-        public override RGBColor L(ShadeRec sr)
+        public override RGBColor GetLighting(ShadeRec sr)
         {
-            return (intensity * color);
+            return (_intensity * _color);
         }
 
+        /*
         public override Vect3D getDirection(ShadeRec sr)
         {
             //Ambient light has no direction
             return new Vect3D(0, 0, 0);
         }
+        */
 
         public static AmbientLight LoadAmbient(XmlElement lightRoot)
         {
@@ -65,7 +87,7 @@ namespace SCSRaytracer
             {
                 string str_color = ((XmlText)node_color.FirstChild).Data;
                 RGBColor color = new RGBColor(System.Drawing.ColorTranslator.FromHtml(str_color));
-                toReturn.setColor(color);
+                toReturn.Color = color;
             }
             return toReturn;
         }
