@@ -17,26 +17,26 @@ namespace SCSRaytracer
         {
             r = 1.0f;
             disp = new Vector3(0, 0, 0);
-            bbox = new BoundingBox();
-            lowbound = new Vector3(-2*r);
-            highbound = new Vector3(2*r);
-            min_step = 1.0e-5f;
-            max_step = 5.0f;
-            dist_mult = 0.3f;
-            trigger_dist = 0.1f;
+            boundingBox = new BoundingBox();
+            lowBound = new Vector3(-2*r);
+            highBound = new Vector3(2*r);
+            minimumRaymarchStep = 1.0e-5f;
+            maximumRaymarchStep = 5.0f;
+            distanceMultiplier = 0.3f;
+            triggerDistance = 0.1f;
         }
 
-        public override float evalF(Point3D p)
+        public override float EvaluateImplicitFunction(Point3D p)
         {
             Vector3 pretranslation = p.Coordinates - disp;
             Vector3 tmp = pretranslation * pretranslation;
             return tmp.X + tmp.Y + tmp.Z - r * r;
         }
 
-        protected override float evalD(Point3D p, Vect3D d, ref float cur)
+        protected override float EvaluateDistanceFunction(Point3D p, Vect3D d, ref float cur)
         {
             //Translate the point
-            cur = evalF(p);
+            cur = EvaluateImplicitFunction(p);
             return (p.Coordinates - disp).Length() - r;
         }
     }

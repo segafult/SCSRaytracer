@@ -14,14 +14,14 @@ namespace SCSRaytracer
     class UniformGrid : CompoundRenderable
     {
         private RenderableObject[] cells;
-        private BoundingBox bbox;
+        private BoundingBox _boundingBox;
         int nx, ny, nz;
 
         public override BoundingBox BoundingBox
         {
             get
             {
-                return bbox;
+                return _boundingBox;
             }
         }
 
@@ -29,7 +29,7 @@ namespace SCSRaytracer
         public UniformGrid() : base()
         {
             //cells = new List<RenderableObject>();
-            bbox = new BoundingBox();
+            _boundingBox = new BoundingBox();
         }
 
         /*
@@ -42,18 +42,18 @@ namespace SCSRaytracer
         /// <summary>
         /// Sets up the grid acceleration structure
         /// </summary>
-        public void setup_cells()
+        public void SetupCells()
         {
             //Construct bounding box
-            Point3D pmin = min_coordinates();
+            Point3D pmin = MinimumCoordinates();
             Point3D pmax = max_coordinates();
 
-            bbox.corner0 = pmin.Coordinates;
-            bbox.corner1 = pmax.Coordinates;
+            _boundingBox.corner0 = pmin.Coordinates;
+            _boundingBox.corner1 = pmax.Coordinates;
             //bbox.x0 = pmin.coords.X; bbox.y0 = pmin.coords.Y; bbox.z0 = pmin.coords.Z;
             //bbox.x1 = pmax.coords.X; bbox.y1 = pmax.coords.Y; bbox.z1 = pmax.coords.Z;
 
-            int numobjs = objs.Count;
+            int numobjs = containedObjects.Count;
             //Find width of grid structure
             float wx = pmax.X - pmin.X;
             float wy = pmax.Y - pmin.Y;
@@ -84,23 +84,23 @@ namespace SCSRaytracer
                 counts[i] = 0;
             }
 
-            BoundingBox object_bbox;
+            BoundingBox objectBoundingBox;
             int index;
 
             //Put objects in cells
             for(int i = 0; i < numobjs; i++)
             {
-                object_bbox = objs[i].BoundingBox;
+                objectBoundingBox = containedObjects[i].BoundingBox;
 
                 //Find the corners of the bounding box in terms of cell indices of the grid
                 //According to the mathematical relationship f(p) = (px - p0x)/(p1x-p0x) [0.0,1.0]
                 //index = nf(p)
-                int ixmin = (int)clamp((object_bbox.corner0.X - pmin.X) * nx / (pmax.X - pmin.X), 0, nx - 1);
-                int iymin = (int)clamp((object_bbox.corner0.Y - pmin.Y) * ny / (pmax.Y - pmin.Y), 0, ny - 1);
-                int izmin = (int)clamp((object_bbox.corner0.Z - pmin.Z) * nz / (pmax.Z - pmin.Z), 0, nz - 1);
-                int ixmax = (int)clamp((object_bbox.corner1.X - pmin.X) * nx / (pmax.X - pmin.X), 0, nx - 1);
-                int iymax = (int)clamp((object_bbox.corner1.Y - pmin.Y) * ny / (pmax.Y - pmin.Y), 0, ny - 1);
-                int izmax = (int)clamp((object_bbox.corner1.Z - pmin.Z) * nz / (pmax.Z - pmin.Z), 0, nz - 1);
+                int ixmin = (int)Clamp((objectBoundingBox.corner0.X - pmin.X) * nx / (pmax.X - pmin.X), 0, nx - 1);
+                int iymin = (int)Clamp((objectBoundingBox.corner0.Y - pmin.Y) * ny / (pmax.Y - pmin.Y), 0, ny - 1);
+                int izmin = (int)Clamp((objectBoundingBox.corner0.Z - pmin.Z) * nz / (pmax.Z - pmin.Z), 0, nz - 1);
+                int ixmax = (int)Clamp((objectBoundingBox.corner1.X - pmin.X) * nx / (pmax.X - pmin.X), 0, nx - 1);
+                int iymax = (int)Clamp((objectBoundingBox.corner1.Y - pmin.Y) * ny / (pmax.Y - pmin.Y), 0, ny - 1);
+                int izmax = (int)Clamp((objectBoundingBox.corner1.Z - pmin.Z) * nz / (pmax.Z - pmin.Z), 0, nz - 1);
 
                 //int ixmin = (int)clamp((object_bbox.x0 - pmin.coords.X) * nx / (pmax.coords.X - pmin.coords.X), 0, nx - 1);
                 //int iymin = (int)clamp((object_bbox.y0 - pmin.coords.Y) * ny / (pmax.coords.Y - pmin.coords.Y), 0, ny - 1);
@@ -121,25 +121,25 @@ namespace SCSRaytracer
                             //Just add the object if no objects are stored in cell already
                             if(counts[index] == 0)
                             {
-                                cells[index] = objs[i];
+                                cells[index] = containedObjects[i];
                                 counts[index]++;
                             }
                             //If object is already stored in cell, create a new compound object and store
                             //the two objects in it
                             else if(counts[index] == 1)
                             {
-                                CompoundRenderable compound_object = new CompoundRenderable();
-                                compound_object.add_object(cells[index]);
-                                compound_object.add_object(objs[i]);
+                                CompoundRenderable compoundObject = new CompoundRenderable();
+                                compoundObject.AddObject(cells[index]);
+                                compoundObject.AddObject(containedObjects[i]);
 
-                                cells[index] = compound_object;
+                                cells[index] = compoundObject;
                                 counts[index]++;
                             }
                             //If more than one object is in the cell, just add it to the compound object already contained in the cell
                             else if(counts[index] > 1)
                             {
                                 //Safe to assume that if this code is running, the object at cells[index] is a compoundrenderable
-                                ((CompoundRenderable)cells[index]).add_object(objs[i]);
+                                ((CompoundRenderable)cells[index]).AddObject(containedObjects[i]);
                                 counts[index]++;
                             }
                         }
@@ -149,21 +149,24 @@ namespace SCSRaytracer
             }
         }
         
-        public override bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray ray, ref float tMin, ref ShadeRec sr)
         {
-            float ox = r.Origin.X;
-            float oy = r.Origin.Y;
-            float oz = r.Origin.Z;
-            float dx = r.Direction.X;
-            float dy = r.Direction.Y;
-            float dz = r.Direction.Z;
+            //
+            // Code from Suffern (2007)
+            //
+            float ox = ray.Origin.X;
+            float oy = ray.Origin.Y;
+            float oz = ray.Origin.Z;
+            float dx = ray.Direction.X;
+            float dy = ray.Direction.Y;
+            float dz = ray.Direction.Z;
 
-            float x0 = bbox.corner0.X;
-            float y0 = bbox.corner0.Y;
-            float z0 = bbox.corner0.Z;
-            float x1 = bbox.corner1.X;
-            float y1 = bbox.corner1.Y;
-            float z1 = bbox.corner1.Z;
+            float x0 = _boundingBox.corner0.X;
+            float y0 = _boundingBox.corner0.Y;
+            float z0 = _boundingBox.corner0.Z;
+            float x1 = _boundingBox.corner1.X;
+            float y1 = _boundingBox.corner1.Y;
+            float z1 = _boundingBox.corner1.Z;
 
             float tx_min, ty_min, tz_min;
             float tx_max, ty_max, tz_max;
@@ -218,18 +221,18 @@ namespace SCSRaytracer
 
             //Initial cell coordinates
             int ix, iy, iz;
-            if(bbox.inside(r.Origin))
+            if(_boundingBox.inside(ray.Origin))
             {
-                ix = (int)clamp((ox - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray origin if inside
-                iy = (int)clamp((oy - y0) * ny / (y1 - y0), 0, ny - 1);
-                iz = (int)clamp((oz - z0) * nz / (z1 - z0), 0, nz - 1);
+                ix = (int)Clamp((ox - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray origin if inside
+                iy = (int)Clamp((oy - y0) * ny / (y1 - y0), 0, ny - 1);
+                iz = (int)Clamp((oz - z0) * nz / (z1 - z0), 0, nz - 1);
             }
             else
             {
-                Point3D p = r.Origin + t0 * r.Direction;
-                ix = (int)clamp((p.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
-                iy = (int)clamp((p.Y - y0) * ny / (y1 - y0), 0, ny - 1);
-                iz = (int)clamp((p.Z - z0) * nz / (z1 - z0), 0, nz - 1);
+                Point3D p = ray.Origin + t0 * ray.Direction;
+                ix = (int)Clamp((p.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
+                iy = (int)Clamp((p.Y - y0) * ny / (y1 - y0), 0, ny - 1);
+                iz = (int)Clamp((p.Z - z0) * nz / (z1 - z0), 0, nz - 1);
             }
 
             //Get increments for ray marching
@@ -304,13 +307,13 @@ namespace SCSRaytracer
             //Traverse grid
             while(true)
             {
-                RenderableObject object_ptr = cells[ix + (nx * iy) + (nx * ny * iz)];
+                RenderableObject objectPointer = cells[ix + (nx * iy) + (nx * ny * iz)];
 
                 //Is the next cell an increment in the x direction?
                 if(tx_next < ty_next && tx_next < tz_next)
                 {
                     //Hit an object in this cell, cull cells behind this object
-                    if ((object_ptr != null) && object_ptr.Hit(r, ref tmin, ref sr) && tmin < tx_next)
+                    if ((objectPointer != null) && objectPointer.Hit(ray, ref tMin, ref sr) && tMin < tx_next)
                     {
                         //mat = object_ptr.getMaterial();
                         return true;
@@ -333,7 +336,7 @@ namespace SCSRaytracer
                     if(ty_next < tz_next)
                     {
                         //Hit an object in this cell? Cull cells behind object
-                        if (object_ptr != null && object_ptr.Hit(r, ref tmin, ref sr) && tmin < ty_next) 
+                        if (objectPointer != null && objectPointer.Hit(ray, ref tMin, ref sr) && tMin < ty_next) 
                         {
                             //mat = object_ptr.getMaterial();
                             return true;
@@ -353,7 +356,7 @@ namespace SCSRaytracer
                     else
                     {
                         //Hit an object in this cell? Cull cells behind object
-                        if (object_ptr != null && object_ptr.Hit(r, ref tmin, ref sr) && tmin < tz_next)
+                        if (objectPointer != null && objectPointer.Hit(ray, ref tMin, ref sr) && tMin < tz_next)
                         {
                             //mat = object_ptr.getMaterial();
                             return true;
@@ -373,21 +376,21 @@ namespace SCSRaytracer
             }      
         }
 
-        public override bool Hit(Ray r, float tmin)
+        public override bool Hit(Ray ray, float tMin)
         {
-            float ox = r.Origin.X;
-            float oy = r.Origin.Y;
-            float oz = r.Origin.Z;
-            float dx = r.Direction.X;
-            float dy = r.Direction.Y;
-            float dz = r.Direction.Z;
+            float ox = ray.Origin.X;
+            float oy = ray.Origin.Y;
+            float oz = ray.Origin.Z;
+            float dx = ray.Direction.X;
+            float dy = ray.Direction.Y;
+            float dz = ray.Direction.Z;
 
-            float x0 = bbox.corner0.X;
-            float y0 = bbox.corner0.Y;
-            float z0 = bbox.corner0.Z;
-            float x1 = bbox.corner1.X;
-            float y1 = bbox.corner1.Y;
-            float z1 = bbox.corner1.Z;
+            float x0 = _boundingBox.corner0.X;
+            float y0 = _boundingBox.corner0.Y;
+            float z0 = _boundingBox.corner0.Z;
+            float x1 = _boundingBox.corner1.X;
+            float y1 = _boundingBox.corner1.Y;
+            float z1 = _boundingBox.corner1.Z;
 
             float tx_min, ty_min, tz_min;
             float tx_max, ty_max, tz_max;
@@ -435,25 +438,25 @@ namespace SCSRaytracer
             t1 = (tx_max < ty_max) ? tx_max : ty_max;
             if (tz_max < t1) t1 = tz_max;
 
-            if (t0 > t1 && !bbox.inside(r.Origin))
+            if (t0 > t1 && !_boundingBox.inside(ray.Origin))
             {
                 return false;
             }
 
             //Initial cell coordinates
             int ix, iy, iz;
-            if (bbox.inside(r.Origin))
+            if (_boundingBox.inside(ray.Origin))
             {
-                ix = (int)clamp((ox - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray origin if inside
-                iy = (int)clamp((oy - y0) * ny / (y1 - y0), 0, ny - 1);
-                iz = (int)clamp((oz - z0) * nz / (z1 - z0), 0, nz - 1);
+                ix = (int)Clamp((ox - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray origin if inside
+                iy = (int)Clamp((oy - y0) * ny / (y1 - y0), 0, ny - 1);
+                iz = (int)Clamp((oz - z0) * nz / (z1 - z0), 0, nz - 1);
             }
             else
             {
-                Point3D p = r.Origin + t0 * r.Direction;
-                ix = (int)clamp((p.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
-                iy = (int)clamp((p.Y - y0) * ny / (y1 - y0), 0, ny - 1);
-                iz = (int)clamp((p.Z - z0) * nz / (z1 - z0), 0, nz - 1);
+                Point3D p = ray.Origin + t0 * ray.Direction;
+                ix = (int)Clamp((p.X - x0) * nx / (x1 - x0), 0, nx - 1); //Get indices of ray hitpoint if origin outside
+                iy = (int)Clamp((p.Y - y0) * ny / (y1 - y0), 0, ny - 1);
+                iz = (int)Clamp((p.Z - z0) * nz / (z1 - z0), 0, nz - 1);
             }
 
             //Get increments for ray marching
@@ -528,13 +531,13 @@ namespace SCSRaytracer
             //Traverse grid
             while (true)
             {
-                RenderableObject object_ptr = cells[ix + (nx * iy) + (nx * ny * iz)];
+                RenderableObject objectPointer = cells[ix + (nx * iy) + (nx * ny * iz)];
 
                 //Is the next cell an increment in the x direction?
                 if (tx_next < ty_next && tx_next < tz_next)
                 {
                     //Hit an object in this cell, cull cells behind this object
-                    if ((object_ptr != null) && object_ptr.Hit(r, tmin) && tmin < tx_next)
+                    if ((objectPointer != null) && objectPointer.Hit(ray, tMin) && tMin < tx_next)
                     {
                         return true;
                     }
@@ -556,7 +559,7 @@ namespace SCSRaytracer
                     if (ty_next < tz_next)
                     {
                         //Hit an object in this cell? Cull cells behind object
-                        if (object_ptr != null && object_ptr.Hit(r, tmin) && tmin < ty_next)
+                        if (objectPointer != null && objectPointer.Hit(ray, tMin) && tMin < ty_next)
                         {
                             return true;
                         }
@@ -575,7 +578,7 @@ namespace SCSRaytracer
                     else
                     {
                         //Hit an object in this cell? Cull cells behind object
-                        if (object_ptr != null && object_ptr.Hit(r, tmin) && tmin < tz_next)
+                        if (objectPointer != null && objectPointer.Hit(ray, tMin) && tMin < tz_next)
                         {
                             return true;
                         }
@@ -598,15 +601,15 @@ namespace SCSRaytracer
         /// Minimum coordinates in contained objects;
         /// </summary>
         /// <returns>A point3d with the minimum x, y, and z coordinates of contained objects.</returns>
-        private Point3D min_coordinates()
+        private Point3D MinimumCoordinates()
         {
             BoundingBox bbox;
             Point3D pmin = new Point3D(GlobalVars.K_HUGE_VALUE, GlobalVars.K_HUGE_VALUE, GlobalVars.K_HUGE_VALUE);
 
-            int numobjects = objs.Count;
+            int numobjects = containedObjects.Count;
             for(int i = 0; i < numobjects; i++)
             {
-                bbox = objs[i].BoundingBox;
+                bbox = containedObjects[i].BoundingBox;
                 if (bbox.corner0.X < pmin.X) pmin.X = bbox.corner0.X;
                 if (bbox.corner0.Y < pmin.Y) pmin.Y = bbox.corner0.Y;
                 if (bbox.corner0.Z < pmin.Z) pmin.Z = bbox.corner0.Z;
@@ -627,10 +630,10 @@ namespace SCSRaytracer
             BoundingBox bbox;
             Point3D pmax = new Point3D(-GlobalVars.K_HUGE_VALUE, -GlobalVars.K_HUGE_VALUE, -GlobalVars.K_HUGE_VALUE);
 
-            int numobjects = objs.Count;
+            int numobjects = containedObjects.Count;
             for(int i = 0; i < numobjects; i++)
             {
-                bbox = objs[i].BoundingBox;
+                bbox = containedObjects[i].BoundingBox;
                 if (bbox.corner1.X > pmax.X) pmax.X = bbox.corner1.X;
                 if (bbox.corner1.Y > pmax.Y) pmax.Y = bbox.corner1.Y;
                 if (bbox.corner1.Z > pmax.Z) pmax.Z = bbox.corner1.Z;
@@ -644,7 +647,7 @@ namespace SCSRaytracer
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private float clamp(float x, float xmin, float xmax)
+        private float Clamp(float x, float xmin, float xmax)
         {
             if(x < xmin)
             {
@@ -666,10 +669,10 @@ namespace SCSRaytracer
             {
                 RenderableObject rend = RenderableObject.LoadRenderableObject(child);
                 if (rend != null)
-                    toReturn.add_object(rend);
+                    toReturn.AddObject(rend);
             }
 
-            toReturn.setup_cells();
+            toReturn.SetupCells();
             return toReturn;
         }
     }

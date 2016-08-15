@@ -113,7 +113,9 @@ namespace SCSRaytracer
 
             w.Build();
             w.OpenWindow(w.CurrentViewPlane.HorizontalResolution, w.CurrentViewPlane.VerticalResolution);
-            //while (GlobalVars.frameno < 120)
+            //GlobalVars.frameno = 120;
+            //w.Animate();
+            //while (GlobalVars.frameno < 130)
             //{
                 //w.camera.setEye(new Point3D(200, 200, GlobalVars.cam_zcoord));
             //    w.camera.setLookat(new Point3D(0, 0, GlobalVars.lookat_zcoord));
@@ -130,12 +132,13 @@ namespace SCSRaytracer
                 }
 
                 w.SaveDisplayedImage(GlobalVars.outFile);
-
+                //w.SaveDisplayedImage("E:\\weird\\frame_" + GlobalVars.frameno + ".bmp");
                 //    GlobalVars.cam_zcoord -= 10;
                 //    GlobalVars.lookat_zcoord -= 10;
                 //    GlobalVars.frameno += 1;
-                //w.animate();
-                //GlobalVars.frameno++;
+                
+                //GlobalVars.frameno+=1;
+                //w.Animate();
             //}
 
 

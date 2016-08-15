@@ -17,12 +17,12 @@ namespace SCSRaytracer
     {
         public List<Point3D> vertices;
         public List<Normal> normals;
-        public List<List<int>> vertex_faces; //List of faces shared by each vertex. Used for calculating normals.
+        public List<List<int>> vertexFaces; //List of faces shared by each vertex. Used for calculating normals.
         public List<float> u;
         public List<float> v;
 
-        public int num_verts;
-        public int num_triangles;
+        public int countVertices;
+        public int countTriangles;
 
         MeshLoader loader;
 
@@ -30,12 +30,12 @@ namespace SCSRaytracer
         {
             vertices = new List<Point3D>();
             normals = new List<Normal>();
-            vertex_faces = new List<List<int>>();
+            vertexFaces = new List<List<int>>();
             u = new List<float>();
             v = new List<float>();
 
-            num_verts = 0;
-            num_triangles = 0;
+            countVertices = 0;
+            countTriangles = 0;
         }
 
         public void loadFromFile(string filename, bool smooth)
@@ -59,9 +59,9 @@ namespace SCSRaytracer
             loader.ParseFaces(this, smooth);
         }
 
-        public Normal normalForFace(int index)
+        public Normal NormalForFace(int index)
         {
-            return ((MeshTriangle)objs[index]).getNormal();
+            return ((MeshTriangle)containedObjects[index]).Normal;
         }
 
         public static Mesh LoadMesh(XmlElement def)
@@ -78,7 +78,7 @@ namespace SCSRaytracer
                 toReturn.loadFromFile(str_file, smooth);
             }
 
-            toReturn.setup_cells();
+            toReturn.SetupCells();
 
             return toReturn;
         }

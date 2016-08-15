@@ -32,14 +32,14 @@ namespace SCSRaytracer
                 System.Console.WriteLine("Calculating vertex normals for mesh " + parent.id);
             }
             //Get the list of faces attached to a given vertex
-            for (int i = 0; i < parent.num_verts; i++) 
+            for (int i = 0; i < parent.countVertices; i++) 
             {
                 //Sum together all the normals of the faces attached to this vertex
-                List<int> faceList = parent.vertex_faces[i];
+                List<int> faceList = parent.vertexFaces[i];
                 Normal normalSum = new Normal(0,0,0);
                 for(int j = 0; j < faceList.Count; j++)
                 {
-                    normalSum += parent.normalForFace(faceList[j]);
+                    normalSum += parent.NormalForFace(faceList[j]);
                 }
                 normalSum.Normalize();
                 parent.normals[i] = normalSum;

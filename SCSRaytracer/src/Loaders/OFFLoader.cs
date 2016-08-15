@@ -69,9 +69,9 @@ namespace SCSRaytracer
                 float z = Convert.ToSingle(vertices[2]);
 
                 parent.vertices.Add(new Point3D(x, y, z));
-                parent.vertex_faces.Add(new List<int>());
+                parent.vertexFaces.Add(new List<int>());
                 parent.normals.Add(new Normal(0, 0, 0));
-                parent.num_verts++;
+                parent.countVertices++;
             }
         }
 
@@ -98,13 +98,13 @@ namespace SCSRaytracer
                             triangle = new SmoothMeshTriangle(parent);
                         else
                             triangle = new FlatMeshTriangle(parent);
-                        triangle.setVertexIndices(indexs[1], indexs[2], indexs[3]);
+                        triangle.SetVertexIndices(indexs[1], indexs[2], indexs[3]);
                         //Update list of faces for given vertexs using current index
-                        parent.vertex_faces[indexs[1]].Add(parent.num_triangles);
-                        parent.vertex_faces[indexs[2]].Add(parent.num_triangles);
-                        parent.vertex_faces[indexs[3]].Add(parent.num_triangles);
-                        parent.num_triangles++;
-                        parent.add_object(triangle);
+                        parent.vertexFaces[indexs[1]].Add(parent.countTriangles);
+                        parent.vertexFaces[indexs[2]].Add(parent.countTriangles);
+                        parent.vertexFaces[indexs[3]].Add(parent.countTriangles);
+                        parent.countTriangles++;
+                        parent.AddObject(triangle);
                         break;
 
                     case 4: //Face is a quad
@@ -117,25 +117,25 @@ namespace SCSRaytracer
                             triangle = new SmoothMeshTriangle(parent);
                         else
                             triangle = new FlatMeshTriangle(parent);
-                        triangle.setVertexIndices(indexs[1], indexs[2], indexs[3]);
+                        triangle.SetVertexIndices(indexs[1], indexs[2], indexs[3]);
                         //Update list of faces for given vertexs using current index
-                        parent.vertex_faces[indexs[1]].Add(parent.num_triangles);
-                        parent.vertex_faces[indexs[2]].Add(parent.num_triangles);
-                        parent.vertex_faces[indexs[3]].Add(parent.num_triangles);
-                        parent.num_triangles++;
-                        parent.add_object(triangle);
+                        parent.vertexFaces[indexs[1]].Add(parent.countTriangles);
+                        parent.vertexFaces[indexs[2]].Add(parent.countTriangles);
+                        parent.vertexFaces[indexs[3]].Add(parent.countTriangles);
+                        parent.countTriangles++;
+                        parent.AddObject(triangle);
                         //Create new triangle
                         if (smooth)
                             triangle = new SmoothMeshTriangle(parent);
                         else
                             triangle = new FlatMeshTriangle(parent);
-                        triangle.setVertexIndices(indexs[3], indexs[4], indexs[1]);
+                        triangle.SetVertexIndices(indexs[3], indexs[4], indexs[1]);
                         //Update list of faces for given vertexs using current index
-                        parent.vertex_faces[indexs[3]].Add(parent.num_triangles);
-                        parent.vertex_faces[indexs[4]].Add(parent.num_triangles);
-                        parent.vertex_faces[indexs[1]].Add(parent.num_triangles);
-                        parent.num_triangles++;
-                        parent.add_object(triangle);
+                        parent.vertexFaces[indexs[3]].Add(parent.countTriangles);
+                        parent.vertexFaces[indexs[4]].Add(parent.countTriangles);
+                        parent.vertexFaces[indexs[1]].Add(parent.countTriangles);
+                        parent.countTriangles++;
+                        parent.AddObject(triangle);
                         break;
 
                     default: //What the fuck kind of input are you feeding this poor parser?

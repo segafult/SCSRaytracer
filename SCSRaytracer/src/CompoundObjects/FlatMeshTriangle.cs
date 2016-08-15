@@ -19,7 +19,7 @@ namespace SCSRaytracer
 
         }
 
-        public override bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray ray, ref float tMin, ref ShadeRec sr)
         {
             Point3D p0 = parent.vertices[index0];
             Point3D p1 = parent.vertices[index1];
@@ -27,18 +27,18 @@ namespace SCSRaytracer
 
             float a = p0.X - p1.X;
             float b = p0.X - p2.X;
-            float c = r.Direction.X;
-            float d = p0.X - r.Origin.X;
+            float c = ray.Direction.X;
+            float d = p0.X - ray.Origin.X;
 
             float e = p0.Y - p1.Y;
             float f = p0.Y - p2.Y;
-            float g = r.Direction.Y;
-            float h = p0.Y - r.Origin.Y;
+            float g = ray.Direction.Y;
+            float h = p0.Y - ray.Origin.Y;
 
             float i = p0.Z - p1.Z;
             float j = p0.Z - p2.Z;
-            float k = r.Direction.Z;
-            float l = p0.Z - r.Origin.Z;
+            float k = ray.Direction.Z;
+            float l = p0.Z - ray.Origin.Z;
 
             float m = f * k - g * j;
             float n = h * k - g * l;
@@ -64,9 +64,9 @@ namespace SCSRaytracer
             if (t < GlobalVars.K_EPSILON)
                 return false;
 
-            tmin = t;
-            sr.Normal = normal;
-            sr.HitPointLocal = r.Origin + t * r.Direction;
+            tMin = t;
+            sr.Normal = _normal;
+            sr.HitPointLocal = ray.Origin + t * ray.Direction;
             return true;
         }
     }

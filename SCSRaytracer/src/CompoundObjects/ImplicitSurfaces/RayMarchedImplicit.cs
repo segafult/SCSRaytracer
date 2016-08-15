@@ -15,57 +15,57 @@ namespace SCSRaytracer
     /// </summary>
     abstract class RayMarchedImplicit : RenderableObject
     {
-        protected BoundingBox bbox;
-        protected Vector3 lowbound, highbound;
+        protected BoundingBox boundingBox;
+        protected Vector3 lowBound, highBound;
         protected static float EPSILON = 1.0e-3f;
         protected static float INVTWOEPSILON = 1 / (EPSILON * 2.0f);
-        protected float min_step; //Minimum value to increment ray by when asymptotically approaching a surface
-        protected float max_step; //Maximum value to increment ray by, helpful for avoiding excessive steps due to saddle points
-        protected float dist_mult; //Value to multiply distance by to guarantee not penetrating the surface of the implicit
-        protected float trigger_dist; //Distance at which a hit is registered
+        protected float minimumRaymarchStep; //Minimum value to increment ray by when asymptotically approaching a surface
+        protected float maximumRaymarchStep; //Maximum value to increment ray by, helpful for avoiding excessive steps due to saddle points
+        protected float distanceMultiplier; //Value to multiply distance by to guarantee not penetrating the surface of the implicit
+        protected float triggerDistance; //Distance at which a hit is registered
         protected int RECURSIONDEPTH = 4;
 
         public RayMarchedImplicit()
         {
-            bbox = new BoundingBox();
-            lowbound = new Vector3(-4);
-            highbound = new Vector3(4);
-            min_step = 1.0e-5f;
-            max_step = 4.0f;
-            dist_mult = 0.1f;
-            trigger_dist = 0.1f;
+            boundingBox = new BoundingBox();
+            lowBound = new Vector3(-4);
+            highBound = new Vector3(4);
+            minimumRaymarchStep = 1.0e-5f;
+            maximumRaymarchStep = 4.0f;
+            distanceMultiplier = 0.1f;
+            triggerDistance = 0.1f;
         }
 
-        public void setBoundaries(Point3D min, Point3D max)
+        public void SetBoundaries(Point3D min, Point3D max)
         {
-            lowbound = Vector3.Min(min.Coordinates, max.Coordinates);
-            highbound = Vector3.Max(min.Coordinates, max.Coordinates);
-            setup_bounds();
+            lowBound = Vector3.Min(min.Coordinates, max.Coordinates);
+            highBound = Vector3.Max(min.Coordinates, max.Coordinates);
+            SetupBounds();
         }
         
-        public void setup_bounds()
+        public void SetupBounds()
         {
             //Construct bounding box
-            bbox.corner0 = lowbound;
-            bbox.corner1 = highbound;
+            boundingBox.corner0 = lowBound;
+            boundingBox.corner1 = highBound;
             //bbox.x0 = lowbound.X; bbox.y0 = lowbound.Y; bbox.z0 = lowbound.Z;
             //bbox.x1 = highbound.X; bbox.y1 = highbound.Y; bbox.z1 = highbound.Z;
         }
 
-        public override bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray ray, ref float tMin, ref ShadeRec sr)
         {
             //First verify intersection point of ray with bounding box.
-            Vector3 o = r.Origin.Coordinates;
+            Vector3 o = ray.Origin.Coordinates;
             //float ox = r.origin.coords.X;
             //float oy = r.origin.coords.Y;
             //float oz = r.origin.coords.Z;
-            Vector3 d = r.Direction.Coordinates;
+            Vector3 d = ray.Direction.Coordinates;
             //float dx = r.direction.coords.X;
             //float dy = r.direction.coords.Y;
             //float dz = r.direction.coords.Z;
 
-            Vector3 c0 = bbox.corner0;
-            Vector3 c1 = bbox.corner1;
+            Vector3 c0 = boundingBox.corner0;
+            Vector3 c1 = boundingBox.corner1;
             //float x0 = bbox.c0.X;
             //float y0 = bbox.c0.Y;
             //float z0 = bbox.c0.Z;
@@ -76,10 +76,10 @@ namespace SCSRaytracer
             float tx_min, ty_min, tz_min;
             float tx_max, ty_max, tz_max;
 
-            Vector3 invd = new Vector3(1.0f)/d;
+            Vector3 inverseDenominator = new Vector3(1.0f)/d;
             //Vector3 min;
             //Vector3 max;
-            float a = invd.X;
+            float a = inverseDenominator.X;
             if (a >= 0)
             {
                 tx_min = (c0.X - o.X) * a;
@@ -91,7 +91,7 @@ namespace SCSRaytracer
                 tx_max = (c0.X - o.X) * a;
             }
 
-            float b = invd.Y;
+            float b = inverseDenominator.Y;
             if (b >= 0)
             {
                 ty_min = (c0.Y - o.Y) * b;
@@ -103,7 +103,7 @@ namespace SCSRaytracer
                 ty_max = (c0.Y - o.Y) * b;
             }
 
-            float c = invd.Z;
+            float c = inverseDenominator.Z;
             if (c >= 0)
             {
                 tz_min = (c0.Z - o.Z) * c;
@@ -127,45 +127,45 @@ namespace SCSRaytracer
                 return false;
             }
 
-            float tpos; //Entry value of t for ray, lowest possible t value
-            if (!bbox.inside(r.Origin))
-                tpos = t0; //Start casting from t0 if starting from outside bounding box
+            float tPosition; //Entry value of t for ray, lowest possible t value
+            if (!boundingBox.inside(ray.Origin))
+                tPosition = t0; //Start casting from t0 if starting from outside bounding box
             else
-                tpos = GlobalVars.K_EPSILON; //Start casting from origin if starting from inside bounding box
-            float tdist = 0; //Value returned by the distance function approximation
-            float tposprev = 0;
-            float adjdist = 0; //Adjusted distance scaled by distance adjustment parameter
-            float curval = 0;
-            float prevval = 0;
-            Point3D loc;
+                tPosition = GlobalVars.K_EPSILON; //Start casting from origin if starting from inside bounding box
+            float tDistance = 0; //Value returned by the distance function approximation
+            float tPositionPrevious = 0;
+            float adjustedDistance = 0; //Adjusted distance scaled by distance adjustment parameter
+            float currentDistanceFunctionValue = 0;
+            float previousDistanceFunctionValue = 0;
+            Point3D location;
             //Traverse space using raymarching algorithm
             do
             {
-                loc = r.Origin + r.Direction * tpos;
-                tdist = evalD(loc,r.Direction, ref curval);
-                adjdist = tdist * dist_mult;
+                location = ray.Origin + ray.Direction * tPosition;
+                tDistance = EvaluateDistanceFunction(location,ray.Direction, ref currentDistanceFunctionValue);
+                adjustedDistance = tDistance * distanceMultiplier;
 
                 //Clamp the adjusted distance between the minimum and maximum steps
-                adjdist = FastMath.clamp(adjdist, min_step, max_step);
+                adjustedDistance = FastMath.clamp(adjustedDistance, minimumRaymarchStep, maximumRaymarchStep);
                 //Increment tpos by the adjusted distance
-                tpos += adjdist;
+                tPosition += adjustedDistance;
 
                 //Accidentally stepped over bounds, solve using bisection algorithm
-                if(prevval*curval < 0.0f)
+                if(previousDistanceFunctionValue*currentDistanceFunctionValue < 0.0f)
                 {
-                    solveRootByBisection(r, ref tmin, ref sr, tposprev, tpos, RECURSIONDEPTH);
+                    SolveRootByBisection(ray, ref tMin, ref sr, tPositionPrevious, tPosition, RECURSIONDEPTH);
                     return true;
                 }
-                tposprev = tpos;
-                prevval = curval;
-            } while (tpos < t1 && tdist > trigger_dist);
+                tPositionPrevious = tPosition;
+                previousDistanceFunctionValue = currentDistanceFunctionValue;
+            } while (tPosition < t1 && tDistance > triggerDistance);
 
             //Hit
-            if(tdist < trigger_dist)
+            if(tDistance < triggerDistance)
             {
-                tmin = tpos;
-                sr.HitPointLocal = r.Origin + tpos * r.Direction;
-                sr.Normal = approximateNormal(sr.HitPointLocal, r.Direction);
+                tMin = tPosition;
+                sr.HitPointLocal = ray.Origin + tPosition * ray.Direction;
+                sr.Normal = ApproximateNormal(sr.HitPointLocal, ray.Direction);
                 sr.ObjectMaterial = _material;
                 return true;
             }
@@ -176,55 +176,55 @@ namespace SCSRaytracer
         }
 
         //Evaluates distance function at a given point in space. Can be overridden for special cases where exact distance function known (ie. sphere)
-        protected virtual float evalD(Point3D p, Vect3D d, ref float cur)
+        protected virtual float EvaluateDistanceFunction(Point3D point, Vect3D distance, ref float cur)
         {
             //Distance (or at least the approximation of it) is a function d(x) = |f(x)/f'(x)|
-            cur = evalF(p);
-            return Math.Abs(cur / evalFPrime(p, d));
+            cur = EvaluateImplicitFunction(point);
+            return Math.Abs(cur / EvaluateImplicitFunctionDerivative(point, distance));
         }
 
         //Evaluates given implicit function at a point, should be overridden in subclasses.
-        public virtual float evalF(Point3D p)
+        public virtual float EvaluateImplicitFunction(Point3D p)
         {
             return 1.0f;
         }
         //Approximates the gradient of F using the small run method. Can be overridden if the
         //gradient is known.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected virtual float evalFPrime(Point3D p, Vect3D d)
+        protected virtual float EvaluateImplicitFunctionDerivative(Point3D point, Vect3D direction)
         {
             //Find the points just in front of the provided point, and just behind it along the ray
-            Point3D behind = p + (d * EPSILON);
-            Point3D infront = p - (d * EPSILON);
+            Point3D behind = point + (direction * EPSILON);
+            Point3D infront = point - (direction * EPSILON);
 
             //Slope = rise over run
-            return (evalF(infront) - evalF(behind)) * INVTWOEPSILON;
+            return (EvaluateImplicitFunction(infront) - EvaluateImplicitFunction(behind)) * INVTWOEPSILON;
         }
 
-        private bool zeroExistsInInterval(Ray r, float low, float high)
+        private bool ZeroExistsInInterval(Ray ray, float low, float high)
         {
-            float f_low = evalF(r.Origin + r.Direction * (float)low);
-            float f_high = evalF(r.Origin + r.Direction * (float)high);
+            float f_low = EvaluateImplicitFunction(ray.Origin + ray.Direction * (float)low);
+            float f_high = EvaluateImplicitFunction(ray.Origin + ray.Direction * (float)high);
             return (f_low * f_high) < 0.0f;
         }
 
-        private bool solveRootByBisection(Ray r, ref float tmin, ref ShadeRec sr, float lowbound, float highbound, int depth)
+        private bool SolveRootByBisection(Ray ray, ref float tMin, ref ShadeRec sr, float lowBound, float highBound, int depth)
         {
             if(depth > 0)
             {
                 //Find the mid point between the low and high bound
                 float midbound;
-                midbound = lowbound + ((highbound - lowbound) / 2.0f);
-                if (zeroExistsInInterval(r, lowbound, midbound))
-                    return solveRootByBisection(r, ref tmin, ref sr, lowbound, midbound, depth - 1);
-                else if (zeroExistsInInterval(r, midbound, highbound))
-                    return solveRootByBisection(r, ref tmin, ref sr, midbound, highbound, depth - 1);
+                midbound = lowBound + ((highBound - lowBound) / 2.0f);
+                if (ZeroExistsInInterval(ray, lowBound, midbound))
+                    return SolveRootByBisection(ray, ref tMin, ref sr, lowBound, midbound, depth - 1);
+                else if (ZeroExistsInInterval(ray, midbound, highBound))
+                    return SolveRootByBisection(ray, ref tMin, ref sr, midbound, highBound, depth - 1);
                 else
                 {
                     //Converged to correct location!
-                    tmin = lowbound;
-                    sr.HitPointLocal = r.Origin + lowbound * r.Direction;
-                    sr.Normal = approximateNormal(sr.HitPointLocal, r.Direction);
+                    tMin = lowBound;
+                    sr.HitPointLocal = ray.Origin + lowBound * ray.Direction;
+                    sr.Normal = ApproximateNormal(sr.HitPointLocal, ray.Direction);
                     sr.ObjectMaterial = _material;
                     return true;
                 }
@@ -232,21 +232,21 @@ namespace SCSRaytracer
             else
             {
                 //Bottom of recursion stack, calculate relevant values
-                tmin = lowbound;
-                sr.HitPointLocal = r.Origin + (float)lowbound * r.Direction;
-                sr.Normal = approximateNormal(sr.HitPointLocal, r.Direction);
+                tMin = lowBound;
+                sr.HitPointLocal = ray.Origin + (float)lowBound * ray.Direction;
+                sr.Normal = ApproximateNormal(sr.HitPointLocal, ray.Direction);
                 sr.ObjectMaterial = sr.WorldPointer.MaterialList[0];
                 return true;
             }
         }
 
         //Approximates the gradient of F(p) at a given point p
-        protected virtual Normal approximateNormal(Point3D p, Vect3D rd)
+        protected virtual Normal ApproximateNormal(Point3D p, Vect3D rd)
         {
-            float f = evalF(p);
-            float f_x = evalF(new Point3D(p.X + EPSILON, p.Y, p.Z));
-            float f_y = evalF(new Point3D(p.X, p.Y + EPSILON, p.Z));
-            float f_z = evalF(new Point3D(p.X, p.Y, p.Z + EPSILON));
+            float f = EvaluateImplicitFunction(p);
+            float f_x = EvaluateImplicitFunction(new Point3D(p.X + EPSILON, p.Y, p.Z));
+            float f_y = EvaluateImplicitFunction(new Point3D(p.X, p.Y + EPSILON, p.Z));
+            float f_z = EvaluateImplicitFunction(new Point3D(p.X, p.Y, p.Z + EPSILON));
 
             //Compute vector for normal
             Vect3D raw_normal = (new Vect3D((float)(f_x - f), (float)(f_y - f), (float)(f_z - f))).Hat();

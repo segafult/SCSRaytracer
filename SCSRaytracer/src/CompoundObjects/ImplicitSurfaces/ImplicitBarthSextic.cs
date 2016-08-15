@@ -14,16 +14,16 @@ namespace SCSRaytracer
 
         public ImplicitBarthSextic()
         {
-            bbox = new BoundingBox();
-            lowbound = new Vector3(-3.5f);
-            highbound = new Vector3(3.5f);
-            min_step = 1.0e-5f;
-            max_step = 10.0f;
-            dist_mult = 0.4f;
-            trigger_dist = 0.01f;
+            boundingBox = new BoundingBox();
+            lowBound = new Vector3(-3.5f);
+            highBound = new Vector3(3.5f);
+            minimumRaymarchStep = 1.0e-5f;
+            maximumRaymarchStep = 10.0f;
+            distanceMultiplier = 0.4f;
+            triggerDistance = 0.01f;
         }
 
-        public override float evalF(Point3D p)
+        public override float EvaluateImplicitFunction(Point3D p)
         {
             float x_sqr = p.X * p.X;
             float y_sqr = p.Y * p.Y;

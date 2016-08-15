@@ -14,7 +14,7 @@ namespace SCSRaytracer
     /// </summary>
     class CompoundRenderable : RenderableObject
     {
-        protected List<RenderableObject> objs;
+        protected List<RenderableObject> containedObjects;
 
         // accessors
         public override Material Material
@@ -25,54 +25,54 @@ namespace SCSRaytracer
             }
             set
             {
-                int numobjs = objs.Count;
+                int numobjs = containedObjects.Count;
                 for (int i = 0; i < numobjs; i++)
                 {
-                    objs[i].Material = value;
+                    containedObjects[i].Material = value;
                 }
             }
         }
 
         public CompoundRenderable()
         {
-            objs = new List<RenderableObject>();
+            containedObjects = new List<RenderableObject>();
         }
 
-        public void add_object(RenderableObject toAdd)
+        public void AddObject(RenderableObject toAdd)
         {
-            objs.Add(toAdd);
+            containedObjects.Add(toAdd);
         }
 
-        public override bool Hit(Ray r, ref float tmin, ref ShadeRec sr)
+        public override bool Hit(Ray r, ref float tMin, ref ShadeRec sr)
         {
             float t = GlobalVars.K_HUGE_VALUE;
             Normal normal = new Normal();
-            Point3D local_hit_point = new Point3D();
+            Point3D localHitPoint = new Point3D();
             bool hit = false;
-            tmin = GlobalVars.K_HUGE_VALUE;
-            int numobjs = objs.Count;
-            Material closestmat = null;
+            tMin = GlobalVars.K_HUGE_VALUE;
+            int countObjects = containedObjects.Count;
+            Material closestObjectMaterial = null;
 
             //Traverse the list of renderable objects, and test for collisions in the same manner as in the world
             //hit function
-            for(int i = 0; i < numobjs; i++)
+            for(int i = 0; i < countObjects; i++)
             {
-                if(objs[i].Hit(r, ref t, ref sr) && (t<tmin))
+                if(containedObjects[i].Hit(r, ref t, ref sr) && (t<tMin))
                 {
                     hit = true;
-                    tmin = t;
-                    closestmat = sr.ObjectMaterial;
+                    tMin = t;
+                    closestObjectMaterial = sr.ObjectMaterial;
                     normal = sr.Normal;
-                    local_hit_point = sr.HitPointLocal;
+                    localHitPoint = sr.HitPointLocal;
                 }
             }
 
             if(hit)
             {
-                sr.TMinimum = tmin;
+                sr.TMinimum = tMin;
                 sr.Normal = normal;
-                sr.HitPointLocal = local_hit_point;
-                sr.ObjectMaterial = closestmat;
+                sr.HitPointLocal = localHitPoint;
+                sr.ObjectMaterial = closestObjectMaterial;
             }
 
             return hit;
@@ -100,7 +100,7 @@ namespace SCSRaytracer
                 //Load each child and store in list
                 RenderableObject rend = RenderableObject.LoadRenderableObject(e);
                 if (rend != null)
-                    toReturn.add_object(rend);
+                    toReturn.AddObject(rend);
             }
 
             return toReturn;

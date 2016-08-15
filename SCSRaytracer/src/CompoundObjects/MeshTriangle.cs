@@ -16,7 +16,7 @@ namespace SCSRaytracer
     {
         protected int index0, index1, index2;
         protected Mesh parent;
-        protected Normal normal;
+        protected Normal _normal;
 
         public override BoundingBox BoundingBox
         {
@@ -34,20 +34,27 @@ namespace SCSRaytracer
                 return new BoundingBox(xmin, xmax, ymin, ymax, zmin, zmax);
             }
         }
+        public Normal Normal
+        {
+            get
+            {
+                return _normal;
+            }
+        }
 
         public MeshTriangle(Mesh p_arg)
         {
             parent = p_arg;
         }
 
-        public void setVertexIndices(int ind0, int ind1, int ind2)
+        public void SetVertexIndices(int ind0, int ind1, int ind2)
         {
             index0 = ind0;
             index1 = ind1;
             index2 = ind2;
-            compute_normal();
+            ComputeNormal();
         }
-        private void compute_normal()
+        private void ComputeNormal()
         {
             Point3D p0 = parent.vertices[index0];
             Point3D p1 = parent.vertices[index1];
@@ -58,11 +65,11 @@ namespace SCSRaytracer
             Vect3D v1 = p2 - p0;
             Vect3D rawNormal = v0 ^ v1;
 
-            normal = new Normal(rawNormal);
-            normal.Normalize();
+            _normal = new Normal(rawNormal);
+            _normal.Normalize();
         }
-        public Normal getNormal() { return normal; }
-        public override bool Hit(Ray r, float tmin)
+        //public Normal getNormal() { return _normal; }
+        public override bool Hit(Ray ray, float tMin)
         {
             Point3D p0 = parent.vertices[index0];
             Point3D p1 = parent.vertices[index1];
@@ -70,18 +77,18 @@ namespace SCSRaytracer
 
             float a = p0.X - p1.X;
             float b = p0.X - p2.X;
-            float c = r.Direction.X;
-            float d = p0.X - r.Origin.X;
+            float c = ray.Direction.X;
+            float d = p0.X - ray.Origin.X;
 
             float e = p0.Y - p1.Y;
             float f = p0.Y - p2.Y;
-            float g = r.Direction.Y;
-            float h = p0.Y - r.Origin.Y;
+            float g = ray.Direction.Y;
+            float h = p0.Y - ray.Origin.Y;
 
             float i = p0.Z - p1.Z;
             float j = p0.Z - p2.Z;
-            float k = r.Direction.Z;
-            float l = p0.Z - r.Origin.Z;
+            float k = ray.Direction.Z;
+            float l = p0.Z - ray.Origin.Z;
 
             float m = f * k - g * j;
             float n = h * k - g * l;

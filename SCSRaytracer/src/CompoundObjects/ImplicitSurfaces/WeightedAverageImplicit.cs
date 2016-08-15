@@ -8,28 +8,43 @@ namespace SCSRaytracer
 {
     class WeightedAverageImplicit : RayMarchedImplicit
     {
-        RayMarchedImplicit i0, i1;
-        float p0, p1;
+        RayMarchedImplicit _implicit0, _implicit1;
+        
+        public RayMarchedImplicit Implicit0
+        {
+            set
+            {
+                _implicit0 = value;
+            }
+        }
+        public RayMarchedImplicit Implicit1
+        {
+            set
+            {
+                _implicit1 = value;
+            }
+        }
+        float parameter0, parameter1;
         public WeightedAverageImplicit()
         {
-            bbox = new BoundingBox();
-            lowbound = new Vector3(-2.5f);
-            highbound = new Vector3(2.5f);
-            min_step = 1.0e-5f;
-            max_step = 4.0f;
-            dist_mult = 0.1f;
-            trigger_dist = 0.1f;
-            p0 = 1.0f;
-            p1 = 0.0f;
-            i0 = new ImplicitSphere();
-            i1 = new ImplicitDecocube();
+            boundingBox = new BoundingBox();
+            lowBound = new Vector3(-2.5f);
+            highBound = new Vector3(2.5f);
+            minimumRaymarchStep = 1.0e-5f;
+            maximumRaymarchStep = 4.0f;
+            distanceMultiplier = 0.1f;
+            triggerDistance = 0.1f;
+            parameter0 = 1.0f;
+            parameter1 = 0.0f;
+            _implicit0 = new ImplicitSphere();
+            _implicit1 = new ImplicitDecocube();
         }
 
-        public void crossFade(float p_arg)
+        public void CrossFade(float parameter)
         {
-            p_arg = FastMath.clamp(p_arg, 0.0f, 1.0f);
-            p1 = p_arg;
-            p0 = 1.0f - p_arg;
+            parameter = FastMath.clamp(parameter, 0.0f, 1.0f);
+            parameter1 = parameter;
+            parameter0 = 1.0f - parameter;
         }
 
 //        protected override float evalD(Point3D p, Vect3D d, ref float cur)
@@ -37,9 +52,9 @@ namespace SCSRaytracer
 //            return base.evalD(p, d, ref cur);
  //       }
 
-        public override float evalF(Point3D p)
+        public override float EvaluateImplicitFunction(Point3D p)
         {
-            return p0 * i0.evalF(p) + p1 * i1.evalF(p);
+            return parameter0 * _implicit0.EvaluateImplicitFunction(p) + parameter1 * _implicit1.EvaluateImplicitFunction(p);
         }
     }
 }

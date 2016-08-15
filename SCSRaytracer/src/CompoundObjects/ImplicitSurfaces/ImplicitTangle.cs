@@ -19,7 +19,7 @@ namespace SCSRaytracer
             c = 11.8f;
         }
 
-        public override float evalF(Point3D p)
+        public override float EvaluateImplicitFunction(Point3D p)
         {
             Vector3 sqrd = p.Coordinates * p.Coordinates;
             Vector3 fourpow = sqrd * sqrd;

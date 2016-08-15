@@ -16,15 +16,15 @@ namespace SCSRaytracer
     {
         public ImplicitWineGlass()
         {
-            bbox = new BoundingBox();
-            lowbound = new Vector3(-3.0f);
-            highbound = new Vector3(3.0f);
-            min_step = 1.0e-5f;
-            max_step = 9.0f;
-            dist_mult = 0.3f;
-            trigger_dist = 0.1f;
+            boundingBox = new BoundingBox();
+            lowBound = new Vector3(-3.0f);
+            highBound = new Vector3(3.0f);
+            minimumRaymarchStep = 1.0e-5f;
+            maximumRaymarchStep = 9.0f;
+            distanceMultiplier = 0.3f;
+            triggerDistance = 0.1f;
         }
-        public override float evalF(Point3D p)
+        public override float EvaluateImplicitFunction(Point3D p)
         {
             float xsqr = p.X * p.X;
             float ysqr = p.Y * p.Y;

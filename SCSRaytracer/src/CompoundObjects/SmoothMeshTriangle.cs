@@ -19,6 +19,8 @@ namespace SCSRaytracer
             Point3D p1 = parent.vertices[index1];
             Point3D p2 = parent.vertices[index2];
 
+            //solve with cramer's rule
+
             float a = p0.X - p1.X;
             float b = p0.X - p2.X;
             float c = r.Direction.X;
@@ -40,31 +42,31 @@ namespace SCSRaytracer
             float q = g * i - e * k;
             float s = e * j - f * i;
 
-            float invDenom = 1.0f / (a * m + b * q + c * s);
+            float inverseDenominator = 1.0f / (a * m + b * q + c * s);
 
-            float beta = invDenom * (d * m - b * n - c * p);
+            float beta = inverseDenominator * (d * m - b * n - c * p);
             if (beta < 0.0)
                 return false;
 
             float rd = e * l - h * i;
-            float gamma = invDenom * (a * n + d * q + c * rd);
+            float gamma = inverseDenominator * (a * n + d * q + c * rd);
             if (gamma < 0.0)
                 return false;
             if (beta + gamma > 1.0)
                 return false;
 
             //Hit!
-            float t = invDenom * (a * p - b * rd + d * s);
+            float t = inverseDenominator * (a * p - b * rd + d * s);
             if (t < GlobalVars.K_EPSILON)
                 return false;
 
             tmin = t;
-            sr.Normal = interpolate_normal(beta, gamma);
+            sr.Normal = InterpolateNormal(beta, gamma);
             sr.HitPointLocal = r.Origin + t * r.Direction;
             return true;
         }
 
-        private Normal interpolate_normal(float beta, float gamma)
+        private Normal InterpolateNormal(float beta, float gamma)
         {
             Normal interpolated = (1 - beta - gamma) * parent.normals[index0] +
                 beta * parent.normals[index1] +

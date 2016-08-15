@@ -15,15 +15,15 @@ namespace SCSRaytracer
 
         public ImplicitHeart()
         {
-            bbox = new BoundingBox();
-            lowbound = new Vector3(-1.5f);
-            highbound = new Vector3(1.5f);
-            min_step = 1.0e-5f;
-            max_step = 4.0f;
-            dist_mult = 0.1f;
+            boundingBox = new BoundingBox();
+            lowBound = new Vector3(-1.5f);
+            highBound = new Vector3(1.5f);
+            minimumRaymarchStep = 1.0e-5f;
+            maximumRaymarchStep = 4.0f;
+            distanceMultiplier = 0.1f;
         }
 
-        public override float evalF(Point3D p)
+        public override float EvaluateImplicitFunction(Point3D p)
         {
             Vector3 sqrd = p.Coordinates * p.Coordinates;
             float cbedz = sqrd.Z * p.Z;

@@ -15,7 +15,7 @@ namespace SCSRaytracer
 {
     class ImplicitTieFighter : RayMarchedImplicit
     {
-        public override float evalF(Point3D p)
+        public override float EvaluateImplicitFunction(Point3D p)
         {
             Vector3 one = p.Coordinates;
             Vector3 sqr = one * one;
